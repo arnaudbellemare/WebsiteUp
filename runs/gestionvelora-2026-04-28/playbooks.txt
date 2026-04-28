@@ -1,0 +1,8 @@
+📚 PLAYBOOK LIBRARY
+================================================================
+- ai-discovery-hardening [geo] — Hardening checklist for AI crawler discoverability.
+- geo-content-optimization [content] — Keyword density + E-E-A-T + entity extraction workflow.
+- github-repo-seo [repo] — Repository discoverability/trust workflow with report artifacts.
+- internal-link-sculpting [architecture] — Sitemap graph review to remove orphan pages and weak clusters.
+- serp-gap-analysis [research] — SERP competitor gaps using GEO + marketing signals.
+- technical-seo-audit [audit] — Crawlability, indexability, performance, schema, and AI-discovery checks.

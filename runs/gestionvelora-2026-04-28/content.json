@@ -1,0 +1,189 @@
+{
+  "source": "https://www.gestionvelora.com",
+  "analyzed_words": 2381,
+  "top_terms": [
+    {
+      "keyword": "management",
+      "count": 154,
+      "density_pct": 6.47
+    },
+    {
+      "keyword": "airbnb",
+      "count": 86,
+      "density_pct": 3.61
+    },
+    {
+      "keyword": "immobilière",
+      "count": 50,
+      "density_pct": 2.1
+    },
+    {
+      "keyword": "saint",
+      "count": 48,
+      "density_pct": 2.02
+    },
+    {
+      "keyword": "syndicat",
+      "count": 47,
+      "density_pct": 1.97
+    },
+    {
+      "keyword": "copropriété",
+      "count": 46,
+      "density_pct": 1.93
+    },
+    {
+      "keyword": "locative",
+      "count": 42,
+      "density_pct": 1.76
+    },
+    {
+      "keyword": "condo",
+      "count": 40,
+      "density_pct": 1.68
+    },
+    {
+      "keyword": "property",
+      "count": 40,
+      "density_pct": 1.68
+    },
+    {
+      "keyword": "commerciale",
+      "count": 38,
+      "density_pct": 1.6
+    },
+    {
+      "keyword": "board",
+      "count": 38,
+      "density_pct": 1.6
+    },
+    {
+      "keyword": "rental",
+      "count": 38,
+      "density_pct": 1.6
+    },
+    {
+      "keyword": "commercial",
+      "count": 38,
+      "density_pct": 1.6
+    },
+    {
+      "keyword": "montréal",
+      "count": 26,
+      "density_pct": 1.09
+    },
+    {
+      "keyword": "mont",
+      "count": 16,
+      "density_pct": 0.67
+    }
+  ],
+  "target_keywords": [
+    {
+      "keyword": "gestion immobiliere",
+      "count": 2,
+      "density_pct": 0.08
+    },
+    {
+      "keyword": "property management",
+      "count": 39,
+      "density_pct": 1.64
+    },
+    {
+      "keyword": "montreal",
+      "count": 18,
+      "density_pct": 0.76
+    }
+  ],
+  "keyword_stuffing": {
+    "name": "keyword_stuffing",
+    "label": "No Keyword Stuffing",
+    "detected": true,
+    "score": 2,
+    "max_score": 6,
+    "impact": "-9%",
+    "details": {
+      "suspicious_keywords": {
+        "management": 6.5,
+        "gestion": 6.0,
+        "airbnb": 3.6
+      },
+      "stuffing_severity": "medium",
+      "repeated_phrases": 0,
+      "front_loading_detected": false
+    }
+  },
+  "eeat_signals": {
+    "name": "eeat_signals",
+    "label": "E-E-A-T Signals",
+    "detected": true,
+    "score": 4,
+    "max_score": 5,
+    "impact": "+15%",
+    "details": {
+      "trust_links": {
+        "privacy": true,
+        "terms": false,
+        "about": true,
+        "contact": true
+      },
+      "trust_link_count": 3,
+      "has_detailed_bio": false,
+      "is_https": true
+    }
+  },
+  "anchor_text_quality": {
+    "name": "anchor_text_quality",
+    "label": "Anchor Text Quality",
+    "detected": true,
+    "score": 3,
+    "max_score": 3,
+    "impact": "+5%",
+    "details": {
+      "total_internal_links": 335,
+      "generic_count": 0,
+      "descriptive_count": 335,
+      "descriptive_ratio": 1.0
+    }
+  },
+  "entity_resolution": {
+    "name": "entity_resolution",
+    "label": "Entity Resolution Friendliness",
+    "detected": true,
+    "score": 4,
+    "max_score": 4,
+    "impact": "+10%",
+    "details": {
+      "has_schema_entity": true,
+      "has_sameas": true,
+      "has_definition": false,
+      "entity_types": [
+        "Organization",
+        "LocalBusiness",
+        "WebSite",
+        "WebPage",
+        "ItemList"
+      ]
+    }
+  },
+  "kg_density": {
+    "name": "kg_density",
+    "label": "Knowledge Graph Density",
+    "detected": true,
+    "score": 2,
+    "max_score": 4,
+    "impact": "+10%",
+    "details": {
+      "relation_count": 0,
+      "density_per_500w": 0.0,
+      "schema_relations": 6,
+      "word_count": 2737
+    }
+  },
+  "recommendations": [
+    "Reduce repeated terms and diversify lexical variants: management (6.5%), gestion (6.0%), airbnb (3.6%).",
+    "Increase semantic coverage for 'gestion immobiliere' (currently 0.08%).",
+    "Increase semantic coverage for 'montreal' (currently 0.76%)."
+  ],
+  "error": ""
+}

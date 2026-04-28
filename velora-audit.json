@@ -1,0 +1,565 @@
+{
+  "url": "https://www.gestionvelora.com",
+  "timestamp": "2026-04-22T19:44:47.814986+00:00",
+  "score": 86,
+  "band": "excellent",
+  "checks": {
+    "robots_txt": {
+      "score": 15,
+      "max": 18,
+      "passed": true,
+      "details": {
+        "found": true,
+        "bots_allowed": [
+          "GPTBot",
+          "OAI-SearchBot",
+          "ChatGPT-User",
+          "anthropic-ai",
+          "ClaudeBot",
+          "Claude-SearchBot",
+          "claude-web",
+          "PerplexityBot",
+          "Perplexity-User",
+          "Google-Extended",
+          "Google-CloudVertexBot",
+          "Bingbot",
+          "Applebot-Extended",
+          "cohere-ai",
+          "DuckAssistBot",
+          "Bytespider",
+          "meta-externalagent",
+          "Meta-ExternalFetcher",
+          "facebookexternalhit",
+          "Amazonbot",
+          "AI2Bot",
+          "AI2Bot-Dolma",
+          "xAI-Bot",
+          "Applebot",
+          "PetalBot",
+          "YouBot",
+          "CCBot"
+        ],
+        "bots_missing": [],
+        "bots_blocked": [],
+        "bots_partial": [],
+        "citation_bots_ok": true,
+        "citation_bots_explicit": false
+      }
+    },
+    "llms_txt": {
+      "score": 14,
+      "max": 18,
+      "passed": true,
+      "details": {
+        "found": true,
+        "has_h1": true,
+        "has_description": true,
+        "has_sections": true,
+        "has_links": true,
+        "word_count": 240,
+        "has_full": true,
+        "sections_count": 5,
+        "links_count": 43,
+        "has_blockquote": true,
+        "has_optional_section": false,
+        "companion_files_hint": false,
+        "validation_warnings": []
+      }
+    },
+    "schema_jsonld": {
+      "score": 13,
+      "max": 16,
+      "passed": true,
+      "details": {
+        "has_website": true,
+        "has_webapp": false,
+        "has_faq": true,
+        "found_types": [
+          "Organization",
+          "LocalBusiness",
+          "WebSite",
+          "FAQPage"
+        ]
+      }
+    },
+    "meta_tags": {
+      "score": 14,
+      "max": 14,
+      "passed": true,
+      "details": {
+        "has_title": true,
+        "has_description": true,
+        "has_canonical": true,
+        "has_og_title": true,
+        "has_og_description": true,
+        "has_og_image": true,
+        "title_text": "Gestion immobili\u00e8re Montr\u00e9al | Gestion Velora",
+        "description_text": "Gestion Velora offre syndicat de copropri\u00e9t\u00e9, gestion Airbnb et location longue dur\u00e9e \u00e0 Montr\u00e9al. Administration compl\u00e8te, maintenance proactive et rapports transparents.",
+        "description_length": 170,
+        "title_length": 45,
+        "canonical_url": "https://www.gestionvelora.com/"
+      }
+    },
+    "content": {
+      "score": 12,
+      "max": 12,
+      "passed": true,
+      "details": {
+        "has_h1": true,
+        "heading_count": 10,
+        "has_numbers": true,
+        "has_links": true,
+        "word_count": 672,
+        "h1_text": "Gestion immobiliere a Montreal pour coproprietes, location et Airbnb",
+        "numbers_count": 4,
+        "external_links_count": 4,
+        "has_heading_hierarchy": true,
+        "has_lists_or_tables": true,
+        "has_front_loading": true
+      }
+    },
+    "signals": {
+      "score": 6,
+      "max": 6,
+      "passed": true,
+      "details": {
+        "has_lang": true,
+        "lang_value": "fr-CA",
+        "has_rss": true,
+        "rss_url": "https://www.gestionvelora.com/rss.xml",
+        "has_freshness": true,
+        "freshness_date": "2026-04-22"
+      }
+    },
+    "ai_discovery": {
+      "score": 5,
+      "max": 6,
+      "passed": true,
+      "details": {
+        "has_well_known_ai": true,
+        "has_summary": true,
+        "has_faq": true,
+        "has_service": false,
+        "summary_valid": true,
+        "faq_count": 3,
+        "endpoints_found": 3
+      }
+    },
+    "brand_entity": {
+      "score": 7,
+      "max": 10,
+      "passed": true,
+      "details": {
+        "brand_name_consistent": true,
+        "names_found": [
+          "Gestion immobiliere a Montreal pour coproprietes, location et Airbnb",
+          "Gestion immobili\u00e8re Montr\u00e9al",
+          "Gestion immobili\u00e8re Montr\u00e9al",
+          "Gestion Velora"
+        ],
+        "schema_desc_matches_meta": false,
+        "kg_pillar_count": 1,
+        "kg_pillar_urls": [
+          "https://ca.linkedin.com/in/gestion-velora-48684b399",
+          "https://ca.linkedin.com/in/arnaud-bellemare-125934372"
+        ],
+        "has_wikipedia": false,
+        "has_wikidata": false,
+        "has_linkedin": true,
+        "has_crunchbase": false,
+        "has_about_link": true,
+        "has_contact_info": true,
+        "has_geo_schema": true,
+        "has_hreflang": true,
+        "hreflang_count": 3,
+        "faq_depth": 7,
+        "has_recent_articles": false
+      }
+    }
+  },
+  "score_breakdown": {
+    "robots": 15,
+    "llms": 14,
+    "schema": 13,
+    "meta": 14,
+    "content": 12,
+    "signals": 6,
+    "ai_discovery": 5,
+    "brand_entity": 7
+  },
+  "recommendations": [
+    "Create /ai/service.json to describe service capabilities for AI",
+    "Add more sameAs links to Knowledge Graph pillars (currently 1/4: Wikipedia, Wikidata, LinkedIn, Crunchbase)",
+    "Keyword stuffing detected: 'pour' at 2.7% density \u2014 diversify vocabulary",
+    "Add proof assets: certifications, reviews, guarantees, and team credibility.",
+    "Add conversion CTAs: quote, consultation, or booking flow on key pages."
+  ],
+  "webmcp": {
+    "readiness_level": "ready",
+    "agent_ready": true,
+    "has_register_tool": false,
+    "has_tool_attributes": true,
+    "tool_count": 11,
+    "has_potential_action": true,
+    "potential_actions": [
+      "SearchAction"
+    ],
+    "has_labeled_forms": false,
+    "labeled_forms_count": 0,
+    "has_openapi": false
+  },
+  "negative_signals": {
+    "severity": "medium",
+    "signals_found": 2,
+    "cta_density_high": false,
+    "cta_count": 0,
+    "has_popup_signals": false,
+    "is_thin_content": false,
+    "broken_links_count": 0,
+    "has_keyword_stuffing": true,
+    "has_author_signal": false,
+    "boilerplate_ratio": 0.01,
+    "has_mixed_signals": false
+  },
+  "cdn_check": {
+    "checked": true,
+    "browser_status": 200,
+    "browser_content_length": 20565,
+    "bot_results": [
+      {
+        "bot": "GPTBot",
+        "status": 200,
+        "content_length": 20565,
+        "blocked": false,
+        "challenge_detected": false
+      },
+      {
+        "bot": "ClaudeBot",
+        "status": 200,
+        "content_length": 20565,
+        "blocked": false,
+        "challenge_detected": false
+      },
+      {
+        "bot": "PerplexityBot",
+        "status": 200,
+        "content_length": 20565,
+        "blocked": false,
+        "challenge_detected": false
+      }
+    ],
+    "any_blocked": false,
+    "cdn_detected": "vercel",
+    "cdn_headers": {
+      "x-vercel-id": "yul1::6xhn5-1776887077743-15d9a58215b5",
+      "server": "Vercel"
+    },
+    "error": ""
+  },
+  "js_rendering": {
+    "checked": true,
+    "raw_word_count": 666,
+    "raw_heading_count": 10,
+    "has_empty_root": false,
+    "has_noscript_content": false,
+    "framework_detected": "",
+    "js_dependent": false,
+    "details": "666 words and 10 headings found in raw HTML. Content is accessible without JavaScript."
+  },
+  "trust_stack": {
+    "checked": true,
+    "technical": {
+      "name": "technical",
+      "label": "Technical Trust",
+      "score": 3,
+      "max_score": 5,
+      "signals_found": [
+        "HTTPS",
+        "HSTS"
+      ],
+      "signals_missing": [
+        "Content-Security-Policy header missing",
+        "X-Frame-Options header missing"
+      ],
+      "details": {}
+    },
+    "identity": {
+      "name": "identity",
+      "label": "Identity Trust",
+      "score": 4,
+      "max_score": 5,
+      "signals_found": [
+        "Brand name consistent",
+        "About page",
+        "Contact info",
+        "Organization schema"
+      ],
+      "signals_missing": [
+        "No author attribution found"
+      ],
+      "details": {}
+    },
+    "social": {
+      "name": "social",
+      "label": "Social Trust",
+      "score": 3,
+      "max_score": 5,
+      "signals_found": [
+        "sameAs links (6)",
+        "Multiple sameAs (3+)",
+        "KG pillars (1/4)"
+      ],
+      "signals_missing": [
+        "No reviews or testimonials found",
+        "No social media profile links"
+      ],
+      "details": {}
+    },
+    "academic": {
+      "name": "academic",
+      "label": "Academic Trust",
+      "score": 4,
+      "max_score": 5,
+      "signals_found": [
+        "Numbers cited (4)",
+        "External sources (4 non-social links)",
+        "References section",
+        "Original statistics (4 patterns)"
+      ],
+      "signals_missing": [
+        "No links to authoritative sources (DOI, PubMed, Scholar)"
+      ],
+      "details": {
+        "authoritative_domains": [],
+        "statistics_count": 4,
+        "numbers_count": 4
+      }
+    },
+    "consistency": {
+      "name": "consistency",
+      "label": "Consistency Trust",
+      "score": 4,
+      "max_score": 5,
+      "signals_found": [
+        "Brand name consistent across title/H1/schema",
+        "No mixed signals",
+        "dateModified present"
+      ],
+      "signals_missing": [
+        "Schema description differs from meta description"
+      ],
+      "details": {}
+    },
+    "composite_score": 18,
+    "grade": "B",
+    "trust_level": "high"
+  },
+  "prompt_injection": {
+    "checked": true,
+    "hidden_text_found": false,
+    "hidden_text_count": 0,
+    "hidden_text_samples": [],
+    "invisible_unicode_found": false,
+    "invisible_unicode_count": 0,
+    "llm_instruction_found": false,
+    "llm_instruction_count": 0,
+    "llm_instruction_samples": [],
+    "html_comment_injection_found": false,
+    "html_comment_injection_count": 0,
+    "html_comment_samples": [],
+    "monochrome_text_found": false,
+    "monochrome_text_count": 0,
+    "microfont_found": false,
+    "microfont_count": 0,
+    "data_attr_injection_found": false,
+    "data_attr_injection_count": 0,
+    "data_attr_samples": [],
+    "aria_hidden_injection_found": false,
+    "aria_hidden_injection_count": 0,
+    "aria_hidden_samples": [],
+    "patterns_found": 0,
+    "severity": "clean",
+    "risk_level": "none"
+  },
+  "rag_chunk": {
+    "checked": true,
+    "total_sections": 10,
+    "sections_in_range": 1,
+    "avg_section_words": 60.8,
+    "has_definition_opening": false,
+    "heading_as_boundary_ratio": 1.0,
+    "anchor_sentences": 20,
+    "chunk_readiness_score": 56
+  },
+  "embedding_proximity": {
+    "checked": true,
+    "skipped_reason": null,
+    "model_name": "all-MiniLM-L6-v2",
+    "query_scores": [
+      {
+        "query": "What does this company do?",
+        "max_similarity": 0.3452
+      },
+      {
+        "query": "What services or products are offered?",
+        "max_similarity": 0.4043
+      },
+      {
+        "query": "Who is the author or organization behind this content?",
+        "max_similarity": 0.2746
+      },
+      {
+        "query": "What are the key facts and statistics mentioned?",
+        "max_similarity": 0.3022
+      },
+      {
+        "query": "How does this compare to alternatives?",
+        "max_similarity": 0.2399
+      }
+    ],
+    "avg_similarity": 0.3133,
+    "top_similarity": 0.4043,
+    "retrievable_chunks": 0,
+    "total_chunks": 10
+  },
+  "content_decay": {
+    "checked": true,
+    "signals": [],
+    "earliest_decay_days": null,
+    "decay_risk": "low",
+    "evergreen_score": 100
+  },
+  "platform_citation": {
+    "checked": true,
+    "platforms": [
+      {
+        "platform": "chatgpt",
+        "score": 80,
+        "strengths": [
+          "GPTBot allowed in robots.txt",
+          "llms.txt present",
+          "FAQ schema present",
+          "Well-structured content",
+          "Citability score 87/100",
+          "Organization schema present"
+        ],
+        "recommendations": []
+      },
+      {
+        "platform": "perplexity",
+        "score": 95,
+        "strengths": [
+          "PerplexityBot allowed",
+          "llms.txt with links",
+          "High citability (87/100)",
+          "Content freshness signals present",
+          "Substantial content depth",
+          "External links for source diversity",
+          "RSS feed available"
+        ],
+        "recommendations": []
+      },
+      {
+        "platform": "google_ai",
+        "score": 90,
+        "strengths": [
+          "Google-Extended allowed",
+          "Complete meta tags",
+          "Open Graph tags present",
+          "Citability score 87/100",
+          "Quality content structure",
+          "AI discovery endpoints present",
+          "sameAs links for authority signals"
+        ],
+        "recommendations": [
+          "Add more schema types for richer structured data"
+        ]
+      }
+    ]
+  },
+  "context_window": {
+    "checked": true,
+    "total_words": 666,
+    "total_tokens_estimate": 865,
+    "front_loaded_ratio": 1.0,
+    "key_info_tokens": 78,
+    "filler_ratio": 0.0,
+    "optimal_for": [
+      "perplexity",
+      "chatgpt",
+      "claude"
+    ],
+    "truncation_risk": "low",
+    "context_efficiency_score": 80
+  },
+  "instruction_readiness": {
+    "checked": true,
+    "labeled_buttons": 0,
+    "unlabeled_buttons": 0,
+    "action_clarity_score": 100,
+    "total_inputs": 0,
+    "labeled_inputs": 0,
+    "typed_inputs": 0,
+    "form_readability_score": 100,
+    "nav_links": 11,
+    "stateful_urls": false,
+    "has_aria_live": false,
+    "has_error_roles": false,
+    "readiness_score": 60,
+    "readiness_level": "ready"
+  },
+  "vertical_profile": {
+    "checked": true,
+    "vertical": "generic",
+    "detected_vertical": "generic",
+    "detection_confidence": 0.2,
+    "market_locale": "en-fr",
+    "trust_signals": 1,
+    "conversion_signals": 1,
+    "locality_signals": 5,
+    "vertical_signals": 0,
+    "bilingual_ready": true,
+    "business_readiness_score": 37,
+    "signals": [
+      {
+        "key": "trust_proof",
+        "label": "Trust proof",
+        "detected": true,
+        "evidence": []
+      },
+      {
+        "key": "conversion_path",
+        "label": "Conversion path",
+        "detected": true,
+        "evidence": [
+          "hub services"
+        ]
+      },
+      {
+        "key": "local_entity",
+        "label": "Local entity clarity",
+        "detected": true,
+        "evidence": [
+          "local",
+          "montreal",
+          "schema address/areaServed"
+        ]
+      },
+      {
+        "key": "bilingual_readiness",
+        "label": "Bilingual readiness",
+        "detected": true,
+        "evidence": [
+          "hreflang multi-language"
+        ]
+      }
+    ],
+    "priority_actions": [
+      "Add proof assets: certifications, reviews, guarantees, and team credibility.",
+      "Add conversion CTAs: quote, consultation, or booking flow on key pages."
+    ]
+  },
+  "http_status": 200,
+  "page_size": 20565,
+  "audit_duration_ms": 10491
+}

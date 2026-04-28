@@ -1,0 +1,611 @@
+{
+  "url": "https://gestionvelora.com",
+  "timestamp": "2026-04-28T01:25:36.325150+00:00",
+  "score": 90,
+  "band": "excellent",
+  "checks": {
+    "robots_txt": {
+      "score": 18,
+      "max": 18,
+      "passed": true,
+      "details": {
+        "found": true,
+        "bots_allowed": [
+          "GPTBot",
+          "OAI-SearchBot",
+          "ChatGPT-User",
+          "anthropic-ai",
+          "ClaudeBot",
+          "Claude-SearchBot",
+          "claude-web",
+          "PerplexityBot",
+          "Perplexity-User",
+          "Google-Extended",
+          "Google-CloudVertexBot",
+          "Bingbot",
+          "Applebot-Extended",
+          "cohere-ai",
+          "DuckAssistBot",
+          "Bytespider",
+          "meta-externalagent",
+          "Meta-ExternalFetcher",
+          "facebookexternalhit",
+          "Amazonbot",
+          "AI2Bot",
+          "AI2Bot-Dolma",
+          "xAI-Bot",
+          "Applebot",
+          "PetalBot",
+          "YouBot",
+          "CCBot"
+        ],
+        "bots_missing": [],
+        "bots_blocked": [],
+        "bots_partial": [],
+        "citation_bots_ok": true,
+        "citation_bots_explicit": true
+      }
+    },
+    "llms_txt": {
+      "score": 14,
+      "max": 18,
+      "passed": true,
+      "details": {
+        "found": true,
+        "has_h1": true,
+        "has_description": true,
+        "has_sections": true,
+        "has_links": true,
+        "word_count": 798,
+        "has_full": true,
+        "sections_count": 7,
+        "links_count": 54,
+        "has_blockquote": true,
+        "has_optional_section": true,
+        "companion_files_hint": true,
+        "validation_warnings": [],
+        "coverage_score": 0,
+        "important_pages_linked": [],
+        "important_pages_missing": [
+          "about",
+          "contact",
+          "services",
+          "pricing",
+          "blog"
+        ]
+      }
+    },
+    "schema_jsonld": {
+      "score": 13,
+      "max": 16,
+      "passed": true,
+      "details": {
+        "has_website": true,
+        "has_webapp": false,
+        "has_faq": true,
+        "found_types": [
+          "Organization",
+          "LocalBusiness",
+          "WebSite",
+          "WebPage",
+          "ItemList",
+          "ContactPage",
+          "FAQPage"
+        ]
+      }
+    },
+    "meta_tags": {
+      "score": 14,
+      "max": 14,
+      "passed": true,
+      "details": {
+        "has_title": true,
+        "has_description": true,
+        "has_canonical": true,
+        "has_og_title": true,
+        "has_og_description": true,
+        "has_og_image": true,
+        "title_text": "Gestion immobili\u00e8re Montr\u00e9al | Gestion Velora",
+        "description_text": "Gestion Velora offre syndicat de copropri\u00e9t\u00e9, gestion Airbnb et location longue dur\u00e9e \u00e0 Montr\u00e9al. Administration compl\u00e8te, maintenance proactive et rapports transparents.",
+        "description_length": 170,
+        "title_length": 45,
+        "canonical_url": "https://www.gestionvelora.com/"
+      }
+    },
+    "content": {
+      "score": 11,
+      "max": 12,
+      "passed": true,
+      "details": {
+        "has_h1": true,
+        "heading_count": 15,
+        "has_numbers": true,
+        "has_links": true,
+        "word_count": 2737,
+        "h1_text": "Gestion immobiliere a Montreal pour coproprietes, location et Airbnb",
+        "numbers_count": 13,
+        "external_links_count": 4,
+        "has_heading_hierarchy": true,
+        "has_lists_or_tables": true,
+        "has_front_loading": true,
+        "headings_with_id": 0,
+        "heading_id_ratio": 0.0,
+        "has_definition_first": true,
+        "text_html_ratio": 0.347,
+        "external_nofollow_count": 2,
+        "all_external_nofollow": false
+      }
+    },
+    "signals": {
+      "score": 6,
+      "max": 6,
+      "passed": true,
+      "details": {
+        "has_lang": true,
+        "lang_value": "fr-CA",
+        "has_rss": true,
+        "rss_url": "https://www.gestionvelora.com/rss.xml",
+        "has_freshness": true,
+        "freshness_date": "2026-04-22"
+      }
+    },
+    "ai_discovery": {
+      "score": 6,
+      "max": 6,
+      "passed": true,
+      "details": {
+        "has_well_known_ai": true,
+        "has_summary": true,
+        "has_faq": true,
+        "has_service": true,
+        "summary_valid": true,
+        "faq_count": 10,
+        "endpoints_found": 4
+      }
+    },
+    "brand_entity": {
+      "score": 8,
+      "max": 10,
+      "passed": true,
+      "details": {
+        "brand_name_consistent": true,
+        "names_found": [
+          "Gestion immobiliere a Montreal pour coproprietes, location et Airbnb",
+          "Gestion immobili\u00e8re Montr\u00e9al",
+          "Gestion immobili\u00e8re Montr\u00e9al",
+          "Gestion Velora"
+        ],
+        "schema_desc_matches_meta": true,
+        "kg_pillar_count": 1,
+        "kg_pillar_urls": [
+          "https://ca.linkedin.com/in/gestion-velora-48684b399",
+          "https://ca.linkedin.com/in/arnaud-bellemare-125934372",
+          "https://ca.linkedin.com/in/gestion-velora-48684b399"
+        ],
+        "has_wikipedia": false,
+        "has_wikidata": false,
+        "has_linkedin": true,
+        "has_crunchbase": false,
+        "has_about_link": true,
+        "has_contact_info": true,
+        "has_geo_schema": true,
+        "has_hreflang": true,
+        "hreflang_count": 3,
+        "faq_depth": 7,
+        "has_recent_articles": false
+      }
+    }
+  },
+  "score_breakdown": {
+    "robots": 18,
+    "llms": 14,
+    "schema": 13,
+    "meta": 14,
+    "content": 11,
+    "signals": 6,
+    "ai_discovery": 6,
+    "brand_entity": 8
+  },
+  "recommendations": [
+    "Keyword stuffing detected: 'management' at 7.1% density \u2014 diversify vocabulary",
+    "Hidden text detected (display:none/visibility:hidden with content) \u2014 AI crawlers can read it and may penalize this cloaking pattern",
+    "Maintain signal consistency and monitor monthly for trust/citation regressions.",
+    "llms.txt is missing links to important pages: /about, /contact, /services, /pricing, /blog. Add these to the relevant H2 sections so AI systems can discover your key content.",
+    "Add id= attributes to H2/H3 headings to enable section-level citations (currently 0% of headings have anchors). Example: <h2 id=\"pricing\">Pricing</h2>",
+    "2 of 4 external links carry rel=\"nofollow\". Consider removing nofollow from links to authoritative sources so AI crawlers can follow and validate your citations."
+  ],
+  "webmcp": {
+    "readiness_level": "ready",
+    "agent_ready": true,
+    "has_register_tool": false,
+    "has_tool_attributes": true,
+    "tool_count": 15,
+    "has_potential_action": true,
+    "potential_actions": [
+      "SearchAction"
+    ],
+    "has_labeled_forms": false,
+    "labeled_forms_count": 0,
+    "has_openapi": false
+  },
+  "negative_signals": {
+    "severity": "medium",
+    "signals_found": 2,
+    "cta_density_high": false,
+    "cta_count": 0,
+    "has_popup_signals": false,
+    "is_thin_content": false,
+    "broken_links_count": 0,
+    "has_keyword_stuffing": true,
+    "has_author_signal": false,
+    "boilerplate_ratio": 0.0,
+    "has_mixed_signals": false
+  },
+  "cdn_check": {
+    "checked": true,
+    "browser_status": 307,
+    "browser_content_length": 15,
+    "bot_results": [
+      {
+        "bot": "GPTBot",
+        "status": 307,
+        "content_length": 15,
+        "blocked": false,
+        "challenge_detected": false
+      },
+      {
+        "bot": "ClaudeBot",
+        "status": 307,
+        "content_length": 15,
+        "blocked": false,
+        "challenge_detected": false
+      },
+      {
+        "bot": "PerplexityBot",
+        "status": 307,
+        "content_length": 15,
+        "blocked": false,
+        "challenge_detected": false
+      }
+    ],
+    "any_blocked": false,
+    "cdn_detected": "vercel",
+    "cdn_headers": {
+      "x-vercel-id": "yul1::xx6wn-1777339534819-6616cfaeebed",
+      "server": "Vercel"
+    },
+    "error": ""
+  },
+  "js_rendering": {
+    "checked": true,
+    "raw_word_count": 2731,
+    "raw_heading_count": 15,
+    "has_empty_root": false,
+    "has_noscript_content": false,
+    "framework_detected": "",
+    "js_dependent": false,
+    "details": "2731 words and 15 headings found in raw HTML. Content is accessible without JavaScript."
+  },
+  "trust_stack": {
+    "checked": true,
+    "technical": {
+      "name": "technical",
+      "label": "Technical Trust",
+      "score": 3,
+      "max_score": 5,
+      "signals_found": [
+        "HTTPS",
+        "HSTS"
+      ],
+      "signals_missing": [
+        "Content-Security-Policy header missing",
+        "X-Frame-Options header missing"
+      ],
+      "details": {}
+    },
+    "identity": {
+      "name": "identity",
+      "label": "Identity Trust",
+      "score": 4,
+      "max_score": 5,
+      "signals_found": [
+        "Brand name consistent",
+        "About page",
+        "Contact info",
+        "Organization schema"
+      ],
+      "signals_missing": [
+        "No author attribution found"
+      ],
+      "details": {}
+    },
+    "social": {
+      "name": "social",
+      "label": "Social Trust",
+      "score": 3,
+      "max_score": 5,
+      "signals_found": [
+        "sameAs links (10)",
+        "Multiple sameAs (3+)",
+        "KG pillars (1/4)"
+      ],
+      "signals_missing": [
+        "No reviews or testimonials found",
+        "No social media profile links"
+      ],
+      "details": {}
+    },
+    "academic": {
+      "name": "academic",
+      "label": "Academic Trust",
+      "score": 4,
+      "max_score": 5,
+      "signals_found": [
+        "Numbers cited (13)",
+        "External sources (4 non-social links)",
+        "References section",
+        "Original statistics (6 patterns)"
+      ],
+      "signals_missing": [
+        "No links to authoritative sources (DOI, PubMed, Scholar)"
+      ],
+      "details": {
+        "authoritative_domains": [],
+        "statistics_count": 6,
+        "numbers_count": 13
+      }
+    },
+    "consistency": {
+      "name": "consistency",
+      "label": "Consistency Trust",
+      "score": 5,
+      "max_score": 5,
+      "signals_found": [
+        "Brand name consistent across title/H1/schema",
+        "No mixed signals",
+        "Schema description matches meta",
+        "dateModified present"
+      ],
+      "signals_missing": [],
+      "details": {}
+    },
+    "composite_score": 19,
+    "grade": "B",
+    "trust_level": "high"
+  },
+  "prompt_injection": {
+    "checked": true,
+    "hidden_text_found": true,
+    "hidden_text_count": 1,
+    "hidden_text_samples": [
+      "Gestion immobiliere a Montreal pour coproprietes, location et AirbnbLa gestion immobiliere a Montreal est l'ensemble des operations qui maintiennent u\u2026"
+    ],
+    "invisible_unicode_found": false,
+    "invisible_unicode_count": 0,
+    "llm_instruction_found": false,
+    "llm_instruction_count": 0,
+    "llm_instruction_samples": [],
+    "html_comment_injection_found": false,
+    "html_comment_injection_count": 0,
+    "html_comment_samples": [],
+    "monochrome_text_found": false,
+    "monochrome_text_count": 0,
+    "microfont_found": false,
+    "microfont_count": 0,
+    "data_attr_injection_found": false,
+    "data_attr_injection_count": 0,
+    "data_attr_samples": [],
+    "aria_hidden_injection_found": false,
+    "aria_hidden_injection_count": 0,
+    "aria_hidden_samples": [],
+    "patterns_found": 1,
+    "severity": "suspicious",
+    "risk_level": "medium"
+  },
+  "rag_chunk": {
+    "checked": true,
+    "total_sections": 15,
+    "sections_in_range": 5,
+    "avg_section_words": 174.3,
+    "has_definition_opening": false,
+    "heading_as_boundary_ratio": 1.0,
+    "anchor_sentences": 31,
+    "chunk_readiness_score": 63
+  },
+  "embedding_proximity": {
+    "checked": true,
+    "skipped_reason": "sentence-transformers not installed (pip install geo-optimizer-skill[embedding])",
+    "model_name": "",
+    "query_scores": [],
+    "avg_similarity": 0.0,
+    "top_similarity": 0.0,
+    "retrievable_chunks": 0,
+    "total_chunks": 0
+  },
+  "content_decay": {
+    "checked": true,
+    "signals": [
+      {
+        "decay_type": "temporal",
+        "text": "re intelligente \u00e0 Montr\u00e9al en 2026 Maintenance pr\u00e9ventive \u00e0 Mont",
+        "estimated_stale_days": 365,
+        "suggestion": "Use relative time or add dateModified schema for freshness signals"
+      },
+      {
+        "decay_type": "temporal",
+        "text": "rty management in Montreal in 2026 Preventive maintenance in Mon",
+        "estimated_stale_days": 365,
+        "suggestion": "Use relative time or add dateModified schema for freshness signals"
+      }
+    ],
+    "earliest_decay_days": 365,
+    "decay_risk": "medium",
+    "evergreen_score": 84
+  },
+  "platform_citation": {
+    "checked": true,
+    "platforms": [
+      {
+        "platform": "chatgpt",
+        "score": 80,
+        "strengths": [
+          "GPTBot allowed in robots.txt",
+          "llms.txt present",
+          "FAQ schema present",
+          "Well-structured content",
+          "Citability score 94/100",
+          "Organization schema present"
+        ],
+        "recommendations": []
+      },
+      {
+        "platform": "perplexity",
+        "score": 95,
+        "strengths": [
+          "PerplexityBot allowed",
+          "llms.txt with links",
+          "High citability (94/100)",
+          "Content freshness signals present",
+          "Substantial content depth",
+          "External links for source diversity",
+          "RSS feed available"
+        ],
+        "recommendations": []
+      },
+      {
+        "platform": "google_ai",
+        "score": 90,
+        "strengths": [
+          "Google-Extended allowed",
+          "Complete meta tags",
+          "Open Graph tags present",
+          "Citability score 94/100",
+          "Quality content structure",
+          "AI discovery endpoints present",
+          "sameAs links for authority signals"
+        ],
+        "recommendations": [
+          "Add more schema types for richer structured data"
+        ]
+      }
+    ]
+  },
+  "context_window": {
+    "checked": true,
+    "total_words": 2731,
+    "total_tokens_estimate": 3550,
+    "front_loaded_ratio": 0.45,
+    "key_info_tokens": 214,
+    "filler_ratio": 0.0,
+    "optimal_for": [
+      "perplexity",
+      "chatgpt",
+      "claude"
+    ],
+    "truncation_risk": "medium",
+    "context_efficiency_score": 58
+  },
+  "instruction_readiness": {
+    "checked": true,
+    "labeled_buttons": 0,
+    "unlabeled_buttons": 0,
+    "action_clarity_score": 100,
+    "total_inputs": 0,
+    "labeled_inputs": 0,
+    "typed_inputs": 0,
+    "form_readability_score": 100,
+    "nav_links": 341,
+    "stateful_urls": true,
+    "has_aria_live": false,
+    "has_error_roles": false,
+    "readiness_score": 75,
+    "readiness_level": "ready"
+  },
+  "vertical_profile": {
+    "checked": true,
+    "vertical": "generic",
+    "detected_vertical": "generic",
+    "detection_confidence": 0.2,
+    "market_locale": "en",
+    "trust_signals": 3,
+    "conversion_signals": 2,
+    "locality_signals": 5,
+    "vertical_signals": 0,
+    "bilingual_ready": false,
+    "business_readiness_score": 50,
+    "signals": [
+      {
+        "key": "trust_proof",
+        "label": "Trust proof",
+        "detected": true,
+        "evidence": [
+          "reviews",
+          "1 review signals"
+        ]
+      },
+      {
+        "key": "conversion_path",
+        "label": "Conversion path",
+        "detected": true,
+        "evidence": [
+          "hub services",
+          "service syndicat de copropri\u00e9t\u00e9"
+        ]
+      },
+      {
+        "key": "local_entity",
+        "label": "Local entity clarity",
+        "detected": true,
+        "evidence": [
+          "local",
+          "montreal",
+          "schema address/areaServed"
+        ]
+      }
+    ],
+    "priority_actions": [
+      "Maintain signal consistency and monitor monthly for trust/citation regressions."
+    ]
+  },
+  "next_actions": [
+    {
+      "key": "llms",
+      "title": "Improve llms.txt readiness (+4 potential points)",
+      "why": "Improve llms.txt structure (sections, depth, and linked key pages).",
+      "impact": "medium",
+      "effort": "low",
+      "priority": "P1",
+      "expected_score_gain": 4
+    },
+    {
+      "key": "schema",
+      "title": "Improve structured data (+3 potential points)",
+      "why": "Expand JSON-LD coverage with complete, valid business and FAQ schema.",
+      "impact": "low",
+      "effort": "medium",
+      "priority": "P2",
+      "expected_score_gain": 3
+    },
+    {
+      "key": "brand_entity",
+      "title": "Improve entity trust and KG signals (+2 potential points)",
+      "why": "Reinforce entity trust signals with consistent brand, about/contact, and sameAs links.",
+      "impact": "low",
+      "effort": "medium",
+      "priority": "P2",
+      "expected_score_gain": 2
+    },
+    {
+      "key": "content",
+      "title": "Improve citation-ready content (+1 potential points)",
+      "why": "Hidden text detected (display:none/visibility:hidden with content) \u2014 AI crawlers can read it and may penalize this cloaking pattern",
+      "impact": "low",
+      "effort": "high",
+      "priority": "P3",
+      "expected_score_gain": 1
+    }
+  ],
+  "http_status": 200,
+  "page_size": 69408,
+  "audit_duration_ms": 3479
+}

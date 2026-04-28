@@ -1,0 +1,26 @@
+{
+  "url": "https://www.gestionvelora.com",
+  "perf_score": 65,
+  "issues": [
+    {
+      "check": "render_blocking_script",
+      "severity": "error",
+      "element": "<script src=\"/assets/index-BEBZdHy2.js\">",
+      "fix": "Add async or defer: <script src=\"/assets/index-BEBZdHy2.js\" defer>"
+    },
+    {
+      "check": "render_blocking_stylesheet",
+      "severity": "warning",
+      "element": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,40\">",
+      "fix": "Load non-critical CSS asynchronously: <link rel=\"preload\" as=\"style\" onload=\"this.rel='stylesheet'\">"
+    },
+    {
+      "check": "render_blocking_stylesheet",
+      "severity": "warning",
+      "element": "<link rel=\"stylesheet\" href=\"/assets/index-DjmMk2VV.css\">",
+      "fix": "Load non-critical CSS asynchronously: <link rel=\"preload\" as=\"style\" onload=\"this.rel='stylesheet'\">"
+    }
+  ],
+  "conversion_score": 15,
+  "tracking_score": 40
+}

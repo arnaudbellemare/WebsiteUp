@@ -1,0 +1,34 @@
+{
+  "repo_path": "/Users/cno/GestionVeloraWebsite-2",
+  "score": 40,
+  "grade": "foundation",
+  "found_files": [
+    "README.md",
+    "public/robots.txt",
+    "public/sitemap.xml"
+  ],
+  "missing_files": [
+    "LICENSE",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CODE_OF_CONDUCT.md",
+    "CHANGELOG.md",
+    "CITATION.cff",
+    "llms.txt",
+    "llms-full.txt",
+    ".well-known/ai.txt",
+    "ai/summary.json",
+    "ai/faq.json",
+    "ai/service.json"
+  ],
+  "readme_word_count": 208,
+  "readme_heading_count": 6,
+  "has_ai_files": false,
+  "has_web_seo_files": true,
+  "recommendations": [
+    "Add `LICENSE` to strengthen repository trust and discoverability.",
+    "Add `CONTRIBUTING.md` to strengthen repository trust and discoverability.",
+    "Add `SECURITY.md` to strengthen repository trust and discoverability.",
+    "Add AI discovery files (llms.txt and .well-known/ai.txt)."
+  ]
+}
