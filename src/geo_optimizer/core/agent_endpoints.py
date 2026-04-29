@@ -49,6 +49,9 @@ class AgentReadinessResult:
     has_service: bool = False
     has_tools: bool = False
 
+    # Whether the site exposes callable agent/LLM/API services
+    offers_agent_services: bool = False
+
     # Files to generate
     files: list[AgentFile] = field(default_factory=list)
 
@@ -97,6 +100,67 @@ def _check_tools_endpoint(base_url: str) -> bool:
     from urllib.parse import urljoin
     r, err = fetch_url(urljoin(base_url, "/ai/tools.json"))
     return bool(r and not err and r.status_code == 200)
+
+
+# Strong signals: any one of these alone indicates the site exposes agent/API/LLM services
+_AGENT_SERVICE_SIGNALS = re.compile(
+    r"""
+    \b(
+        api | sdk | webhook | chatbot | llm | gpt | openai | anthropic |
+        graphql | grpc | mcp | webmcp |
+        ai[-\s]agent | agent[-\s]api | ai[-\s]platform | ai[-\s]service | ai[-\s]tool |
+        rest[-\s]api | function[-\s]calling | tool[-\s]calling |
+        developer[-\s]portal | developer[-\s]docs | api[-\s]docs
+    )\b
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
+# Interactive signals: credentials/sandbox language strongly implies callable service
+_INTERACTIVE_SIGNALS = re.compile(
+    r"""
+    \b(
+        api[-\s]?key | bearer[-\s]?token | oauth | playground |
+        rate[-\s]?limit | endpoint[-\s]?url | curl | swagger | openapi
+    )\b
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
+# URL path signals (not word-boundary based)
+_PATH_SIGNALS = re.compile(r'href=["\'][^"\']*/(api|docs|swagger|openapi|graphql)[/"\'?]', re.IGNORECASE)
+
+
+def _site_offers_agent_services(html: str | None, tools_json: str | None) -> bool:
+    """Return True if the site appears to expose callable agent/LLM/API functionality.
+
+    Checks:
+    - tools.json has real callable tools (POST endpoints or parameterised tools)
+    - Homepage HTML contains API/agent/LLM service signals
+    """
+    # tools.json with POST endpoints or parameterised tools is the strongest signal
+    if tools_json:
+        try:
+            data = json.loads(tools_json)
+            for tool in data.get("tools", []):
+                method = str(tool.get("method", "GET")).upper()
+                params = tool.get("parameters", {})
+                if method == "POST" or (isinstance(params, dict) and len(params) > 0):
+                    return True
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    if not html:
+        return False
+
+    # Strip script/style blocks to avoid false positives from minified JS
+    clean = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", html, flags=re.DOTALL | re.IGNORECASE)
+
+    return (
+        bool(_AGENT_SERVICE_SIGNALS.search(clean))
+        or bool(_INTERACTIVE_SIGNALS.search(clean))
+        or bool(_PATH_SIGNALS.search(clean))
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -297,6 +361,13 @@ def run_agent_endpoint_generator(url: str) -> AgentReadinessResult:
     discovery = audit_ai_discovery(base_url)
     has_tools = _check_tools_endpoint(base_url)
 
+    # Fetch tools.json content for richer signal detection
+    from urllib.parse import urljoin
+    tools_r, _ = fetch_url(urljoin(base_url, "/ai/tools.json"))
+    tools_json = tools_r.text if tools_r and tools_r.status_code == 200 else None
+
+    offers_agent_services = _site_offers_agent_services(html, tools_json)
+
     result = AgentReadinessResult(
         url=base_url,
         site_name=name,
@@ -306,6 +377,7 @@ def run_agent_endpoint_generator(url: str) -> AgentReadinessResult:
         has_faq=discovery.has_faq,
         has_service=discovery.has_service,
         has_tools=has_tools,
+        offers_agent_services=offers_agent_services,
     )
 
     # Generate missing files
@@ -344,16 +416,19 @@ def run_agent_endpoint_generator(url: str) -> AgentReadinessResult:
             description="WebMCP tool definitions — makes your site callable as an AI tool",
         ))
 
-    # Always include snippets (developer guidance)
+    # potentialAction JSON-LD — always useful for discoverability
     result.snippets.append(AgentFile(
         path="potentialAction JSON-LD snippet",
         content=_gen_potential_action_snippet(name, base_url),
         description="Add to your <head> — schema.org actions for agent discoverability",
     ))
-    result.snippets.append(AgentFile(
-        path="WebMCP HTML snippet",
-        content=_gen_webmcp_snippet(name, base_url),
-        description="Add to your layout — registerTool() + toolname attributes for browser agents",
-    ))
+
+    # WebMCP HTML snippet — only if the site actually exposes callable services
+    if offers_agent_services:
+        result.snippets.append(AgentFile(
+            path="WebMCP HTML snippet",
+            content=_gen_webmcp_snippet(name, base_url),
+            description="Add to your layout — registerTool() + toolname attributes for browser agents",
+        ))
 
     return result

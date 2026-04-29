@@ -15,6 +15,7 @@ from geo_optimizer.core.agent_endpoints import (
     run_agent_endpoint_generator,
     _extract_site_name,
     _extract_description,
+    _site_offers_agent_services,
 )
 
 
@@ -38,6 +39,49 @@ SAMPLE_HTML = """<html><head>
 # ---------------------------------------------------------------------------
 # Unit: name / description extraction
 # ---------------------------------------------------------------------------
+
+class TestSiteOffersAgentServices:
+    def test_detects_api_keyword(self):
+        html = "<p>Use our REST API to integrate with your tools.</p>"
+        assert _site_offers_agent_services(html, None) is True
+
+    def test_detects_webhook(self):
+        html = "<p>Send data via webhook to automate your workflows.</p>"
+        assert _site_offers_agent_services(html, None) is True
+
+    def test_detects_developer_portal(self):
+        html = "<a href='/docs'>Developer Portal</a>"
+        assert _site_offers_agent_services(html, None) is True
+
+    def test_detects_chatbot(self):
+        html = "<p>Our AI chatbot is available 24/7.</p>"
+        assert _site_offers_agent_services(html, None) is True
+
+    def test_detects_api_key_interactive_signal(self):
+        html = "<p>Get your API key to start building.</p>"
+        assert _site_offers_agent_services(html, None) is True
+
+    def test_plain_business_site_returns_false(self):
+        html = "<p>We manage properties in Montreal. Contact us for a quote.</p>"
+        assert _site_offers_agent_services(html, None) is False
+
+    def test_none_html_returns_false(self):
+        assert _site_offers_agent_services(None, None) is False
+
+    def test_detects_post_tool_in_tools_json(self):
+        tools_json = '{"tools":[{"name":"search","method":"POST","parameters":{"q":"string"}}]}'
+        assert _site_offers_agent_services(None, tools_json) is True
+
+    def test_get_only_tools_without_params_not_sufficient(self):
+        tools_json = '{"tools":[{"name":"get_summary","method":"GET","parameters":{}}]}'
+        # No HTML signals either
+        assert _site_offers_agent_services(None, tools_json) is False
+
+    def test_ignores_signals_in_script_tags(self):
+        # Minified JS often contains these words — should not trigger
+        html = "<script>var api='x';var webhook=false;</script><p>Property management.</p>"
+        assert _site_offers_agent_services(html, None) is False
+
 
 class TestExtractors:
     def test_extract_name_from_title(self):
@@ -89,15 +133,13 @@ class TestRunAgentEndpointGenerator:
         assert "ai/service.json" in paths
         assert "ai/tools.json" in paths
 
-    def test_always_includes_two_snippets(self):
+    def test_always_includes_potential_action_snippet(self):
         patches = self._patch_all_missing()
         with patches[0], patches[1], patches[2]:
             result = run_agent_endpoint_generator("https://acme.com")
 
-        assert len(result.snippets) == 2
         snippet_paths = {s.path for s in result.snippets}
         assert "potentialAction JSON-LD snippet" in snippet_paths
-        assert "WebMCP HTML snippet" in snippet_paths
 
     def test_site_name_propagated(self):
         patches = self._patch_all_missing()
@@ -224,11 +266,12 @@ class TestGeneratedContent:
         assert "tools:" in content
         assert "acme.com" in content
 
-    def test_webmcp_snippet_has_register_tool(self):
+    def test_webmcp_snippet_included_when_site_offers_agent_services(self):
         from geo_optimizer.models.results import AiDiscoveryResult
+        api_html = SAMPLE_HTML + "<p>Our REST API and developer portal let you integrate via webhooks.</p>"
         with (
             patch("geo_optimizer.core.agent_endpoints.fetch_url",
-                  return_value=(_mock_response(200, SAMPLE_HTML), None)),
+                  return_value=(_mock_response(200, api_html), None)),
             patch("geo_optimizer.core.agent_endpoints.audit_ai_discovery",
                   return_value=AiDiscoveryResult()),
             patch("geo_optimizer.core.agent_endpoints._check_tools_endpoint",
@@ -236,9 +279,26 @@ class TestGeneratedContent:
         ):
             result = run_agent_endpoint_generator("https://acme.com")
 
-        webmcp = next(s for s in result.snippets if "WebMCP" in s.path)
+        webmcp = next((s for s in result.snippets if "WebMCP" in s.path), None)
+        assert webmcp is not None
         assert "registerTool" in webmcp.content
         assert "toolname" in webmcp.content
+
+    def test_webmcp_snippet_excluded_for_plain_business_site(self):
+        from geo_optimizer.models.results import AiDiscoveryResult
+        plain_html = SAMPLE_HTML  # no API/agent signals
+        with (
+            patch("geo_optimizer.core.agent_endpoints.fetch_url",
+                  return_value=(_mock_response(200, plain_html), None)),
+            patch("geo_optimizer.core.agent_endpoints.audit_ai_discovery",
+                  return_value=AiDiscoveryResult()),
+            patch("geo_optimizer.core.agent_endpoints._check_tools_endpoint",
+                  return_value=False),
+        ):
+            result = run_agent_endpoint_generator("https://acme.com")
+
+        webmcp = next((s for s in result.snippets if "WebMCP" in s.path), None)
+        assert webmcp is None
 
     def test_potential_action_snippet_is_valid_json_ld(self):
         from geo_optimizer.models.results import AiDiscoveryResult
