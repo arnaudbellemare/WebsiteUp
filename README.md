@@ -1,6 +1,8 @@
 <div align="center">
 
-<img src="assets/logo.svg" alt="GEO Optimizer" width="480"/>
+<img src="assets/logo.svg" alt="WebsiteUP" width="480"/>
+
+# WebsiteUP
 
 ### Make your website visible to AI search engines
 
@@ -27,7 +29,7 @@ Perplexity: "According to [Competitor.com], their services include..."
              ↑ They appear. You don't.
 ```
 
-GEO Optimizer audits your site against **47 research-backed methods** ([Princeton KDD 2024](https://arxiv.org/abs/2311.09735), [AutoGEO ICLR 2026](https://arxiv.org/abs/2510.11438)) and generates the fixes so AI engines can find, parse, and cite you.
+WebsiteUP audits your site against **47 research-backed methods** ([Princeton KDD 2024](https://arxiv.org/abs/2311.09735), [AutoGEO ICLR 2026](https://arxiv.org/abs/2510.11438)) and generates the fixes so AI engines can find, parse, and cite you.
 
 ---
 
@@ -108,7 +110,7 @@ geo schema --type faq --url https://yoursite.com
 # Content audit (keyword density, E-E-A-T, entity signals)
 geo content --url https://yoursite.com --keywords "property management,montreal"
 
-# Audit a GitHub repo's SEO/GEO health
+# Audit a GitHub repo's SEO/AI visibility health
 geo github --repo-path .
 
 # Internal link graph and orphan page detection
@@ -121,7 +123,7 @@ geo coherence --sitemap https://yoursite.com/sitemap.xml
 geo logs --file access.log
 
 # Saved AI answer archive and citation quality
-geo snapshots --query "best GEO tool"
+geo snapshots --query "best AI visibility tool"
 geo snapshots --quality --snapshot-id 12 --target-domain yoursite.com
 ```
 
@@ -138,7 +140,7 @@ aiv fixer --url https://yoursite.com --apply
 
 ## What it checks
 
-| Area | Points | What GEO Optimizer looks for |
+| Area | Points | What WebsiteUP looks for |
 |------|--------|------------------------------|
 | **Robots.txt** | /18 | 27 AI bots across 3 tiers (training, search, user). Citation bots explicitly allowed? |
 | **llms.txt** | /18 | Present, has H1 + blockquote, sections, links, depth. Companion llms-full.txt? |
@@ -232,11 +234,11 @@ geo audit --url https://yoursite.com --save-history --regression
 
 ## MCP Server
 
-Use GEO Optimizer directly from Claude, Cursor, Windsurf, or any MCP client:
+Use WebsiteUP directly from Claude, Cursor, Windsurf, or any MCP client:
 
 ```bash
 pip install websiteup[mcp]
-claude mcp add geo-optimizer -- geo-mcp
+claude mcp add websiteup -- geo-mcp
 ```
 
 Then just ask: *"audit my site and fix what's missing"*
@@ -260,7 +262,7 @@ Then just ask: *"audit my site and fix what's missing"*
 
 ## Use as AI Context
 
-Load the right file into your AI assistant to get GEO expertise:
+Load the right file into your AI assistant to get WebsiteUP expertise:
 
 | Platform | File |
 |----------|------|
@@ -296,10 +298,10 @@ result = await audit_async("https://example.com")
 
 ## Dynamic Badge
 
-Show your GEO score in your README:
+Show your WebsiteUP score in your README:
 
 ```markdown
-![GEO Score](https://geo-optimizer-web.onrender.com/badge?url=https://yoursite.com)
+![WebsiteUP Score](https://geo-optimizer-web.onrender.com/badge?url=https://yoursite.com)
 ```
 
 Colors: 86–100 green · 68–85 cyan · 36–67 yellow · 0–35 red. Cached 1h.
@@ -327,7 +329,7 @@ See [`examples/example_plugin.py`](examples/example_plugin.py) for a working exa
 | [AutoGEO](https://arxiv.org/abs/2510.11438) | **ICLR 2026** | Automatic rule extraction. +50.99% over Princeton baseline |
 | [C-SEO Bench](https://arxiv.org/abs/2506.11097) | **2025** | Most content manipulation is ineffective. Infrastructure matters most |
 
-The research is clear: if crawlers can't find and parse your content, prose optimization doesn't help. GEO Optimizer focuses on **technical infrastructure** (robots.txt, llms.txt, schema, meta) first.
+The research is clear: if crawlers can't find and parse your content, prose optimization doesn't help. WebsiteUP focuses on **technical infrastructure** (robots.txt, llms.txt, schema, meta) first.
 
 ---
 
