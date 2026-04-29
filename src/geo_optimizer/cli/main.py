@@ -57,6 +57,7 @@ def cli(lang):
 
 
 # Import and register subcommands
+from geo_optimizer.cli.agent_cmd import agent_cmd  # noqa: E402
 from geo_optimizer.cli.audit_cmd import audit  # noqa: E402
 from geo_optimizer.cli.autopilot_cmd import autopilot  # noqa: E402
 from geo_optimizer.cli.apply_cmd import apply_cmd  # noqa: E402
@@ -80,6 +81,7 @@ from geo_optimizer.cli.schema_cmd import schema  # noqa: E402
 from geo_optimizer.cli.snapshots_cmd import snapshots  # noqa: E402
 from geo_optimizer.cli.track_cmd import track  # noqa: E402
 
+cli.add_command(agent_cmd)
 cli.add_command(audit)
 cli.add_command(autopilot)
 cli.add_command(apply_cmd)

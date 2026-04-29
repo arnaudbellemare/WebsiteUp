@@ -75,6 +75,27 @@ geo fix --url https://yoursite.com --apply
 geo audit --url https://yoursite.com --save-history
 ```
 
+### Make your site callable as an AI agent tool
+
+```bash
+geo agent --url https://yoursite.com
+geo agent --url https://yoursite.com --apply
+```
+
+Generates the full endpoint stack so AI agents (Claude, ChatGPT, Perplexity) can use your site as a tool — not just cite it, but actually call it:
+
+| File | What it does |
+|------|-------------|
+| `.well-known/ai.txt` | Agent declaration — tells agents who you are |
+| `ai/summary.json` | Machine-readable site identity |
+| `ai/faq.json` | Answers agents can surface directly in responses |
+| `ai/service.json` | Service capabilities for agent tool selection |
+| `ai/tools.json` | WebMCP tool definitions — makes your site callable |
+
+Also generates `potentialAction` JSON-LD and `registerTool()` / `toolname` HTML snippets for browser agents. Future-proofs for the agent era.
+
+---
+
 ### Competitor comparison
 
 ```bash
