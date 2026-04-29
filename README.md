@@ -4,17 +4,13 @@
 
 ### Make your website visible to AI search engines
 
-[![PyPI](https://img.shields.io/pypi/v/geo-optimizer-skill?style=flat-square&color=3b82f6)](https://pypi.org/project/geo-optimizer-skill/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![CI](https://github.com/auriti-labs/geo-optimizer-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/auriti-labs/geo-optimizer-skill/actions)
-[![codecov](https://codecov.io/gh/auriti-labs/geo-optimizer-skill/branch/main/graph/badge.svg)](https://codecov.io/gh/auriti-labs/geo-optimizer-skill)
+[![CI](https://github.com/arnaudbellemare/WebsiteUp/actions/workflows/ci.yml/badge.svg)](https://github.com/arnaudbellemare/WebsiteUp/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
 [![MCP Compatible](https://img.shields.io/badge/MCP-compatible-8b5cf6?style=flat-square)](https://modelcontextprotocol.io)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?style=flat-square&logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/auritidesign)
-
 **Audit · Score · Fix · Monitor — for AI citation readiness.**
 
-[Quick Start](#quick-start) · [Live Demo](https://geo-optimizer-web.onrender.com) · [Documentation](https://auriti-labs.github.io/geo-optimizer-skill/) · [Changelog](CHANGELOG.md)
+[Quick Start](#quick-start) · [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -38,7 +34,7 @@ GEO Optimizer audits your site against **47 research-backed methods** ([Princeto
 ## Quick Start
 
 ```bash
-pip install geo-optimizer-skill
+pip install websiteup
 ```
 
 Then run your first audit:
@@ -217,7 +213,7 @@ geo audit --url https://example.com --format github    # GitHub Actions annotati
 
 ```yaml
 # .github/workflows/geo.yml
-- uses: Auriti-Labs/geo-optimizer-skill@v1
+- uses: arnaudbellemare/WebsiteUp@v1
   with:
     url: https://yoursite.com
     min-score: 70        # Fail the build if score drops below 70
@@ -239,7 +235,7 @@ geo audit --url https://yoursite.com --save-history --regression
 Use GEO Optimizer directly from Claude, Cursor, Windsurf, or any MCP client:
 
 ```bash
-pip install geo-optimizer-skill[mcp]
+pip install websiteup[mcp]
 claude mcp add geo-optimizer -- geo-mcp
 ```
 
@@ -359,31 +355,22 @@ All URL inputs are validated against private IP ranges (RFC 1918, loopback, link
 ## Contributing
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/geo-optimizer-skill.git
-cd geo-optimizer-skill && pip install -e ".[dev]"
+git clone https://github.com/arnaudbellemare/WebsiteUp.git
+cd WebsiteUp && pip install -e ".[dev]"   # or: pip install websiteup
 pytest tests/ -v   # 1393 tests
 ```
 
-[Bug reports](https://github.com/Auriti-Labs/geo-optimizer-skill/issues/new?template=bug_report.yml) · [Feature requests](https://github.com/Auriti-Labs/geo-optimizer-skill/issues/new?template=feature_request.yml) · [CONTRIBUTING.md](CONTRIBUTING.md)
+[Bug reports](https://github.com/arnaudbellemare/WebsiteUp/issues/new) · [Feature requests](https://github.com/arnaudbellemare/WebsiteUp/issues/new) · [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ---
 
 <div align="center">
 
-**MIT License** · Built by [Auriti Labs](https://github.com/auriti-labs)
+**MIT License** · Built by [Arnaud Bellemare](https://github.com/arnaudbellemare)
 
 If this saved you time, a star helps others find it.
 
-[![Star on GitHub](https://img.shields.io/github/stars/auriti-labs/geo-optimizer-skill?style=for-the-badge&color=facc15&logo=github&label=Star)](https://github.com/auriti-labs/geo-optimizer-skill/stargazers)
+[![Star on GitHub](https://img.shields.io/github/stars/arnaudbellemare/WebsiteUp?style=for-the-badge&color=facc15&logo=github&label=Star)](https://github.com/arnaudbellemare/WebsiteUp/stargazers)
 
 </div>
 
----
-
-<a href="https://www.star-history.com/?repos=Auriti-Labs%2Fgeo-optimizer-skill&type=timeline&logscale=&legend=bottom-right">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=Auriti-Labs/geo-optimizer-skill&type=timeline&theme=dark&logscale&legend=bottom-right" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=Auriti-Labs/geo-optimizer-skill&type=timeline&logscale&legend=bottom-right" />
-   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=Auriti-Labs/geo-optimizer-skill&type=timeline&logscale&legend=bottom-right" />
- </picture>
-</a>
