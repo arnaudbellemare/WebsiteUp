@@ -1,3 +1,10 @@
+---
+title: "geo fix Command"
+description: "Auto-generate all missing GEO files in one shot: robots.txt patches, llms.txt, JSON-LD schemas, meta tag recommendations, and AI discovery templates."
+date: 2026-04-28
+tags: [fix, remediation, robots-txt, llms-txt, schema, cli]
+---
+
 # geo fix Command
 
 `geo fix` audits a URL and generates all missing files in one shot: robots.txt patches, llms.txt, JSON-LD schemas, meta tag recommendations, AI discovery templates, and deterministic content rewrite guidance.

@@ -1,7 +1,7 @@
 """
 Test per geo_optimizer.cli.ci_formatter — output SARIF e JUnit.
 
-Verifica che gli output CI siano validi e contengano le informazioni attese.
+Verifies that gli output CI siano validi e contengano le informazioni attese.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from geo_optimizer.models.results import (
 
 
 def _make_result(**overrides) -> AuditResult:
-    """Crea un AuditResult per i test."""
+    """Creates a AuditResult per i test."""
     result = AuditResult(
         url="https://example.com",
         score=45,
@@ -83,7 +83,7 @@ class TestSarifFormatter:
         # Deve avere findings per llms.txt mancante, meta description mancante, ecc.
         assert len(results) > 0
         rule_ids = {r["ruleId"] for r in results}
-        assert "geo/llms-txt" in rule_ids  # llms.txt non trovato
+        assert "geo/llms-txt" in rule_ids  # llms.txt not found
 
     def test_sarif_contiene_score(self):
         """SARIF contiene lo score GEO nelle proprietà."""
@@ -136,7 +136,7 @@ class TestJunitFormatter:
         result = _make_result()
         output = format_audit_junit(result)
 
-        # Deve essere parsabile come XML
+        # Must be parseable as XML
         root = ET.fromstring(output)
         assert root.tag == "testsuites"
 

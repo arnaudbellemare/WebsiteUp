@@ -53,7 +53,7 @@ def analyze_content_workflow_url(
 
     try:
         html = response.content.decode(response.encoding or "utf-8", errors="replace")
-    except Exception:
+    except (UnicodeDecodeError, LookupError):
         html = response.text
 
     return analyze_content_workflow_html(

@@ -11,7 +11,7 @@ import pytest
 from geo_optimizer.core.registry import AuditCheck, CheckRegistry, CheckResult
 
 
-# ─── Fixture: check valido che implementa il Protocol ────────────────────────
+# ─── Fixture: valid check implementing the Protocol ─────────────────────────
 
 
 class _MockCheck:
@@ -32,10 +32,10 @@ class _MockCheck:
 
 
 class _FailingCheck:
-    """Check che solleva sempre un'eccezione durante run()."""
+    """A check that always raises an exception during run()."""
 
     name = "failing_check"
-    description = "Check che fallisce sempre"
+    description = "Check che fails sempre"
     max_score = 5
 
     def run(self, url: str, soup=None, **kwargs) -> CheckResult:
@@ -75,7 +75,7 @@ def test_registry_init_vuoto():
 
 
 def test_register_check_valido():
-    """Registra un check valido e verifica che sia presente."""
+    """Registra un check valido e verifies that sia presente."""
     check = _MockCheck()
     CheckRegistry.register(check)
 
@@ -84,14 +84,14 @@ def test_register_check_valido():
 
 
 def test_register_check_duplicato_solleva_errore():
-    """Registrare due check con lo stesso nome solleva ValueError."""
+    """Registering two checks with the same name raises ValueError."""
     CheckRegistry.register(_MockCheck())
     with pytest.raises(ValueError, match="already registered"):
         CheckRegistry.register(_MockCheck())
 
 
 def test_register_oggetto_non_protocol_solleva_typeerror():
-    """Un oggetto che non implementa AuditCheck solleva TypeError."""
+    """An object that does not implement AuditCheck raises TypeError."""
     # _MissingMethodCheck non ha run() → non è AuditCheck
     with pytest.raises(TypeError, match="does not implement"):
         CheckRegistry.register(_MissingMethodCheck())
@@ -105,21 +105,21 @@ def test_unregister_rimuove_check():
 
 
 def test_unregister_nome_inesistente_non_solleva():
-    """unregister() su nome non esistente non solleva eccezioni."""
+    """unregister() su nome does not existnte non solleva eccezioni."""
     CheckRegistry.unregister("nome_inesistente")  # non deve sollevare
 
 
 def test_get_nome_inesistente_ritorna_none():
-    """get() su nome non registrato ritorna None."""
+    """get() su nome non registrato returns None."""
     assert CheckRegistry.get("inesistente") is None
 
 
 # ─── Test: discover (load_entry_points) ──────────────────────────────────────
 
 
-def test_load_entry_points_nessun_plugin(monkeypatch):
-    """load_entry_points() con nessun plugin installato ritorna 0."""
-    # Mock entry_points per simulare assenza di plugin
+def test_load_entry_points_no_plugin(monkeypatch):
+    """load_entry_points() con no plugin installato ritorna 0."""
+    # Mock entry_points to simulate absence of plugins
     with patch("geo_optimizer.core.registry.sys") as mock_sys:
         mock_sys.version_info = (3, 10, 0)
         with patch("importlib.metadata.entry_points", return_value=[]):
@@ -129,21 +129,21 @@ def test_load_entry_points_nessun_plugin(monkeypatch):
 
 def test_load_entry_points_non_ricarica_se_gia_caricato():
     """load_entry_points() chiamato due volte salta il secondo caricamento."""
-    # Prima chiamata: setta _loaded_entry_points = True
+    # First call: sets _loaded_entry_points = True
     with patch("importlib.metadata.entry_points", return_value=[]) as mock_ep:
         CheckRegistry.load_entry_points()
         CheckRegistry.load_entry_points()
-        # Deve essere chiamato solo una volta (la seconda salta)
+        # Should be called only once (the second call is skipped)
         assert mock_ep.call_count <= 1
 
 
 def test_load_entry_points_con_plugin_valido():
     """load_entry_points() carica un plugin che espone una classe check."""
-    # Crea un entry point mock che ritorna _MockCheck
+    # Creates an entry point mock that returns _MockCheck
     mock_ep = MagicMock()
     mock_ep.load.return_value = _MockCheck
 
-    # Patch sys.version_info per il branch Python >= 3.10
+    # Patch sys.version_info for the Python >= 3.10 branch
     import sys
 
     original_version = sys.version_info
@@ -158,19 +158,19 @@ def test_load_entry_points_con_plugin_valido():
 
 
 def test_load_entry_points_plugin_fallito_non_blocca():
-    """Plugin che fallisce durante il caricamento non blocca gli altri."""
+    """A plugin that fails during loading does not block the others."""
     mock_ep_ok = MagicMock()
     mock_ep_ok.load.return_value = _MockCheck
 
     mock_ep_fail = MagicMock()
-    mock_ep_fail.load.side_effect = ImportError("modulo non trovato")
+    mock_ep_fail.load.side_effect = ImportError("modulo not found")
 
     with patch("geo_optimizer.core.registry.sys") as mock_sys:
         mock_sys.version_info = (3, 10, 0)
         with patch("importlib.metadata.entry_points", return_value=[mock_ep_fail, mock_ep_ok]):
             count = CheckRegistry.load_entry_points()
 
-    # Solo il plugin valido deve essere stato caricato
+    # Only the valid plugin should be loaded
     assert count == 1
     assert "mock_check" in CheckRegistry.names()
 
@@ -178,14 +178,14 @@ def test_load_entry_points_plugin_fallito_non_blocca():
 # ─── Test: run_all ────────────────────────────────────────────────────────────
 
 
-def test_run_all_nessun_check_registrato():
+def test_run_all_no_check_registrato():
     """run_all() senza check registrati ritorna lista vuota."""
     results = CheckRegistry.run_all("https://example.com")
     assert results == []
 
 
 def test_run_all_esegue_check_registrato():
-    """run_all() esegue il check e ritorna CheckResult con score corretto."""
+    """run_all() executes the check and returns a CheckResult with the correct score."""
     CheckRegistry.register(_MockCheck())
     results = CheckRegistry.run_all("https://example.com")
 
@@ -197,7 +197,7 @@ def test_run_all_esegue_check_registrato():
 
 
 def test_run_all_check_fallito_non_blocca_altri():
-    """Check che solleva eccezione produce CheckResult con score 0 ma non blocca gli altri."""
+    """A check that raises an exception produces a CheckResult with score 0 but does not block the others."""
     CheckRegistry.register(_FailingCheck())
     CheckRegistry.register(_MockCheck())
 
@@ -214,7 +214,7 @@ def test_run_all_check_fallito_non_blocca_altri():
     assert failing.passed is False
     assert "Error" in failing.message
 
-    # Il check valido deve funzionare normalmente
+    # Il check valido deve worksre normalmente
     ok = risultati_per_nome["mock_check"]
     assert ok.score == 10
     assert ok.passed is True
@@ -259,12 +259,12 @@ def test_check_result_completo():
         score=8,
         max_score=10,
         passed=True,
-        details={"chiave": "valore"},
+        details={"chiave": "value"},
         message="Tutto ok",
     )
     assert r.score == 8
     assert r.passed is True
-    assert r.details["chiave"] == "valore"
+    assert r.details["chiave"] == "value"
 
 
 # ─── Test: clear ─────────────────────────────────────────────────────────────

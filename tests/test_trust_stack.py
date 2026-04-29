@@ -23,7 +23,7 @@ def _base_html(extra_body: str = "") -> str:
 
 
 def _defaults(**overrides):
-    """Crea parametri default per audit_trust_stack con override."""
+    """Creates default parameters for audit_trust_stack with overrides."""
     params = {
         "soup": _soup(_base_html()),
         "base_url": "https://example.com",
@@ -74,7 +74,7 @@ class TestTechnicalTrust:
         result = audit_trust_stack(**_defaults(response_headers=headers))
         assert "X-Frame-Options" in result.technical.signals_found
 
-    def test_nessun_header_frame_segnala_mancante(self):
+    def test_no_header_frame_segnala_mancante(self):
         # Neither X-Frame-Options nor CSP frame-ancestors → signal must be missing
         headers = {"Content-Security-Policy": "default-src 'self'"}
         result = audit_trust_stack(**_defaults(response_headers=headers))
@@ -321,7 +321,7 @@ class TestComposite:
         assert result.trust_level == "excellent"
 
     def test_grade_f_zero(self):
-        """Nessun segnale → grade F."""
+        """No segnale → grade F."""
         result = audit_trust_stack(**_defaults(base_url="http://example.com"))
         assert result.grade in ("F", "D")
         assert result.composite_score <= 10

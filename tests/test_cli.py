@@ -354,7 +354,7 @@ class TestCLIVersionAndHelp:
         assert "--output" in result.output
 
     def test_monitor_help(self, runner):
-        """geo monitor --help mostra le opzioni del monitor passivo."""
+        """geo monitor --help shows the passive monitor options."""
         result = runner.invoke(cli, ["monitor", "--help"])
         assert result.exit_code == 0
         assert "--domain" in result.output
@@ -362,7 +362,7 @@ class TestCLIVersionAndHelp:
         assert "--retention-days" in result.output
 
     def test_snapshots_help(self, runner):
-        """geo snapshots --help mostra le opzioni di archive e query."""
+        """geo snapshots --help shows the archive and query options."""
         result = runner.invoke(cli, ["snapshots", "--help"])
         assert result.exit_code == 0
         assert "--query" in result.output
@@ -412,7 +412,7 @@ class TestAuditCommand:
         assert "META TAG" in result.output
         assert "CONTENT QUALITY" in result.output
         assert "75/100" in result.output
-        # Verifica che run_full_audit riceva url, cache e project_config
+        # Verifies that run_full_audit riceva url, cache e project_config
         mock_audit.assert_called_once()
         call_args = mock_audit.call_args
         assert call_args[0][0] == "https://example.com"
@@ -640,7 +640,7 @@ class TestAuditCommand:
     @patch("geo_optimizer.cli.audit_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.cli.audit_cmd.run_full_audit")
     def test_audit_regression_exits_with_code_one(self, mock_audit, _mock_validate, runner):
-        """--regression fallisce quando il punteggio scende rispetto allo snapshot precedente."""
+        """--regression fails when the punteggio scende rispetto allo snapshot precedente."""
         baseline = AuditResult(
             url="https://example.com",
             timestamp=_ts(14),
@@ -759,7 +759,7 @@ class TestHistoryAndTrackCommands:
 
     @patch("geo_optimizer.cli.history_cmd.validate_public_url", return_value=(True, None))
     def test_history_text_output(self, _mock_validate, runner, sample_audit_result):
-        """geo history mostra il trend salvato per una URL."""
+        """geo history shows the saved trend for a URL."""
         from geo_optimizer.core.history import HistoryStore
 
         recent_ts = _ts(7)
@@ -793,7 +793,7 @@ class TestHistoryAndTrackCommands:
     @patch("geo_optimizer.cli.track_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.cli.track_cmd.run_full_audit")
     def test_track_report_writes_html(self, mock_audit, _mock_validate, runner, sample_audit_result):
-        """geo track --report genera un file HTML col trend salvato."""
+        """geo track --report generates an HTML file with the saved trend."""
         mock_audit.return_value = sample_audit_result
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = os.path.join(tmpdir, "tracking.db")
@@ -827,7 +827,7 @@ class TestMonitorCommand:
     @patch("geo_optimizer.cli.monitor_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.cli.monitor_cmd.run_passive_monitor")
     def test_monitor_text_output(self, mock_monitor, _mock_validate, runner):
-        """geo monitor mostra lo snapshot passive in formato testo."""
+        """geo monitor shows the passive snapshot in text format."""
         mock_monitor.return_value = MonitorResult(
             domain="example.com",
             url="https://example.com",
@@ -860,7 +860,7 @@ class TestMonitorCommand:
     @patch("geo_optimizer.cli.monitor_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.cli.monitor_cmd.run_passive_monitor")
     def test_monitor_json_output(self, mock_monitor, _mock_validate, runner):
-        """geo monitor --format json serializza il risultato."""
+        """geo monitor --format json serializza il result."""
         mock_monitor.return_value = MonitorResult(
             domain="example.com",
             url="https://example.com",
@@ -887,7 +887,7 @@ class TestSnapshotsCommand:
     """Tests for `geo snapshots`."""
 
     def test_snapshots_save_and_list(self, runner):
-        """geo snapshots salva uno snapshot e lo recupera filtrando per query."""
+        """geo snapshots saves a snapshot and retrieves it filtered by query."""
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = os.path.join(tmpdir, "snapshots.db")
             save_result = runner.invoke(
@@ -933,7 +933,7 @@ class TestSnapshotsCommand:
         assert "best GEO tool" in list_result.output
 
     def test_snapshots_json_output(self, runner):
-        """geo snapshots --format json serializza l'archivio filtrato."""
+        """geo snapshots --format json serialises the filtered archive."""
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = os.path.join(tmpdir, "snapshots.db")
             runner.invoke(
@@ -961,7 +961,7 @@ class TestSnapshotsCommand:
         assert data["entries"][0]["query"] == "ai visibility tools"
 
     def test_snapshots_quality_output(self, runner):
-        """geo snapshots --quality analizza i tier delle citazioni archiviate."""
+        """geo snapshots --quality analyses the tiers of archived citations."""
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = os.path.join(tmpdir, "snapshots.db")
             save_result = runner.invoke(

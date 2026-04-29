@@ -18,7 +18,7 @@ from geo_optimizer.web.badge import (
 
 
 # ============================================================================
-# #55 — XSS nel badge SVG
+# #55 — XSS in the SVG badge
 # ============================================================================
 
 
@@ -45,26 +45,26 @@ class TestSvgEscape:
 
 
 class TestBadgeSvgXss:
-    """Test prevenzione XSS nel generatore badge SVG."""
+    """XSS prevention tests in the SVG badge generator."""
 
     def test_label_con_script_injection(self):
-        """Payload XSS nel label viene neutralizzato."""
+        """XSS payload in the label is neutralised."""
         svg = generate_badge_svg(85, "good", label='"></text><script>alert("xss")</script><text>')
         assert "<script>" not in svg
         assert "&lt;script&gt;" in svg
 
     def test_label_con_svg_event_handler(self):
-        """Event handler SVG nel label viene neutralizzato."""
+        """SVG event handler in the label is neutralised."""
         svg = generate_badge_svg(90, "excellent", label='" onload="alert(1)')
         assert "onload" not in svg or "&quot;" in svg
-        # Il " viene escapato a &quot;, rompendo l'injection
+        # The " is escaped to &quot;, breaking the injection
         assert "&quot;" in svg
 
     def test_label_troncata_a_max_length(self):
-        """Label troppo lunga viene troncata."""
+        """Label that is too long is truncated."""
         long_label = "A" * 100
         svg = generate_badge_svg(50, "foundation", label=long_label)
-        # Verifica che la label nel SVG non contenga 100 "A"
+        # Verify that the label in the SVG does not contain 100 "A"s
         assert "A" * (_MAX_LABEL_LENGTH + 1) not in svg
 
     def test_band_non_valida_diventa_critical(self):
@@ -73,17 +73,17 @@ class TestBadgeSvgXss:
         assert BAND_COLORS["critical"] in svg
 
     def test_score_clampato_min(self):
-        """Score negativo viene portato a 0."""
+        """Negative score is clamped to 0."""
         svg = generate_badge_svg(-10, "critical")
         assert "0/100" in svg
 
     def test_score_clampato_max(self):
-        """Score > 100 viene portato a 100."""
+        """Score > 100 is clamped to 100."""
         svg = generate_badge_svg(999, "excellent")
         assert "100/100" in svg
 
     def test_svg_valido_con_input_normale(self):
-        """Badge con input normali genera SVG valido."""
+        """Badge with normal inputs generates a valid SVG."""
         svg = generate_badge_svg(85, "good", label="GEO Score")
         assert svg.startswith("<svg")
         assert "GEO Score" in svg
@@ -102,7 +102,7 @@ class TestBadgeSvgXss:
         assert "<title>Test &lt;Label&gt;: 75/100</title>" in svg
 
     def test_tutte_le_band_valide(self):
-        """Tutte le band nella whitelist producono il colore corretto."""
+        """All bands in the whitelist produce the correct colour."""
         for band, color in BAND_COLORS.items():
             svg = generate_badge_svg(50, band)
             assert color in svg
@@ -152,15 +152,15 @@ class TestSsrfBypassNetworks:
             ok, err = validate_public_url("https://evil.example.com")
             assert ok is False
 
-    def test_blocca_ipv4_mapped_ipv6_privato(self):
-        """::ffff:10.0.0.1 — IPv4-mapped IPv6 con IP privato."""
+    def test_blocca_ipv4_mapped_ipv6_private(self):
+        """::ffff:10.0.0.1 — IPv4-mapped IPv6 con IP private."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(10, 1, 6, "", ("::ffff:10.0.0.1", 0, 0, 0))]
             ok, err = validate_public_url("https://evil.example.com")
             assert ok is False
 
     def test_ip_pubblico_passa(self):
-        """IP pubblico legittimo non viene bloccato."""
+        """IP pubblico legittimo non is blocked."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(2, 1, 6, "", ("8.8.8.8", 0))]
             ok, err = validate_public_url("https://example.com")
@@ -168,14 +168,14 @@ class TestSsrfBypassNetworks:
             assert err is None
 
     def test_blocca_multicast(self):
-        """Indirizzi multicast bloccati dal fallback is_multicast."""
+        """Multicast addresses blocked by the is_multicast fallback."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(2, 1, 6, "", ("224.0.0.1", 0))]
             ok, err = validate_public_url("https://evil.example.com")
             assert ok is False
 
     def test_reti_rfc1918_ancora_bloccate(self):
-        """Reti RFC 1918 originali continuano a essere bloccate."""
+        """Original RFC 1918 networks continue to be blocked."""
         test_ips = ["10.0.0.1", "172.16.0.1", "192.168.1.1"]
         for ip in test_ips:
             with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
@@ -184,7 +184,7 @@ class TestSsrfBypassNetworks:
                 assert ok is False, f"{ip} dovrebbe essere bloccato"
 
     def test_loopback_ipv6(self):
-        """::1 — loopback IPv6 bloccato."""
+        """::1 — IPv6 loopback blocked."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(10, 1, 6, "", ("::1", 0, 0, 0))]
             ok, err = validate_public_url("https://evil.example.com")

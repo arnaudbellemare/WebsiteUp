@@ -196,7 +196,7 @@ def _snippet(text: str) -> str:
 
 
 def _append_unique(items: list[str], value: str) -> None:
-    """Aggiunge un valore se non gia' presente."""
+    """Adds a value if not already present."""
     if value and value not in items:
         items.append(value)
 

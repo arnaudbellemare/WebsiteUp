@@ -268,7 +268,7 @@ def audit(
                 auto_detect_lang(html_lang=_html_lang, url=url or target_url or "")
     except SystemExit:
         raise
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         if output_format == "json":
             import json
 

@@ -1,3 +1,10 @@
+---
+title: "Skill Roadmap"
+description: "Maintainer roadmap for the internal GEO skill catalog. Planned improvements, version targets, and contribution guidelines."
+date: 2026-04-28
+tags: [roadmap, skill, maintainer, internal]
+---
+
 # Skill Roadmap
 
 Maintainer roadmap for the internal GEO skill catalog.

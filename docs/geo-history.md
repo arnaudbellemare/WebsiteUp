@@ -1,3 +1,10 @@
+---
+title: "GEO History"
+description: "View the saved GEO score trend for a URL from the local tracking database. Track progress over time after implementing optimizations."
+date: 2026-04-28
+tags: [history, tracking, monitoring, cli]
+---
+
 # GEO History
 
 `geo history` shows the saved GEO score trend for a URL from the local tracking database.

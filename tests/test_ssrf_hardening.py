@@ -29,10 +29,10 @@ from geo_optimizer.utils.validators import resolve_and_validate_url, validate_pu
 
 
 class TestResolveAndValidateUrl:
-    """resolve_and_validate_url risolve DNS una volta sola e restituisce gli IP."""
+    """resolve_and_validate_url resolves DNS once and returns the IPs."""
 
     def test_url_pubblica_restituisce_ip(self):
-        """URL pubblica valida restituisce lista IP non vuota."""
+        """Valid public URL returns a non-empty IP list."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
             ok, err, ips = resolve_and_validate_url("https://example.com")
@@ -41,7 +41,7 @@ class TestResolveAndValidateUrl:
             assert ips == ["93.184.216.34"]
 
     def test_url_privata_restituisce_lista_vuota(self):
-        """URL con IP privato restituisce lista IP vuota e errore."""
+        """URL with private IPs returns an empty IP list and an error."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(2, 1, 6, "", ("10.0.0.1", 0))]
             ok, err, ips = resolve_and_validate_url("https://evil.example.com")
@@ -59,11 +59,11 @@ class TestResolveAndValidateUrl:
             assert ips == []
 
     def test_dns_risolto_una_sola_volta(self):
-        """Verifica che getaddrinfo venga chiamato una volta sola."""
+        """Verifies that getaddrinfo is called una volta sola."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
             resolve_and_validate_url("https://example.com")
-            # DNS risolto esattamente una volta — nessuna seconda chiamata
+            # DNS resolved exactly once — no second call
             assert mock_dns.call_count == 1
 
     def test_ip_multipli_tutti_pubblici(self):
@@ -79,12 +79,12 @@ class TestResolveAndValidateUrl:
             assert "93.184.216.34" in ips
             assert "93.184.216.35" in ips
 
-    def test_un_ip_privato_blocca_tutto(self):
-        """Se anche un solo IP è privato, la richiesta viene bloccata."""
+    def test_un_ip_private_blocca_tutto(self):
+        """If even a single IP is private, the request is blocked."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [
                 (2, 1, 6, "", ("93.184.216.34", 0)),  # pubblico
-                (2, 1, 6, "", ("192.168.1.1", 0)),  # privato
+                (2, 1, 6, "", ("192.168.1.1", 0)),  # private
             ]
             ok, err, ips = resolve_and_validate_url("https://evil.example.com")
             assert ok is False
@@ -124,8 +124,8 @@ class TestRedirectSsrfProtection:
 
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
-    def test_redirect_verso_ip_privato_bloccato(self, mock_create, mock_dns):
-        """Redirect verso IP privato viene bloccato prima della connessione."""
+    def test_redirect_verso_ip_private_bloccato(self, mock_create, mock_dns):
+        """Redirect verso IP private is blocked prima della connessione."""
         mock_session = MagicMock()
 
         redirect_response = Mock()
@@ -153,7 +153,7 @@ class TestRedirectSsrfProtection:
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_redirect_verso_localhost_bloccato(self, mock_create, mock_dns):
-        """Redirect verso localhost viene bloccato."""
+        """Redirect verso localhost is blocked."""
         mock_session = MagicMock()
 
         redirect_response = Mock()
@@ -175,7 +175,7 @@ class TestRedirectSsrfProtection:
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_redirect_pubblico_accettato(self, mock_create, mock_dns):
-        """Redirect verso URL pubblica viene seguito normalmente."""
+        """Redirect to a public URL is followed normally."""
         mock_session = MagicMock()
 
         redirect_response = Mock()
@@ -201,7 +201,7 @@ class TestRedirectSsrfProtection:
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_troppi_redirect_bloccati(self, mock_create, mock_dns):
-        """Loop di redirect supera il limite e viene bloccato."""
+        """Loop di redirect supera il limite e is blocked."""
         mock_session = MagicMock()
 
         mock_dns.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
@@ -224,12 +224,12 @@ class TestRedirectSsrfProtection:
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_redirect_senza_location_bloccato(self, mock_create, mock_dns):
-        """Redirect senza Location header viene bloccato."""
+        """Redirect senza Location header is blocked."""
         mock_session = MagicMock()
 
         redirect_response = Mock()
         redirect_response.status_code = 301
-        redirect_response.headers = {}  # Nessun Location
+        redirect_response.headers = {}  # No Location
         redirect_response.close = Mock()
 
         mock_session.get.return_value = redirect_response
@@ -244,7 +244,7 @@ class TestRedirectSsrfProtection:
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_redirect_relativo_risolto_correttamente(self, mock_create, mock_dns):
-        """Redirect con path relativo viene risolto rispetto all'host corrente."""
+        """Redirect with a relative path is resolved against the current host."""
         mock_session = MagicMock()
 
         redirect_response = Mock()
@@ -266,7 +266,7 @@ class TestRedirectSsrfProtection:
         resp, err = fetch_url("https://example.com/old-path")
         assert resp is not None
         assert err is None
-        # Verifica che la seconda get sia stata chiamata con l'URL corretto
+        # Verify that the second get was called with the correct URL
         second_call_url = mock_session.get.call_args_list[1][0][0]
         assert second_call_url == "https://example.com/new-path"
 
@@ -280,7 +280,7 @@ class TestBodyStreamingSizeCheck:
     """fetch_url usa streaming per verificare il limite di dimensione durante il download."""
 
     def test_stream_response_entro_limite(self):
-        """Body entro il limite viene letto correttamente."""
+        """Body within the limit is read correctly."""
         mock_resp = Mock()
         mock_resp.iter_content.return_value = [b"Hello", b" ", b"World"]
 
@@ -291,7 +291,7 @@ class TestBodyStreamingSizeCheck:
     def test_stream_response_supera_limite(self):
         """Body che supera il limite interrompe lo streaming."""
         mock_resp = Mock()
-        # Chunk da 100 byte ognuno, limite 250 → deve bloccarsi al 3° chunk
+        # Chunks of 100 bytes each, limit 250 → should stop at the 3rd chunk
         mock_resp.iter_content.return_value = [b"x" * 100, b"x" * 100, b"x" * 100, b"x" * 100]
 
         content, err = _stream_response(mock_resp, max_size=250)
@@ -311,7 +311,7 @@ class TestBodyStreamingSizeCheck:
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_fetch_url_usa_streaming(self, mock_create, mock_dns):
-        """fetch_url usa stream=True nella chiamata a session.get()."""
+        """fetch_url uses stream=True in the call to session.get()."""
         mock_dns.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
 
         mock_session = MagicMock()
@@ -326,14 +326,14 @@ class TestBodyStreamingSizeCheck:
 
         fetch_url("https://example.com")
 
-        # Verifica che stream=True sia stato passato
+        # Verifies that stream=True sia status passato
         call_kwargs = mock_session.get.call_args[1]
         assert call_kwargs.get("stream") is True
 
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_content_length_grande_bloccato_prima_dello_stream(self, mock_create, mock_dns):
-        """Content-Length > max_size interrompe prima di scaricare il body."""
+        """Content-Length > max_size aborts before downloading the body."""
         mock_dns.return_value = [(2, 1, 6, "", ("93.184.216.34", 0))]
 
         mock_session = MagicMock()
@@ -341,7 +341,7 @@ class TestBodyStreamingSizeCheck:
         mock_resp.status_code = 200
         mock_resp.headers = {"Content-Length": str(MAX_RESPONSE_SIZE + 1)}
         mock_resp.close = Mock()
-        mock_resp.iter_content = Mock()  # Non deve essere chiamato
+        mock_resp.iter_content = Mock()  # Should not be called
 
         mock_session.get.return_value = mock_resp
         mock_create.return_value = mock_session
@@ -349,19 +349,19 @@ class TestBodyStreamingSizeCheck:
         resp, err = fetch_url("https://example.com", max_size=1024)
         assert resp is None
         assert "too large" in err.lower()
-        # iter_content non deve essere stato chiamato (check preventivo)
+        # iter_content non deve essere status chiamato (check preventivo)
         mock_resp.iter_content.assert_not_called()
 
     @patch("geo_optimizer.utils.validators.socket.getaddrinfo")
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_fetch_url_blocca_url_non_sicura(self, mock_create, mock_dns):
-        """fetch_url blocca URL con IP privato prima della connessione."""
+        """fetch_url blocks URLs with private IPs before connecting."""
         mock_dns.return_value = [(2, 1, 6, "", ("192.168.1.1", 0))]
 
         resp, err = fetch_url("https://evil.example.com")
         assert resp is None
         assert "unsafe" in err.lower() or err is not None
-        # La sessione non deve essere stata creata
+        # The session should not have been created
         mock_create.assert_not_called()
 
 

@@ -37,8 +37,8 @@ def coherence(sitemap: str, max_pages: int, output_format: str) -> None:
     else:
         _print_text(result)
 
-    if result.issues:
-        sys.exit(1)
+    # Keep command successful for local/interactive use:
+    # coherence issues are reported in output but do not trigger a non-zero exit.
 
 
 def _print_text(result) -> None:

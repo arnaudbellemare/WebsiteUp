@@ -1,3 +1,10 @@
+---
+title: "Troubleshooting"
+description: "Solutions to common installation and runtime problems with GEO Optimizer, including network errors, schema validation failures, and MCP server setup issues."
+date: 2026-04-28
+tags: [troubleshooting, errors, installation, debugging]
+---
+
 # Troubleshooting
 
 Solutions to common installation and runtime problems.

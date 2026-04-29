@@ -23,11 +23,12 @@ def audit_content_quality(soup, url: str, soup_clean=None) -> ContentResult:
     if soup is None:
         return result
 
-    # H1
-    h1 = soup.find("h1")
-    if h1:
+    # H1 — presence + uniqueness
+    h1_tags = soup.find_all("h1")
+    result.h1_count = len(h1_tags)
+    if h1_tags:
         result.has_h1 = True
-        result.h1_text = h1.text.strip()
+        result.h1_text = h1_tags[0].text.strip()
 
     # Headings
     headings = soup.find_all(["h1", "h2", "h3", "h4"])

@@ -162,7 +162,7 @@ class CheckRegistry:
                         continue
                     cls._checks[check.name] = check
                     loaded += 1
-                except Exception as exc:
+                except (ImportError, AttributeError, TypeError, RuntimeError) as exc:
                     # Failed plugins do not block the audit, but log for debugging (fix #202)
                     logger.warning("Plugin '%s' failed to load: %s", ep.name, exc)
 
@@ -196,7 +196,7 @@ class CheckRegistry:
                 plugin_soup = copy.deepcopy(soup) if soup is not None else None
                 result = check.run(url=url, soup=plugin_soup, **kwargs)
                 results.append(result)
-            except Exception as e:
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
                 # Check failed: score 0, error message
                 results.append(
                     CheckResult(

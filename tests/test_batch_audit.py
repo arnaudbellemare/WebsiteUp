@@ -10,7 +10,7 @@ from geo_optimizer.models.results import AuditResult, SitemapUrl
 
 
 def _make_audit_result(url: str, score: int, band: str, breakdown: dict[str, int]) -> AuditResult:
-    """Crea un AuditResult minimo per i test batch."""
+    """Creates a AuditResult minimo per i test batch."""
     return AuditResult(
         url=url,
         score=score,
@@ -34,7 +34,7 @@ class TestBatchAudit:
         mock_fetch_sitemap,
         mock_to_thread,
     ):
-        """La sitemap viene auditata e aggregata in un risultato batch coerente."""
+        """The sitemap is audited and aggregated into a consistent batch result."""
         mock_to_thread.side_effect = lambda func, *args, **kwargs: func(*args, **kwargs)
         mock_fetch_sitemap.return_value = [
             SitemapUrl(url="https://example.com/"),

@@ -23,7 +23,7 @@ def test_extract_citations_deduplica_e_preserva_posizione():
 
 
 def test_snapshot_store_save_and_list_filters(tmp_path):
-    """Gli snapshot salvati sono interrogabili per query e range temporale."""
+    """Saved snapshots are queryable by query string and time range."""
     store = SnapshotStore(Path(tmp_path / "snapshots.db"))
     first = store.save_snapshot(
         query="best GEO tool",

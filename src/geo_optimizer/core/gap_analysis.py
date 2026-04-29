@@ -45,7 +45,7 @@ def _sort_by_score(result1: AuditResult, result2: AuditResult) -> tuple[AuditRes
 
 
 def _build_action_plan(weaker: AuditResult, stronger: AuditResult) -> list[GapAction]:
-    """Genera azioni concrete quando il sito debole manca segnali presenti nel forte."""
+    """Generates concrete actions when the weak site lacks signals present in the strong one."""
     actions: list[GapAction] = []
     weaker_url = weaker.url.rstrip("/")
 

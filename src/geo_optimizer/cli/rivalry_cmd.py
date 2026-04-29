@@ -369,7 +369,7 @@ def rivalry(url, rival_url, sitemap, max_urls, vertical, market_locale, output_f
             store = HistoryStore(Path(history_db) if history_db else None)
             entry = store.save_audit_result(audit_result)
             history_delta = entry.delta
-        except Exception as exc:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
             click.echo(f"⚠️  Could not save history: {type(exc).__name__}", err=True)
 
     page_rows = []
@@ -377,7 +377,7 @@ def rivalry(url, rival_url, sitemap, max_urls, vertical, market_locale, output_f
     if not sitemap_url:
         try:
             sitemap_url = discover_sitemap(audit_result.url)
-        except Exception:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError):
             sitemap_url = None
     if sitemap_url:
         try:
@@ -393,7 +393,7 @@ def rivalry(url, rival_url, sitemap, max_urls, vertical, market_locale, output_f
                         "error": p.error,
                     }
                 )
-        except Exception:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError):
             # rivalry report should still work even if sitemap analysis fails
             page_rows = []
 

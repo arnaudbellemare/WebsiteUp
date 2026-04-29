@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import requests
+
 from geo_optimizer.models.results import CdnAiCrawlerResult
 
 
@@ -101,7 +103,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
             elif "akamaighost" in server_val or "akamai" in server_val:
                 result.cdn_detected = "akamai"
 
-        except Exception:
+        except requests.exceptions.RequestException:
             # Not reachable even as a browser — skip check
             return result
 
@@ -145,7 +147,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
                         # Bot receives <30% of the content → likely a block page
                         bot_entry["blocked"] = True
 
-            except Exception:
+            except requests.exceptions.RequestException:
                 bot_entry["blocked"] = True
 
             result.bot_results.append(bot_entry)
@@ -153,7 +155,7 @@ def audit_cdn_ai_crawler(base_url: str) -> CdnAiCrawlerResult:
         result.checked = True
         result.any_blocked = any(b["blocked"] or b["challenge_detected"] for b in result.bot_results)
 
-    except Exception:
+    except requests.exceptions.RequestException:
         pass
 
     return result

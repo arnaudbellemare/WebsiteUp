@@ -2,7 +2,7 @@
 Test per le fix rimanenti v2.0.0 — sicurezza e stabilità.
 
 Copre:
-- #6 SSRF sitemap URL da robots.txt (validazione dominio + IP)
+- #6 SSRF sitemap URL da robots.txt (validazione domain + IP)
 - #7 Path traversal in --file, --faq-file
 - #9 DoS — limite dimensione risposte HTTP
 - #10 Sitemap bomb — limite profondità ricorsione
@@ -46,18 +46,18 @@ def _mock_v2_url_validation(monkeypatch):
 
 
 class TestStatusCodeValidation:
-    """Solo risposte HTTP 200 vengono parsate come contenuto valido."""
+    """Solo risposte HTTP 200 vengono parsate come content valido."""
 
     @patch("geo_optimizer.core.audit_robots.fetch_url")
     def test_robots_403_non_parsato(self, mock_fetch):
-        """robots.txt con status 403 non viene trattato come trovato."""
+        """robots.txt con status 403 is not trattato come trovato."""
         mock_fetch.return_value = (Mock(status_code=403, text="Forbidden"), None)
         result = audit_robots_txt("https://example.com")
         assert result.found is False
 
     @patch("geo_optimizer.core.audit_robots.fetch_url")
     def test_robots_500_non_parsato(self, mock_fetch):
-        """robots.txt con status 500 non viene trattato come trovato."""
+        """robots.txt con status 500 is not trattato come trovato."""
         mock_fetch.return_value = (Mock(status_code=500, text="Error"), None)
         result = audit_robots_txt("https://example.com")
         assert result.found is False
@@ -71,14 +71,14 @@ class TestStatusCodeValidation:
 
     @patch("geo_optimizer.core.audit_llms.fetch_url")
     def test_llms_403_non_parsato(self, mock_fetch):
-        """llms.txt con status 403 non viene trattato come trovato."""
+        """llms.txt con status 403 is not trattato come trovato."""
         mock_fetch.return_value = (Mock(status_code=403, text="Forbidden"), None)
         result = audit_llms_txt("https://example.com")
         assert result.found is False
 
     @patch("geo_optimizer.core.audit_llms.fetch_url")
     def test_llms_301_non_parsato(self, mock_fetch):
-        """llms.txt con redirect 301 non viene trattato come trovato."""
+        """llms.txt con redirect 301 is not trattato come trovato."""
         mock_fetch.return_value = (Mock(status_code=301, text="Moved"), None)
         result = audit_llms_txt("https://example.com")
         assert result.found is False
@@ -99,7 +99,7 @@ class TestStatusCodeValidation:
 
 
 class TestFetchPageTitleStatusCheck:
-    """fetch_page_title ritorna None per pagine di errore."""
+    """fetch_page_title returns None per pagine di errore."""
 
     @patch("geo_optimizer.utils.http.fetch_url")
     def test_404_ritorna_none(self, mock_fetch):
@@ -233,14 +233,14 @@ class TestSitemapDepthLimit:
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
     def test_profondita_massima_raggiunta(self, mock_create):
-        """Chiamata con _depth >= MAX non effettua richieste HTTP."""
+        """Call with _depth >= MAX does not make HTTP requests."""
         result = fetch_sitemap("https://example.com/sitemap.xml", _depth=10)
         assert result == []
         # Non deve nemmeno fare richieste HTTP
         mock_create.assert_not_called()
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_profondita_zero_funziona(self, mock_create):
+    def test_profondita_zero_works(self, mock_create):
         """Profondità 0 processa normalmente la sitemap."""
         sitemap_xml = """<?xml version="1.0"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -311,8 +311,8 @@ class TestSitemapUrlValidation:
     """discover_sitemap valida gli URL sitemap estratti da robots.txt."""
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_sitemap_stesso_dominio_accettato(self, mock_create):
-        """URL sitemap dello stesso dominio viene accettato."""
+    def test_sitemap_stesso_domain_accettato(self, mock_create):
+        """Sitemap URL from the same domain is accepted."""
         from geo_optimizer.core.llms_generator import discover_sitemap
 
         mock_session = MagicMock()
@@ -327,8 +327,8 @@ class TestSitemapUrlValidation:
             assert result == "https://example.com/sitemap.xml"
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_sitemap_dominio_esterno_rifiutato(self, mock_create):
-        """URL sitemap di un dominio diverso viene ignorato."""
+    def test_sitemap_domain_external_rifiutato(self, mock_create):
+        """URL sitemap di un domain diverso is ignored."""
         from geo_optimizer.core.llms_generator import discover_sitemap
 
         mock_session = MagicMock()
@@ -336,7 +336,7 @@ class TestSitemapUrlValidation:
             text="Sitemap: https://evil.com/malicious-sitemap.xml",
             status_code=200,
         )
-        # Se il sitemap esterno viene rifiutato, deve cadere ai common paths
+        # Se il sitemap external viene rifiutato, deve cadere ai common paths
         head_resp = Mock(status_code=404)
         mock_session.get.return_value = robots_resp
         mock_session.head.return_value = head_resp

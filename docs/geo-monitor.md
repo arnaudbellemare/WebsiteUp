@@ -1,3 +1,10 @@
+---
+title: "GEO Monitor"
+description: "Passive AI-visibility checker for a domain. Continuously watch for changes in robots.txt, llms.txt, schema, and bot access rules."
+date: 2026-04-28
+tags: [monitor, monitoring, domain, cli]
+---
+
 # GEO Monitor
 
 `geo monitor` is the passive AI-visibility checker for a domain.

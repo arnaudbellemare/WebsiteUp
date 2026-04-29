@@ -1,7 +1,7 @@
 """
 Test per il gradino intermedio schema_richness — Enhancement #394.
 
-Verifica che lo scoring sia graduato in 4 livelli:
+Verifies that lo scoring sia graduato in 4 livelli:
   - avg >= 5 attrs → 3pt (rich)
   - avg >= 4 attrs → 2pt (medium)
   - avg >= 3 attrs → 1pt (minimal)
@@ -29,7 +29,7 @@ def _soup(html: str) -> BeautifulSoup:
 
 
 def _schema_html(schema_dict: dict) -> str:
-    """Helper: wrappa un dict come script JSON-LD in pagina HTML minimale."""
+    """Helper: wrappa un dict come script JSON-LD in page HTML minimale."""
     blob = json.dumps(schema_dict)
     return f'<html><head><script type="application/ld+json">{blob}</script></head><body></body></html>'
 

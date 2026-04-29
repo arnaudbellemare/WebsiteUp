@@ -13,6 +13,10 @@ from geo_optimizer.models.config import (
     CONTENT_MIN_WORDS,
     LLMS_DEPTH_HIGH_WORDS,
     LLMS_DEPTH_WORDS,
+    META_DESC_MAX_LEN,
+    META_DESC_MIN_LEN,
+    META_TITLE_MAX_LEN,
+    META_TITLE_MIN_LEN,
     ROBOTS_PARTIAL_SCORE,
     SCORE_BANDS,
     SCORING,
@@ -116,12 +120,26 @@ def _score_meta(meta) -> int:
     s += SCORING["meta_description"] if meta.has_description else 0
     s += SCORING["meta_canonical"] if meta.has_canonical else 0
     s += SCORING["meta_og"] if (meta.has_og_title and meta.has_og_description) else 0
+    # Twitter Card: both twitter:card and twitter:title present
+    if getattr(meta, "has_twitter_card", False) and getattr(meta, "has_twitter_title", False):
+        s += SCORING.get("meta_twitter", 0)
+    # Title length penalty: deduct 1pt when outside 40–60 char sweet-spot
+    tl = meta.title_length
+    if meta.has_title and not (META_TITLE_MIN_LEN <= tl <= META_TITLE_MAX_LEN):
+        s = max(0, s - 1)
+    # Description length penalty: deduct 1pt when outside 120–160 char sweet-spot
+    dl = meta.description_length
+    if meta.has_description and not (META_DESC_MIN_LEN <= dl <= META_DESC_MAX_LEN):
+        s = max(0, s - 1)
     return s
 
 
 def _score_content(content) -> int:
     """Compute the content quality score."""
     s = SCORING["content_h1"] if content.has_h1 else 0
+    # H1 uniqueness: multiple H1 tags is an SEO defect — deduct the H1 point
+    if getattr(content, "h1_count", 1) > 1:
+        s = max(0, s - SCORING["content_h1"])
     s += SCORING["content_numbers"] if content.has_numbers else 0
     s += SCORING["content_links"] if content.has_links else 0
     s += SCORING["content_word_count"] if content.word_count >= CONTENT_MIN_WORDS else 0

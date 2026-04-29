@@ -89,7 +89,7 @@ def fetch_sitemap(
 
     # Fix #124: immediate stop if URL limit already reached
     if _total_count[0] >= MAX_TOTAL_URLS:
-        logger.warning("Limite URL raggiunto (%d), skip sitemap: %s", MAX_TOTAL_URLS, sitemap_url)
+        logger.warning("URL limit reached (%d), skipping sitemap: %s", MAX_TOTAL_URLS, sitemap_url)
         if on_status:
             on_status(f"URL limit reached ({MAX_TOTAL_URLS}), skipping: {sitemap_url}")
         return urls
@@ -138,8 +138,8 @@ def fetch_sitemap(
         if on_status:
             on_status(f"Sitemap error (after retries): {e}")
         return urls
-    except Exception as e:
-        # Final catch for unexpected errors (e.g. mocks in tests) — fix #78
+    except (OSError, ValueError, AttributeError) as e:
+        # Final catch for OS/network errors and parse errors (e.g. mocks in tests) — fix #78
         logger.warning("Sitemap unexpected error: %s", e)
         if on_status:
             on_status(f"Sitemap error: {e}")
@@ -292,7 +292,7 @@ def fetch_page_title(url: str) -> str | None:
         h1 = soup.find("h1")
         if h1:
             return h1.text.strip()
-    except Exception:
+    except AttributeError:
         pass
     return None
 
@@ -533,7 +533,7 @@ def _discover_sitemap_inner(
                 if on_status:
                     on_status(f"Sitemap found in robots.txt: {sitemap_url}")
                 return sitemap_url
-    except Exception:
+    except (requests.exceptions.RequestException, ValueError, AttributeError):
         pass
 
     # Try common paths: HEAD first, fallback GET if 405/timeout (#115)
@@ -554,7 +554,7 @@ def _discover_sitemap_inner(
                     if on_status:
                         on_status(f"Sitemap found: {url}")
                     return url
-        except Exception:
+        except OSError:
             try:
                 r_get = session.get(url, headers=HEADERS, timeout=5)
                 if r_get.status_code == 200:
@@ -562,7 +562,7 @@ def _discover_sitemap_inner(
                     if on_status:
                         on_status(f"Sitemap found: {url}")
                     return url
-            except Exception:
+            except OSError:
                 continue
 
     logger.warning("No sitemap found automatically for %s", base_url)

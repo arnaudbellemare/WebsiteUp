@@ -1,3 +1,10 @@
+---
+title: "GEO Coherence"
+description: "Cross-page semantic coherence analysis. Detects terminology inconsistencies across site pages that reduce AI citation accuracy."
+date: 2026-04-28
+tags: [coherence, semantic, content, cli]
+---
+
 # geo coherence
 
 Cross-page semantic coherence analysis. Detects terminology inconsistencies across site pages.

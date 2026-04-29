@@ -236,7 +236,7 @@ def _fetch_with_manual_redirects(
             return None, f"Timeout ({timeout}s) after 3 retries"
         except requests.exceptions.ConnectionError as e:
             return None, f"Connection failed after 3 retries: {e}"
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
             return None, str(e)
 
         # Check Content-Length before downloading the body

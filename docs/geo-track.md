@@ -1,3 +1,10 @@
+---
+title: "GEO Track"
+description: "Monitoring-oriented CLI for recurring GEO audits with local history. Track score progression and generate trend reports over time."
+date: 2026-04-28
+tags: [track, monitoring, history, trends, cli]
+---
+
 # GEO Track
 
 `geo track` is the monitoring-oriented CLI surface for recurring GEO audits with local history.

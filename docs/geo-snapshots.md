@@ -1,3 +1,10 @@
+---
+title: "GEO Snapshots"
+description: "Archive complete AI answer snapshots in a local SQLite database. Compare how AI engines cite your site over time."
+date: 2026-04-28
+tags: [snapshots, sqlite, archive, monitoring, cli]
+---
+
 # GEO Snapshots
 
 `geo snapshots` archives complete AI answer snapshots in a local SQLite database.

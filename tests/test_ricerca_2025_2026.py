@@ -1,8 +1,8 @@
 """
-Test per le nuove funzionalità basate sulla ricerca 2025-2026.
+Tests for new features based on research from 2025–2026.
 
-Issue #36 e #38: Schema Richness, Answer-First, Passage Density,
-Over-optimization Warning e aggiornamento pesi citability.
+Issue #36 and #38: Schema Richness, Answer-First, Passage Density,
+Over-optimization Warning and citability weight updates.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from geo_optimizer.models.results import SchemaResult
 
 
 def _soup(html: str) -> BeautifulSoup:
-    """Helper: crea BeautifulSoup da stringa HTML."""
+    """Helper: creates a BeautifulSoup from an HTML string."""
     return BeautifulSoup(html, "html.parser")
 
 
@@ -40,7 +40,7 @@ class TestSchemaRichness:
             avg_attributes_per_schema=2.0,
         )
         score_with_generic = _score_schema(schema)
-        # Solo schema_any_valid (2 punti), nessun richness bonus
+        # Solo schema_any_valid (2 punti), no richness bonus
         assert score_with_generic == SCORING["schema_any_valid"]
 
     def test_schema_ricco_punti_pieni(self):
@@ -127,13 +127,13 @@ class TestSchemaRichness:
 
 class TestAnswerFirst:
     def test_h2_con_fatto_concreto(self):
-        """H2 seguito da paragrafo con numero → rilevato."""
+        """H2 followed by a paragraph with a number → detected."""
         html = """
         <html><body>
             <h2>Quanto costa il SEO?</h2>
             <p>Il costo medio del SEO nel 2026 è di $2,500 al mese per le PMI,
             con un ROI medio del 275% nel primo anno.</p>
-            <h2>Come funziona</h2>
+            <h2>Come works</h2>
             <p>Il 73% dei siti ottimizzati vede miglioramenti entro 90 giorni.</p>
         </body></html>
         """
@@ -144,7 +144,7 @@ class TestAnswerFirst:
         assert result.score > 0
 
     def test_h2_senza_fatti(self):
-        """H2 seguito da paragrafo generico → non rilevato."""
+        """H2 followed by a generic paragraph → not detected."""
         html = """
         <html><body>
             <h2>Introduzione</h2>
@@ -160,7 +160,7 @@ class TestAnswerFirst:
         # ma comunque il ratio potrebbe essere basso
         assert result.details["h2_count"] == 2
 
-    def test_nessun_h2(self):
+    def test_no_h2(self):
         """Pagina senza H2 → score 0."""
         html = "<html><body><p>Testo semplice.</p></body></html>"
         result = detect_answer_first(_soup(html))
@@ -174,7 +174,7 @@ class TestAnswerFirst:
         assert result.impact == "+25%"
 
     def test_wordpress_elementor_div_wrapper(self):
-        """Fix #400: H2 seguito da <div><p>testo</p></div> (WordPress/Elementor) → rilevato."""
+        """Fix #400: H2 followed by <div><p>text</p></div> (WordPress/Elementor) → detected."""
         # WordPress/Elementor wraps content in div containers;
         # the <p> is not a direct sibling of H2, but nested inside a <div>
         html = """
@@ -184,7 +184,7 @@ class TestAnswerFirst:
                 <p>Il costo medio del SEO nel 2026 è di $2,500 al mese per le PMI,
                 con un ROI medio del 275% nel primo anno.</p>
             </div>
-            <h2>Come funziona</h2>
+            <h2>Come works</h2>
             <div class="wp-block-group">
                 <p>Il 73% dei siti ottimizzati vede miglioramenti entro 90 giorni.</p>
             </div>
@@ -196,7 +196,7 @@ class TestAnswerFirst:
         assert result.details["h2_count"] == 2
 
     def test_div_vuoto_non_conta(self):
-        """Fix #400: div vuoto dopo H2 non genera falso positivo."""
+        """Fix #400: empty div after H2 does not generate a false positive."""
         html = """
         <html><body>
             <h2>Titolo sezione</h2>
@@ -223,7 +223,7 @@ class TestPassageDensity:
             "con schema markup ricco hanno un tasso di citazione del 61.7%, "
             "significativamente superiore al 41.6% dei siti con schema generico. "
             "Inoltre, i siti senza alcuno schema hanno ottenuto il 52.3%, "
-            "dimostrando che uno schema generico è peggiore di nessuno schema. "
+            "dimostrando che uno schema generico è peggiore di noo schema. "
             "Il campione includeva 500 domini unici analizzati per 180 giorni "
             "con un totale di 12,450 query testate su 5 diversi motori AI. "
             "I risultati sono statisticamente significativi con p-value 0.001."
@@ -249,7 +249,7 @@ class TestPassageDensity:
 
     def test_paragrafi_senza_numeri(self):
         """Paragrafi di lunghezza corretta ma senza dati → non densi."""
-        para = " ".join(["contenuto interessante e ben scritto"] * 15)  # ~75 parole
+        para = " ".join(["content interessante e ben scritto"] * 15)  # ~75 parole
         html = f"<html><body><p>{para}</p><p>{para}</p></body></html>"
         result = detect_passage_density(_soup(html))
         assert result.details["dense_paragraphs"] == 0
@@ -273,9 +273,9 @@ class TestPassageDensity:
 
 class TestOverOptimization:
     def test_frasi_ripetitive_rilevate(self):
-        """Stessa frase ripetuta 3+ volte → rilevata."""
+        """Same phrase repeated 3+ times → detected."""
         frase = "Il nostro servizio di ottimizzazione SEO è il migliore sul mercato oggi"
-        filler = "contenuto vario diversificato qualità struttura analisi risultato strategia marketing digitale"
+        filler = "content vario diversificato qualità struttura analisi result strategia marketing digitale"
         # Serve testo con 50+ parole per superare la soglia minima
         html = f"""
         <html><body>
@@ -289,22 +289,22 @@ class TestOverOptimization:
         """Densità keyword anomala nelle prime 200 parole → rilevata."""
         # Prime 200 parole: keyword "seo" ripetuta molto
         front = " ".join(["seo ottimizzazione seo ranking seo keyword seo"] * 30)
-        rest = " ".join(["contenuto vario diversificato qualità struttura"] * 20)
+        rest = " ".join(["content vario diversificato qualità struttura"] * 20)
         html = f"<html><body><p>{front} {rest}</p></body></html>"
         result = detect_keyword_stuffing(_soup(html))
         assert result.details.get("front_loading_detected") is True
 
-    def test_nessuna_over_optimization(self):
-        """Testo naturale (50+ parole) → nessun warning."""
+    def test_noa_over_optimization(self):
+        """Testo naturale (50+ parole) → no warning."""
         html = """
         <html><body>
             <p>La visibilità nei motori di ricerca AI è fondamentale per i siti moderni.
             Le tecniche di ottimizzazione includono schema markup, citazioni autorevoli,
-            e contenuto strutturato con dati concreti. La ricerca Princeton ha dimostrato
+            e content strutturato con dati concreti. La ricerca Princeton ha dimostrato
             che combinare più metodi produce i migliori risultati complessivi per
             il posizionamento nelle risposte generate dai motori AI.
             Questo approccio sistematico permette di migliorare significativamente
-            la probabilità che un contenuto venga citato nelle risposte generate.</p>
+            la probabilità che un content venga citato nelle risposte generate.</p>
         </body></html>
         """
         result = detect_keyword_stuffing(_soup(html))
@@ -319,7 +319,7 @@ class TestOverOptimization:
 
 class TestPesiCitability:
     def test_max_score_totale_100(self):
-        """I 18 metodi base sommano 100, i 7 bonus batch2 aggiungono 31, i 5 bonus batch3+4 aggiungono 18 = 149."""
+        """The 18 base methods sum to 100, the 7 batch2 bonuses add 31, the 5 batch3+4 bonuses add 18 = 149."""
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
         total_max = sum(m.max_score for m in result.methods)
@@ -328,7 +328,7 @@ class TestPesiCitability:
         )
 
     def test_metodi_sono_25(self):
-        """Devono esserci 30 metodi (18 base + 7 Batch 2 + 5 Batch 3+4)."""
+        """There should be 30 methods (18 base + 7 Batch 2 + 5 Batch 3+4)."""
         html = "<html><body><p>Test.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
         assert len(result.methods) == 47
@@ -342,12 +342,12 @@ class TestPesiCitability:
         assert "passage_density" in names
 
     def test_max_score_singoli_aggiornati(self):
-        """Verifica che i max_score dei metodi ricalibrati siano corretti (v3.15)."""
+        """Verifies that i max_score dei metodi ricalibrati siano corretti (v3.15)."""
         html = "<html><body><p>Test.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
         scores_by_name = {m.name: m.max_score for m in result.methods}
 
-        # Metodi ricalibrati v3.15
+        # Recalibrated methods v3.15
         assert scores_by_name["keyword_stuffing"] == 6
         assert scores_by_name["quotation_addition"] == 6
         assert scores_by_name["statistics_addition"] == 6
@@ -360,7 +360,7 @@ class TestPesiCitability:
         assert scores_by_name["answer_first"] == 5
         assert scores_by_name["passage_density"] == 5
 
-        # Nuovi metodi v3.15
+        # New methods v3.15
         assert scores_by_name["readability"] == 8
         assert scores_by_name["faq_in_content"] == 6
         assert scores_by_name["image_alt_quality"] == 5
@@ -370,7 +370,7 @@ class TestPesiCitability:
         assert scores_by_name["format_mix"] == 5
 
     def test_improvement_suggestions_nuovi_metodi(self):
-        """Le suggestion per i nuovi metodi devono essere presenti."""
+        """Suggestions for the new methods should be present."""
         from geo_optimizer.core.citability import _IMPROVEMENT_SUGGESTIONS
 
         assert "answer_first" in _IMPROVEMENT_SUGGESTIONS

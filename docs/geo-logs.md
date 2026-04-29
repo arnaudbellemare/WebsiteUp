@@ -1,3 +1,10 @@
+---
+title: "geo logs"
+description: "Analyze server access logs to identify AI crawler activity, visit frequency, and which bots are indexing your site."
+date: 2026-04-28
+tags: [logs, crawlers, monitoring, cli]
+---
+
 # geo logs
 
 Analyze server access logs for AI crawler activity.

@@ -2,7 +2,7 @@
 Test per geo_optimizer.web.app — FastAPI web application.
 
 Coverage fix #154: il modulo era a 0% di coverage.
-Tutti i test mockano run_full_audit per evitare chiamate di rete.
+Tutti i test mockano run_full_audit per evitare calls di rete.
 """
 
 import asyncio
@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Dipendenza opzionale: skip dei test se FastAPI o httpx non sono installati
+# Optional dependency: skip tests if FastAPI or httpx are not installed
 pytest.importorskip("fastapi", reason="FastAPI non installato (pip install geo-optimizer-skill[web])")
 pytest.importorskip("httpx", reason="httpx non installato (pip install httpx)")
 
@@ -152,7 +152,7 @@ def test_health_ritorna_200_e_status_ok(client):
 
 
 def test_post_audit_url_valido_ritorna_200(client):
-    """POST /api/audit con URL valido e run_full_audit mockato ritorna 200."""
+    """POST /api/audit with a valid URL and mocked run_full_audit returns 200."""
     mock_result = _make_mock_audit_result()
 
     with patch("geo_optimizer.core.audit.run_full_audit", return_value=mock_result):
@@ -179,13 +179,13 @@ def test_post_audit_url_non_stringa_ritorna_422(client):
 
 
 def test_post_audit_body_vuoto_ritorna_422(client):
-    """POST /api/audit senza body JSON ritorna 422."""
+    """POST /api/audit without a JSON body returns 422."""
     response = client.post("/api/audit", content=b"", headers={"content-type": "application/json"})
     assert response.status_code == 422
 
 
 def test_post_audit_include_report_url(client):
-    """POST /api/audit deve includere report_url nella risposta."""
+    """POST /api/audit deve includere report_url nella response."""
     mock_result = _make_mock_audit_result()
 
     with patch("geo_optimizer.core.audit.run_full_audit", return_value=mock_result):
@@ -201,19 +201,19 @@ def test_post_audit_normalizza_url_senza_schema(client):
     """POST /api/audit aggiunge 'https://' se manca il protocollo."""
     mock_result = _make_mock_audit_result()
 
-    # run_full_audit è importato localmente nella funzione _run_audit:
+    # run_full_audit is imported locally inside the _run_audit function:
     # bisogna patchare il modulo sorgente dove è definita la funzione
     with patch("geo_optimizer.core.audit.run_full_audit", return_value=mock_result):
         response = client.post("/api/audit", json={"url": "example.com"})
 
     assert response.status_code == 200
-    # Verifica che il risultato sia corretto (URL normalizzato usato internamente)
+    # Verifies that il result sia corretto (URL normalizzato usato internamente)
     data = response.json()
     assert data["url"].startswith("https://")
 
 
-def test_post_audit_url_privato_ritorna_400(client):
-    """POST /api/audit con URL verso rete interna deve ritornare 400 (anti-SSRF)."""
+def test_post_audit_url_private_ritorna_400(client):
+    """POST /api/audit with a URL pointing to an internal network must return 400 (anti-SSRF)."""
     response = client.post("/api/audit", json={"url": "http://192.168.1.1"})
     assert response.status_code == 400
 
@@ -222,7 +222,7 @@ def test_post_audit_url_privato_ritorna_400(client):
 
 
 def test_get_audit_url_valido_ritorna_200(client):
-    """GET /api/audit?url=... deve funzionare come POST."""
+    """GET /api/audit?url=... deve worksre come POST."""
     mock_result = _make_mock_audit_result()
 
     with patch("geo_optimizer.core.audit.run_full_audit", return_value=mock_result):
@@ -234,7 +234,7 @@ def test_get_audit_url_valido_ritorna_200(client):
 
 
 def test_get_audit_senza_url_ritorna_422(client):
-    """GET /api/audit senza parametro url ritorna 422."""
+    """GET /api/audit without a url parameter returns 422."""
     response = client.get("/api/audit")
     assert response.status_code == 422
 
@@ -243,19 +243,19 @@ def test_get_audit_senza_url_ritorna_422(client):
 
 
 def test_post_audit_usa_cache_per_secondo_request(client):
-    """Seconda richiesta per lo stesso URL usa la cache (run_full_audit chiamato 1 sola volta)."""
+    """Second request for the same URL uses the cache (run_full_audit called only once)."""
     mock_result = _make_mock_audit_result()
 
     # run_full_audit è importato localmente: patch sul modulo sorgente
     with patch("geo_optimizer.core.audit.run_full_audit", return_value=mock_result) as mock_audit:
-        # Prima richiesta: esegue audit
+        # First request: executes audit
         r1 = client.post("/api/audit", json={"url": "https://example.com"})
         # Seconda richiesta: usa cache
         r2 = client.post("/api/audit", json={"url": "https://example.com"})
 
     assert r1.status_code == 200
     assert r2.status_code == 200
-    # run_full_audit deve essere stato chiamato una sola volta
+    # run_full_audit must be called exactly once
     assert mock_audit.call_count == 1
 
 
@@ -275,16 +275,16 @@ def test_rate_limit_429_dopo_troppe_richieste(client):
     _rate_limit_store["testclient"] = [now] * _RATE_LIMIT_MAX_REQUESTS
 
     with patch("geo_optimizer.core.audit.run_full_audit", return_value=mock_result):
-        # Questa richiesta deve essere bloccata
+        # This request must be blocked
         response = client.get("/api/audit?url=https://example.com")
 
     # Il rate limiter usa l'IP del client — in ambiente di test è "testclient"
-    # Verifica che il rate limit sia stato applicato a qualche IP
+    # Verify that the rate limit is applied to some IP
     assert response.status_code in (200, 429)  # dipende dall'IP riconosciuto
 
 
 def test_check_rate_limit_blocca_dopo_limite():
-    """_check_rate_limit() ritorna False dopo aver superato il limite."""
+    """_check_rate_limit() returns False after exceeding the limit."""
     from geo_optimizer.web.app import _RATE_LIMIT_MAX_REQUESTS, _RATE_LIMIT_WINDOW
     import time
 
@@ -294,13 +294,13 @@ def test_check_rate_limit_blocca_dopo_limite():
     # Imposta già al massimo
     _rate_limit_store[test_ip] = [now] * _RATE_LIMIT_MAX_REQUESTS
 
-    # La prossima richiesta deve essere bloccata — _check_rate_limit è async (fix #209)
+    # The next request must be blocked — _check_rate_limit is async (fix #209)
     result = asyncio.run(_check_rate_limit(test_ip))
     assert result is False
 
 
 def test_check_rate_limit_consente_entro_limite():
-    """_check_rate_limit() ritorna True finché siamo sotto il limite."""
+    """_check_rate_limit() returns True while below the limit."""
     test_ip = "10.0.0.88_test_rate_ok"
     # _check_rate_limit è async (fix #209)
     result = asyncio.run(_check_rate_limit(test_ip))
@@ -322,7 +322,7 @@ def test_security_headers_presenti(client):
 
 
 def test_audit_result_to_dict_include_tutti_campi():
-    """_audit_result_to_dict deve includere TUTTI i campi del risultato audit (fix #151)."""
+    """_audit_result_to_dict deve includere TUTTI i campi del result audit (fix #151)."""
     from geo_optimizer.web.app import _audit_result_to_dict
 
     result = _make_mock_audit_result()
@@ -340,7 +340,7 @@ def test_audit_result_to_dict_include_tutti_campi():
     # Campi checks (struttura nidificata)
     checks = d["checks"]
 
-    # robots: campi extra rispetto alla versione precedente
+    # robots: extra fields compared to the previous version
     robots = checks["robots_txt"]
     assert "citation_bots_explicit" in robots
     assert "bots_partial" in robots
@@ -412,7 +412,7 @@ def test_round_trip_audit_result_to_dict_e_ritorno():
 
 
 def test_badge_happy_path_restituisce_svg(client):
-    """GET /badge con URL valido e audit mockato restituisce SVG con lo score."""
+    """GET /badge with a valid URL and mocked audit returns an SVG with the score."""
     mock_result = _make_mock_audit_result(score=75, band="good")
 
     with patch("geo_optimizer.core.audit.run_full_audit", return_value=mock_result):
@@ -425,7 +425,7 @@ def test_badge_happy_path_restituisce_svg(client):
 
 
 def test_badge_audit_timeout_restituisce_badge_errore(client):
-    """GET /badge con audit in timeout restituisce badge SVG di errore."""
+    """GET /badge with a timed-out audit returns an error SVG badge."""
     import asyncio
 
     with patch(
@@ -434,14 +434,14 @@ def test_badge_audit_timeout_restituisce_badge_errore(client):
     ):
         response = client.get("/badge?url=https://example.com")
 
-    # Anche in caso di timeout il badge viene restituito (non 5xx)
+    # Even on timeout the badge is returned (not 5xx)
     assert response.status_code == 200
     assert "image/svg+xml" in response.headers["content-type"]
     assert b"Error" in response.content
 
 
 def test_badge_audit_eccezione_generica_restituisce_badge_errore(client):
-    """GET /badge con eccezione generica durante l'audit restituisce badge SVG di errore."""
+    """GET /badge with a generic exception during the audit returns an error SVG badge."""
     with patch(
         "geo_optimizer.core.audit.run_full_audit",
         side_effect=RuntimeError("connessione fallita"),
@@ -453,14 +453,14 @@ def test_badge_audit_eccezione_generica_restituisce_badge_errore(client):
     assert b"Error" in response.content
 
 
-def test_badge_url_privato_ritorna_400(client):
-    """GET /badge con URL interno ritorna 400 (anti-SSRF)."""
+def test_badge_url_private_ritorna_400(client):
+    """GET /badge with an internal URL returns 400 (anti-SSRF)."""
     response = client.get("/badge?url=http://10.0.0.1")
     assert response.status_code == 400
 
 
 def test_badge_senza_url_ritorna_422(client):
-    """GET /badge senza parametro url ritorna 422."""
+    """GET /badge without a url parameter returns 422."""
     response = client.get("/badge")
     assert response.status_code == 422
 
@@ -469,27 +469,27 @@ def test_badge_senza_url_ritorna_422(client):
 
 
 def test_report_id_non_hex_ritorna_400(client):
-    """GET /report/{id} con ID non esadecimale ritorna 400."""
+    """GET /report/{id} with a non-hexadecimal ID returns 400."""
     response = client.get("/report/ZZZZinvalidXXXX")
     assert response.status_code == 400
 
 
 def test_report_id_troppo_corto_ritorna_400(client):
-    """GET /report/{id} con ID più corto di 32 caratteri ritorna 400."""
+    """GET /report/{id} with an ID shorter than 32 characters returns 400."""
     response = client.get("/report/abc123")
     assert response.status_code == 400
 
 
 def test_report_id_maiuscolo_ritorna_400(client):
-    """GET /report/{id} con ID in maiuscolo ritorna 400 (fix #210)."""
-    # La regex accetta solo minuscolo — l'ID è esattamente 32 caratteri ma maiuscolo
+    """GET /report/{id} with an uppercase ID returns 400 (fix #210)."""
+    # The regex accepts only lowercase — the ID is exactly 32 characters but uppercase
     id_maiuscolo = "A" * 32
     response = client.get(f"/report/{id_maiuscolo}")
     assert response.status_code == 400
 
 
 def test_report_id_valido_ma_non_in_cache_ritorna_404(client):
-    """GET /report/{id} con ID hex valido ma non in cache ritorna 404."""
+    """GET /report/{id} with a valid hex ID not in the cache returns 404."""
     # ID valido: 32 caratteri esadecimali minuscoli
     id_valido = "a" * 32
     response = client.get(f"/report/{id_valido}")
@@ -497,13 +497,13 @@ def test_report_id_valido_ma_non_in_cache_ritorna_404(client):
 
 
 def test_report_id_valido_con_report_in_cache_ritorna_html(client):
-    """GET /report/{id} con report in cache restituisce HTML 200."""
+    """GET /report/{id} with a cached report returns HTML 200."""
     from geo_optimizer.web.app import _audit_result_to_dict
 
     mock_result = _make_mock_audit_result()
     data = _audit_result_to_dict(mock_result)
 
-    # Inserisce direttamente in cache con un ID noto
+    # Insert directly into cache with a known ID
     import time
 
     report_id = "b" * 32  # 32 caratteri hex validi
@@ -519,12 +519,12 @@ def test_report_id_valido_con_report_in_cache_ritorna_html(client):
 
 
 def test_verify_bearer_token_senza_geo_api_token_ritorna_true():
-    """_verify_bearer_token ritorna True quando GEO_API_TOKEN non è configurato."""
+    """_verify_bearer_token returns True when GEO_API_TOKEN is not configured."""
     import geo_optimizer.web.app as app_module
     from geo_optimizer.web.app import _verify_bearer_token
     from unittest.mock import MagicMock
 
-    # Arrange: simula _API_TOKEN = None
+    # Arrange: simulate _API_TOKEN = None
     original = app_module._API_TOKEN
     app_module._API_TOKEN = None
 
@@ -542,7 +542,7 @@ def test_verify_bearer_token_senza_geo_api_token_ritorna_true():
 
 
 def test_verify_bearer_token_con_token_corretto_ritorna_true():
-    """_verify_bearer_token ritorna True con token valido nell'header Authorization."""
+    """_verify_bearer_token returns True with a valid token in the Authorization header."""
     import geo_optimizer.web.app as app_module
     from geo_optimizer.web.app import _verify_bearer_token
     from unittest.mock import MagicMock
@@ -564,7 +564,7 @@ def test_verify_bearer_token_con_token_corretto_ritorna_true():
 
 
 def test_verify_bearer_token_con_token_sbagliato_ritorna_false():
-    """_verify_bearer_token ritorna False con token errato."""
+    """_verify_bearer_token returns False with an incorrect token."""
     import geo_optimizer.web.app as app_module
     from geo_optimizer.web.app import _verify_bearer_token
     from unittest.mock import MagicMock
@@ -586,7 +586,7 @@ def test_verify_bearer_token_con_token_sbagliato_ritorna_false():
 
 
 def test_verify_bearer_token_senza_header_authorization_ritorna_false():
-    """_verify_bearer_token ritorna False se manca l'header Authorization."""
+    """_verify_bearer_token returns False when the Authorization header is missing."""
     import geo_optimizer.web.app as app_module
     from geo_optimizer.web.app import _verify_bearer_token
     from unittest.mock import MagicMock
@@ -596,7 +596,7 @@ def test_verify_bearer_token_senza_header_authorization_ritorna_false():
     app_module._API_TOKEN = "un-token-qualsiasi"
 
     mock_request = MagicMock()
-    mock_request.headers.get.return_value = ""  # nessun header
+    mock_request.headers.get.return_value = ""  # no header
 
     try:
         result = _verify_bearer_token(mock_request)
@@ -608,7 +608,7 @@ def test_verify_bearer_token_senza_header_authorization_ritorna_false():
 
 
 def test_post_audit_con_token_valido_restituisce_200(client):
-    """POST /api/audit con GEO_API_TOKEN impostato e token corretto ritorna 200."""
+    """POST /api/audit with GEO_API_TOKEN set and correct token returns 200."""
     import os
     import geo_optimizer.web.app as app_module
 
@@ -631,7 +631,7 @@ def test_post_audit_con_token_valido_restituisce_200(client):
 
 
 def test_post_audit_con_token_sbagliato_ritorna_401(client):
-    """POST /api/audit con GEO_API_TOKEN impostato e token errato ritorna 401."""
+    """POST /api/audit with GEO_API_TOKEN set and wrong token returns 401."""
     import geo_optimizer.web.app as app_module
 
     original_token = app_module._API_TOKEN
@@ -655,7 +655,7 @@ def test_post_audit_con_token_sbagliato_ritorna_401(client):
 def test_ai_faq_json_punteggi_coerenti_con_config(client):
     """GET /ai/faq.json — i punteggi delle categorie devono corrispondere a SCORING in config.py.
 
-    Test di regressione per il bug in cui la risposta hard-coded descriveva
+    Test di regressione per il bug in cui la response hard-coded descriveva
     7 categorie con punteggi errati (schema=22, content=14, signals=8) invece
     degli 8 corretti (schema=16, content=12, signals=6, brand=10).
     """
@@ -674,22 +674,22 @@ def test_ai_faq_json_punteggi_coerenti_con_config(client):
         (f for f in faq_list if "score" in f.get("question", "").lower() or "calculat" in f.get("question", "").lower()),
         None,
     )
-    assert score_faq is not None, "Nessuna FAQ sul calcolo del punteggio trovata"
+    assert score_faq is not None, "Noa FAQ sul calcolo del punteggio trovata"
 
-    risposta = score_faq["answer"]
+    response = score_faq["answer"]
 
-    # Verifica categorie e punteggi corretti (da config.SCORING)
-    assert "8 categories" in risposta, f"Deve citare 8 categorie, trovato: {risposta}"
-    assert "schema (16pt)" in risposta, f"Schema deve essere 16pt, trovato: {risposta}"
-    assert "content (12pt)" in risposta, f"Content deve essere 12pt, trovato: {risposta}"
-    assert "signals (6pt)" in risposta, f"Signals deve essere 6pt, trovato: {risposta}"
-    assert "brand" in risposta.lower(), f"Deve includere la categoria brand, trovato: {risposta}"
+    # Verify correct categories and scores (from config.SCORING)
+    assert "8 categories" in response, f"Deve citare 8 categorie, trovato: {response}"
+    assert "schema (16pt)" in response, f"Schema deve essere 16pt, trovato: {response}"
+    assert "content (12pt)" in response, f"Content deve essere 12pt, trovato: {response}"
+    assert "signals (6pt)" in response, f"Signals deve essere 6pt, trovato: {response}"
+    assert "brand" in response.lower(), f"Deve includere la categoria brand, trovato: {response}"
 
-    # Verifica che i vecchi valori errati non siano presenti
-    assert "7 categories" not in risposta, f"Non deve citare 7 categorie: {risposta}"
-    assert "schema (22pt)" not in risposta, f"schema=22pt è il valore errato: {risposta}"
-    assert "content (14pt)" not in risposta, f"content=14pt è il valore errato: {risposta}"
-    assert "signals (8pt)" not in risposta, f"signals=8pt è il valore errato: {risposta}"
+    # Verifies that i vecchi valori errati non siano presenti
+    assert "7 categories" not in response, f"Non deve citare 7 categorie: {response}"
+    assert "schema (22pt)" not in response, f"schema=22pt è il value errato: {response}"
+    assert "content (14pt)" not in response, f"content=14pt è il value errato: {response}"
+    assert "signals (8pt)" not in response, f"signals=8pt è il value errato: {response}"
 
 
 def test_ai_summary_json_restituisce_struttura_valida(client):

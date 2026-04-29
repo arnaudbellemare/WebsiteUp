@@ -1,3 +1,10 @@
+---
+title: "GEO Optimizer — Documentation"
+description: "Complete documentation for GEO Optimizer. Optimize any website to be cited by ChatGPT, Perplexity, Claude, and Gemini AI Overviews."
+date: 2026-04-28
+tags: [documentation, overview, geo, ai-citation]
+---
+
 # GEO Optimizer — Documentation
 
 Optimize any website to be cited by ChatGPT, Perplexity, Claude, and Gemini.

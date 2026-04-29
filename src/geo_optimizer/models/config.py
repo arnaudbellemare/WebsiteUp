@@ -429,11 +429,13 @@ SCORING = {
     "schema_organization": 3,  # was 3
     "schema_website": 2,  # was 3
     "schema_sameas": 0,  # was 3, migrated to brand KG — kept at 0 for backward compat
-    # Meta tags — 14 points
+    # Meta tags — 15 points (title 5 + description 2 + canonical 3 + og 4 + twitter 1)
+    # Length penalties: -1pt if title outside 40–60 chars; -1pt if description outside 120–160 chars
     "meta_title": 5,
     "meta_description": 2,
     "meta_canonical": 3,
     "meta_og": 4,
+    "meta_twitter": 1,         # twitter:card + twitter:title both present
     # Content quality — 12 points — structure + extractability checks
     "content_h1": 2,
     "content_numbers": 1,
@@ -472,6 +474,14 @@ SCHEMA_RICHNESS_LOW = 3  # avg >= 3 attrs → 1pt
 
 # Minimum word threshold for content_word_count (300 words = substantial content)
 CONTENT_MIN_WORDS = 300
+
+# Meta title length sweet-spot: 40–60 characters (Google truncates at ~60)
+META_TITLE_MIN_LEN = 40
+META_TITLE_MAX_LEN = 60
+
+# Meta description length sweet-spot: 120–160 characters
+META_DESC_MIN_LEN = 120
+META_DESC_MAX_LEN = 160
 
 # Content freshness thresholds in days (#401)
 # AutoGEO ICLR 2026: tech content < 3 months strongly preferred by AI search engines

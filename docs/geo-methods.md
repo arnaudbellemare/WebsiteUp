@@ -1,3 +1,10 @@
+---
+title: "The 47 GEO Methods"
+description: "Research-backed content optimization techniques for AI citation visibility. Based on Princeton KDD 2024, AutoGEO ICLR 2026, SE Ranking 2025, and Growth Marshal 2026."
+date: 2026-04-28
+tags: [methods, content, citability, princeton-kdd, research]
+---
+
 # The 47 GEO Methods
 
 Research-backed content optimization techniques for AI citation visibility.

@@ -1,3 +1,10 @@
+---
+title: "MCP Server"
+description: "GEO Optimizer as an MCP server: 12 tools and 5 resources for Claude Code, Cursor, Windsurf, and any MCP-compatible AI coding assistant."
+date: 2026-04-28
+tags: [mcp, claude-code, cursor, windsurf, integration, tools]
+---
+
 # MCP Server
 
 GEO Optimizer exposes its core functionality as an [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server, making all tools available inside AI coding assistants like Claude Code, Cursor, and Windsurf.

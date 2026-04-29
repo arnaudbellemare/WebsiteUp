@@ -89,7 +89,7 @@ def geo_audit(url: str) -> str:
 
         result = run_full_audit(url)
         return _to_json(result)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         # Fix #314: do not expose str(e) to the client — log internally
         logger.error("Error in geo_audit for %s: %s", url, e)
         return json.dumps({"error": "Internal error during operation", "url": url})
@@ -137,7 +137,7 @@ def geo_fix(url: str, only: str = "") -> str:
 
         plan = run_all_fixes(url=url, only=only_set)
         return _to_json(plan)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         # Fix #314: do not expose str(e) to the client — log internally
         logger.error("Error in geo_fix for %s: %s", url, e)
         return json.dumps({"error": "Internal error during operation", "url": url})
@@ -189,7 +189,7 @@ def geo_llms_generate(url: str) -> str:
             description=f"Information about {site_name} for AI search engines",
         )
         return content
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         # Fix #329: do not expose str(e) to the client — log internally
         logger.error("Error in geo_llms_generate for %s: %s", url, e)
         return json.dumps({"error": "Internal error generating llms.txt", "url": url})
@@ -231,7 +231,7 @@ def geo_citability(url: str) -> str:
         soup = BeautifulSoup(r.text, "html.parser")
         result = audit_citability(soup, url)
         return _to_json(result)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         # Fix #314: do not expose str(e) to the client — log internally
         logger.error("Error in geo_citability for %s: %s", url, e)
         return json.dumps({"error": "Internal error during operation", "url": url})
@@ -268,7 +268,7 @@ def geo_schema_validate(json_string: str, schema_type: str = "") -> str:
                 "schema_type": schema_type or "auto-detected",
             }
         )
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         # Fix #314: do not expose str(e) to the client — log internally
         logger.error("Error in geo_schema_validate: %s", e)
         return json.dumps({"valid": False, "error": "Internal error during validation"})
@@ -314,7 +314,7 @@ def geo_compare(urls: str) -> str:
                     "recommendations_count": len(result.recommendations),
                 }
             )
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
             # Fix #314: do not expose str(e) to the client — log internally
             logger.error("Error in geo_compare for %s: %s", u, e)
             results.append({"url": u, "error": "Internal error during operation"})
@@ -351,7 +351,7 @@ def geo_gap_analysis(url1: str, url2: str) -> str:
 
         result = run_gap_analysis(normalized[0], normalized[1])
         return _to_json(result)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         logger.error("Error in geo_gap_analysis for %s vs %s: %s", normalized[0], normalized[1], e)
         return json.dumps({"error": "Internal error during operation", "url1": normalized[0], "url2": normalized[1]})
 
@@ -381,7 +381,7 @@ def geo_ai_discovery(url: str) -> str:
 
         result = audit_ai_discovery(url)
         return _to_json(result)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         # Fix #314: do not expose str(e) to the client — log internally
         logger.error("Error in geo_ai_discovery for %s: %s", url, e)
         return json.dumps({"error": "Internal error during operation", "url": url})
@@ -449,7 +449,7 @@ def geo_check_bots(url: str) -> str:
             },
             indent=2,
         )
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         # Fix #314: do not expose str(e) to the client — log internally
         logger.error("Error in geo_check_bots for %s: %s", url, e)
         return json.dumps({"error": "Internal error during operation", "url": url})
@@ -498,7 +498,7 @@ def geo_trust_score(url: str) -> str:
             },
             indent=2,
         )
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         logger.error("Error in geo_trust_score for %s: %s", url, e)
         return json.dumps({"error": "Internal error during operation", "url": url})
 
@@ -528,7 +528,7 @@ def geo_negative_signals(url: str) -> str:
 
         result = run_full_audit(url, use_cache=True)
         return _to_json(result.negative_signals)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         logger.error("Error in geo_negative_signals for %s: %s", url, e)
         return json.dumps({"error": "Internal error during operation", "url": url})
 
@@ -559,7 +559,7 @@ def geo_factual_accuracy(url: str) -> str:
 
         result = run_factual_accuracy_audit(url)
         return _to_json(result)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         logger.error("Error in geo_factual_accuracy for %s: %s", url, e)
         return json.dumps({"error": "Internal error during operation", "url": url})
 

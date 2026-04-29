@@ -351,7 +351,7 @@ def _check_aggregate_rating(soup, schema) -> bool:
                 data = _json.loads(script.string or "")
                 if "AggregateRating" in str(data):
                     return True
-            except Exception:
+            except (ValueError, AttributeError):
                 pass
 
     return False

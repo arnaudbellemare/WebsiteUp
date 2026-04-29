@@ -1,3 +1,10 @@
+---
+title: "AI Context Files — Platform Guide"
+description: "Platform-specific context files for Claude Projects, ChatGPT Custom GPT, Cursor, Windsurf, and Kiro — optimized for each platform's format and character limits."
+date: 2026-04-28
+tags: [ai-context, claude, chatgpt, cursor, windsurf, mcp]
+---
+
 # AI Context Files — Platform Guide
 
 GEO Optimizer provides platform-specific context files in the `ai-context/` folder. Each file is optimized for its platform's format and character limits.

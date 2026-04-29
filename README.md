@@ -199,7 +199,7 @@ geo pipeline --mode cwv --url https://yoursite.com
 | **Robots.txt** | /18 | 27 AI bots across 3 tiers (training, search, user). Citation bots explicitly allowed? |
 | **llms.txt** | /18 | Present, has H1 + blockquote, sections, links, depth. Companion llms-full.txt? |
 | **Schema JSON-LD** | /16 | WebSite, Organization, FAQPage, Article. Schema richness (5+ attributes)? |
-| **Meta Tags** | /14 | Title, description, canonical, Open Graph complete? |
+| **Meta Tags** | /15 | Title (40–60 chars), description (120–160 chars), canonical, Open Graph, Twitter Card? |
 | **Content** | /12 | H1, statistics, external citations, heading hierarchy, lists/tables, front-loading? |
 | **Brand & Entity** | /10 | Brand name coherence, Knowledge Graph links (Wikipedia/Wikidata/LinkedIn/Crunchbase), about page, geo signals, topic authority |
 | **Signals** | /6 | `<html lang>`, RSS/Atom feed, dateModified freshness? |

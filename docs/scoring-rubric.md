@@ -1,3 +1,10 @@
+---
+title: "GEO Scoring Rubric"
+description: "How the GEO Score (0–100) is computed across 8 categories: robots.txt, llms.txt, Schema JSON-LD, Meta Tags, Content Quality, Signals, AI Discovery, and Brand & Entity."
+date: 2026-04-28
+tags: [scoring, rubric, weights, categories, geo]
+---
+
 # GEO Scoring Rubric
 
 How the GEO Score (0–100) is computed. Based on the Princeton KDD 2024 research on Generative Engine Optimization, extended with AutoGEO ICLR 2026 and geo-checklist.dev signals.
@@ -58,7 +65,7 @@ The total score is the sum of all points earned across **8 categories**, capped 
 
 > **Note:** The `sameAs` knowledge graph signal has been moved to the **Brand & Entity Signals** category as `brand_kg_readiness` (3 pts). The `schema_sameas` key is kept for compatibility but contributes 0 points. The effective maximum for this category is **16 pts**, not 22.
 
-### 4. Meta Tags — max 14 pts
+### 4. Meta Tags — max 15 pts
 
 | Signal | Points | Condition |
 |--------|--------|-----------|
@@ -66,6 +73,11 @@ The total score is the sum of all points earned across **8 categories**, capped 
 | `meta_description` | 2 | `<meta name="description">` present |
 | `meta_canonical` | 3 | `<link rel="canonical">` present |
 | `meta_og` | 4 | Open Graph tags present (`og:title`, `og:description`) |
+| `meta_twitter` | 1 | Twitter Card tags present (`twitter:card`, `twitter:title`) |
+
+> **Length penalties (v4.9.x):** −1 pt if `<title>` is outside 40–60 characters; −1 pt if `<meta description>` is outside 120–160 characters. Maximum is 15 pts only when both are in-range.
+
+> **H1 uniqueness (v4.9.x):** Multiple `<h1>` tags on a single page cancel the `content_h1` point entirely.
 
 ### 5. Content Quality — max 12 pts
 

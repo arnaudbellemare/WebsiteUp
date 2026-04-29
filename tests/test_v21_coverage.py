@@ -1,18 +1,18 @@
 """
-Test v2.1 — Colma i gap di coverage residui nel package geo_optimizer.
+Test v2.1 — Fills remaining coverage gaps in the geo_optimizer package.
 
-Copre:
-- llms_generator.py: callback on_status, priority non numerica, url_to_label
-  con slug numerico, fetch_titles=True, sezione Optional, validazione SSRF
-  in discover_sitemap, fallback common paths
-- formatters.py: citation_bots_ok, llms trovato senza H1, schema senza WebSite,
-  schema senza FAQPage
-- schema_validator.py: @context lista con primo elemento non valido, @type lista
-  vuota, campo URL non stringa né lista
-- schema_cmd.py: path traversal --file e --faq-file, _print_analysis con tutti
-  i tipi schema, verbose=True, FAQ > 3
-- validators.py: must_exist=True con directory al posto di file, ValueError
-  in ip_address ignorato (DNS skip), file non trovato
+Covers:
+- llms_generator.py: on_status callback, non-numeric priority, url_to_label
+  with numeric slug, fetch_titles=True, Optional section, SSRF validation
+  in discover_sitemap, common-paths fallback
+- formatters.py: citation_bots_ok, llms found without H1, schema without WebSite,
+  schema without FAQPage
+- schema_validator.py: @context list with invalid first element, empty @type list,
+  URL field that is neither string nor list
+- schema_cmd.py: path traversal --file and --faq-file, _print_analysis for all
+  schema types, verbose=True, FAQ > 3
+- validators.py: must_exist=True with a directory instead of a file, ValueError
+  in ip_address ignored (DNS skip), file not found
 """
 
 import socket
@@ -45,7 +45,7 @@ from geo_optimizer.utils.validators import validate_public_url, validate_safe_pa
 
 @pytest.fixture(autouse=True)
 def _mock_v21_url_validation(monkeypatch):
-    """Rende deterministica la validazione URL nei test v2.1 offline."""
+    """Makes URL validation deterministic in offline v2.1 tests."""
 
     def _fake_resolve(url):
         host = (urlparse(url).hostname or "").lower()
@@ -70,7 +70,7 @@ def _mock_v21_url_validation(monkeypatch):
 
 
 def _make_audit_result(**overrides) -> AuditResult:
-    """Crea un AuditResult di base con override specifici."""
+    """Creates a base AuditResult with specific overrides."""
     result = AuditResult(
         url="https://example.com",
         score=75,
@@ -119,12 +119,12 @@ def _make_audit_result(**overrides) -> AuditResult:
         recommendations=[],
     )
     # Applica gli override con notazione "robots.found" → result.robots.found
-    for chiave, valore in overrides.items():
+    for chiave, value in overrides.items():
         parti = chiave.split(".")
         obj = result
         for parte in parti[:-1]:
             obj = getattr(obj, parte)
-        setattr(obj, parti[-1], valore)
+        setattr(obj, parti[-1], value)
     return result
 
 
@@ -134,10 +134,10 @@ def _make_audit_result(**overrides) -> AuditResult:
 
 
 class TestFetchSitemapOnStatus:
-    """Verifica che on_status venga chiamato nei vari branch di fetch_sitemap."""
+    """Verifies that on_status is called across the fetch_sitemap branches."""
 
-    def test_on_status_chiamato_a_profondita_massima(self):
-        """Riga 63: on_status chiamato quando _depth >= _MAX_SITEMAP_DEPTH."""
+    def test_on_status_called_at_max_depth(self):
+        """Line 63: on_status called when _depth >= _MAX_SITEMAP_DEPTH."""
         callback = Mock()
         # _MAX_SITEMAP_DEPTH è 3, quindi _depth=3 attiva il branch
         result = fetch_sitemap(
@@ -146,17 +146,17 @@ class TestFetchSitemapOnStatus:
             _depth=3,
         )
         assert result == []
-        # Deve aver chiamato on_status con il messaggio di profondità max
+        # Should have called on_status with the max-depth message
         callback.assert_called_once()
         messaggio = callback.call_args[0][0]
         assert "depth" in messaggio.lower() or "sitemap" in messaggio.lower()
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_on_status_chiamato_in_caso_di_errore_fetch(self, mock_crea):
-        """Riga 77: on_status chiamato quando il fetch della sitemap fallisce."""
-        mock_sessione = MagicMock()
-        mock_sessione.get.side_effect = ConnectionError("Timeout di rete")
-        mock_crea.return_value = mock_sessione
+    def test_on_status_called_on_fetch_error(self, mock_create):
+        """Line 77: on_status called when the sitemap fetch fails."""
+        mock_session = MagicMock()
+        mock_session.get.side_effect = ConnectionError("Network timeout")
+        mock_create.return_value = mock_session
 
         callback = Mock()
         result = fetch_sitemap(
@@ -165,13 +165,13 @@ class TestFetchSitemapOnStatus:
             _depth=0,
         )
         assert result == []
-        # Deve aver chiamato on_status due volte: una per "Fetching" e una per l'errore
-        chiamate = [c[0][0] for c in callback.call_args_list]
-        assert any("error" in c.lower() or "sitemap" in c.lower() for c in chiamate)
+        # Should have called on_status twice: once for "Fetching" and once for the error
+        calls = [c[0][0] for c in callback.call_args_list]
+        assert any("error" in c.lower() or "sitemap" in c.lower() for c in calls)
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_on_status_chiamato_per_sitemap_index(self, mock_crea):
-        """Riga 87: on_status chiamato quando viene rilevato un sitemap index."""
+    def test_on_status_called_for_sitemap_index(self, mock_create):
+        """Line 87: on_status called when a sitemap index is detected."""
         xml_indice = """<?xml version="1.0"?>
         <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
             <sitemap><loc>https://example.com/sitemap-0.xml</loc></sitemap>
@@ -180,16 +180,16 @@ class TestFetchSitemapOnStatus:
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         </urlset>"""
 
-        mock_sessione = MagicMock()
-        resp_indice = Mock()
-        resp_indice.content = xml_indice.encode()
-        resp_indice.raise_for_status = Mock()
-        resp_vuoto = Mock()
-        resp_vuoto.content = xml_vuoto.encode()
-        resp_vuoto.raise_for_status = Mock()
+        mock_session = MagicMock()
+        resp_index = Mock()
+        resp_index.content = xml_indice.encode()
+        resp_index.raise_for_status = Mock()
+        resp_empty = Mock()
+        resp_empty.content = xml_vuoto.encode()
+        resp_empty.raise_for_status = Mock()
         # Prima chiamata → indice, seconda chiamata → sub-sitemap vuoto
-        mock_sessione.get.side_effect = [resp_indice, resp_vuoto]
-        mock_crea.return_value = mock_sessione
+        mock_session.get.side_effect = [resp_index, resp_empty]
+        mock_create.return_value = mock_session
 
         callback = Mock()
         fetch_sitemap(
@@ -198,24 +198,24 @@ class TestFetchSitemapOnStatus:
             _depth=0,
         )
         # on_status deve aver segnalato la presenza dell'indice
-        chiamate = [c[0][0] for c in callback.call_args_list]
-        assert any("index" in c.lower() or "sitemaps" in c.lower() for c in chiamate)
+        calls = [c[0][0] for c in callback.call_args_list]
+        assert any("index" in c.lower() or "sitemaps" in c.lower() for c in calls)
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_on_status_chiamato_con_url_trovati(self, mock_crea):
-        """Riga 100: on_status chiamato con il numero di URL trovati."""
+    def test_on_status_called_with_urls_found(self, mock_create):
+        """Line 100: on_status called with the number of URLs found."""
         xml_sitemap = """<?xml version="1.0"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
             <url><loc>https://example.com/pagina1</loc></url>
             <url><loc>https://example.com/pagina2</loc></url>
         </urlset>"""
 
-        mock_sessione = MagicMock()
+        mock_session = MagicMock()
         resp = Mock()
         resp.content = xml_sitemap.encode()
         resp.raise_for_status = Mock()
-        mock_sessione.get.return_value = resp
-        mock_crea.return_value = mock_sessione
+        mock_session.get.return_value = resp
+        mock_create.return_value = mock_session
 
         callback = Mock()
         result = fetch_sitemap(
@@ -224,70 +224,70 @@ class TestFetchSitemapOnStatus:
             _depth=0,
         )
         assert len(result) == 2
-        chiamate = [c[0][0] for c in callback.call_args_list]
-        assert any("2" in c or "found" in c.lower() for c in chiamate)
+        calls = [c[0][0] for c in callback.call_args_list]
+        assert any("2" in c or "found" in c.lower() for c in calls)
 
 
 # ============================================================================
-# llms_generator.py — priority non numerica (righe 119-120)
+# llms_generator.py — priority non-numeric (righe 119-120)
 # ============================================================================
 
 
 class TestPriorityNonNumerica:
-    """Verifica che un valore priority non numerico venga ignorato silenziosamente."""
+    """Verifies that un value priority non numerico venga ignored silenziosamente."""
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_priority_non_numerica_ignorata(self, mock_crea):
-        """Righe 119-120: <priority>high</priority> → ValueError ignorato, priority=0.5."""
+    def test_non_numeric_priority_ignored(self, mock_create):
+        """Lines 119–120: <priority>high</priority> → ValueError ignored, priority=0.5."""
         xml_sitemap = """<?xml version="1.0"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
             <url>
-                <loc>https://example.com/pagina</loc>
+                <loc>https://example.com/page</loc>
                 <priority>high</priority>
             </url>
         </urlset>"""
 
-        mock_sessione = MagicMock()
+        mock_session = MagicMock()
         resp = Mock()
         resp.content = xml_sitemap.encode()
         resp.raise_for_status = Mock()
-        mock_sessione.get.return_value = resp
-        mock_crea.return_value = mock_sessione
+        mock_session.get.return_value = resp
+        mock_create.return_value = mock_session
 
         result = fetch_sitemap("https://example.com/sitemap.xml", _depth=0)
         assert len(result) == 1
-        # Il valore di default (0.5) deve essere mantenuto quando la priority non è numerica
+        # The default value (0.5) must be kept when the priority is not numeric
         assert result[0].priority == 0.5
-        assert result[0].url == "https://example.com/pagina"
+        assert result[0].url == "https://example.com/page"
 
 
 # ============================================================================
-# llms_generator.py — url_to_label con slug numerico (riga 221)
+# llms_generator.py — url_to_label con numeric slug (riga 221)
 # ============================================================================
 
 
 class TestUrlToLabelSlugNumerico:
-    """Verifica il comportamento di url_to_label quando l'ultimo segmento è tutto cifre."""
+    """Verifies url_to_label behaviour when the last path segment is all digits."""
 
     def test_ultimo_segmento_numerico_usa_path_completo(self):
-        """Riga 221: url come /blog/12345 → label è 'Blog/12345', non solo '12345'."""
+        """Line 221: url come /blog/12345 → label è 'Blog/12345', non solo '12345'."""
         label = url_to_label("https://example.com/blog/12345", "example.com")
-        # Quando il segmento finale è tutto cifre, usa gli ultimi due segmenti
+        # When the last segment is all digits, use the last two segments
         assert "12345" in label
         assert "Blog" in label or "blog" in label.lower()
 
-    def test_ultimo_segmento_alfanumerico_funziona_normalmente(self):
+    def test_ultimo_segmento_alfanumerico_works_normalmente(self):
         """Segmento con lettere e cifre non attiva il branch numerico."""
         label = url_to_label("https://example.com/blog/post-123", "example.com")
         assert "Post 123" in label or "post-123" in label.lower()
 
-    def test_homepage_ritorna_homepage(self):
+    def test_homepage_returns_homepage(self):
         """Path vuoto → 'Homepage'."""
         label = url_to_label("https://example.com/", "example.com")
         assert label == "Homepage"
 
     def test_slug_con_trattini_diventa_title(self):
-        """Slug con trattini viene convertito in Title Case."""
+        """Slug with hyphens is converted to Title Case."""
         label = url_to_label("https://example.com/my-awesome-page", "example.com")
         assert label == "My Awesome Page"
 
@@ -298,46 +298,46 @@ class TestUrlToLabelSlugNumerico:
 
 
 class TestGenerateLlmsTxtFetchTitles:
-    """Verifica il path fetch_titles=True in generate_llms_txt."""
+    """Verifies the fetch_titles=True path in generate_llms_txt."""
 
     def test_fetch_titles_true_usa_titolo_fetchato(self):
-        """Righe 290-292: se fetch_titles=True, chiama fetch_page_title e usa il risultato."""
+        """Lines 290–292: if fetch_titles=True, calls fetch_page_title and uses the result."""
         urls = [SitemapUrl(url="https://example.com/pagina1")]
 
         with patch(
             "geo_optimizer.core.llms_generator.fetch_page_title",
             return_value="Titolo Fetchato",
         ):
-            risultato = generate_llms_txt(
+            result = generate_llms_txt(
                 "https://example.com",
                 urls,
                 site_name="Test",
                 description="Desc test",
                 fetch_titles=True,
             )
-        assert "Titolo Fetchato" in risultato
+        assert "Titolo Fetchato" in result
 
     def test_fetch_titles_true_fallback_se_none(self):
-        """Se fetch_page_title ritorna None, usa url_to_label come fallback."""
-        urls = [SitemapUrl(url="https://example.com/la-mia-pagina")]
+        """If fetch_page_title returns None, falls back to url_to_label."""
+        urls = [SitemapUrl(url="https://example.com/my-about-page")]
 
         with patch(
             "geo_optimizer.core.llms_generator.fetch_page_title",
             return_value=None,
         ):
-            risultato = generate_llms_txt(
+            result = generate_llms_txt(
                 "https://example.com",
                 urls,
                 site_name="Test",
                 description="Desc test",
                 fetch_titles=True,
             )
-        # Deve usare url_to_label come fallback
-        assert "La Mia Pagina" in risultato
+        # Should fall back to url_to_label which title-cases the slug
+        assert "My About Page" in result
 
     def test_fetch_titles_false_non_chiama_fetch(self):
-        """fetch_titles=False (default) non chiama mai fetch_page_title."""
-        urls = [SitemapUrl(url="https://example.com/pagina")]
+        """fetch_titles=False (default) never calls fetch_page_title."""
+        urls = [SitemapUrl(url="https://example.com/page")]
 
         with patch("geo_optimizer.core.llms_generator.fetch_page_title") as mock_fetch:
             generate_llms_txt(
@@ -351,65 +351,65 @@ class TestGenerateLlmsTxtFetchTitles:
 
 
 # ============================================================================
-# llms_generator.py — sezione Optional in generate_llms_txt (righe 341, 351-357)
+# llms_generator.py — Optional section in generate_llms_txt (righe 341, 351-357)
 # ============================================================================
 
 
 class TestGenerateLlmsTxtSezioneOptional:
-    """Verifica la sezione Optional per Privacy, Terms, Contact, Other."""
+    """Verifies the Optional section for Privacy, Terms, Contact, Other."""
 
     def test_url_privacy_finisce_in_sezione_optional(self):
-        """Righe 351-357: URL di privacy policy va nella sezione Optional."""
+        """Lines 351–357: privacy policy URL goes in the Optional section."""
         urls = [
             SitemapUrl(url="https://example.com/privacy-policy"),
             SitemapUrl(url="https://example.com/about"),
         ]
-        risultato = generate_llms_txt(
+        result = generate_llms_txt(
             "https://example.com",
             urls,
             site_name="Test",
             description="Desc",
         )
-        # La sezione Optional deve essere presente e contenere la URL privacy
-        assert "## Optional" in risultato
-        assert "privacy" in risultato.lower()
+        # The Optional section must be present and contain the privacy URL
+        assert "## Optional" in result
+        assert "privacy" in result.lower()
 
     def test_url_terms_finisce_in_sezione_optional(self):
-        """URL con /terms/ va nella sezione Optional."""
+        """URL with /terms/ goes in the Optional section."""
         urls = [SitemapUrl(url="https://example.com/terms-of-service")]
-        risultato = generate_llms_txt(
+        result = generate_llms_txt(
             "https://example.com",
             urls,
             site_name="Test",
             description="Desc",
         )
-        assert "## Optional" in risultato
-        assert "Terms" in risultato
+        assert "## Optional" in result
+        assert "Terms" in result
 
     def test_categories_vuote_non_producono_sezione(self):
-        """Riga 341: categoria con items=[]: non viene emessa la sezione."""
-        # URL senza contenuto dopo il filtraggio (homepage viene saltata per la sezione)
+        """Line 341: category with items=[]: section is not emitted."""
+        # URL with no content after filtering (homepage is skipped for the section)
         urls = [SitemapUrl(url="https://example.com/")]
-        risultato = generate_llms_txt(
+        result = generate_llms_txt(
             "https://example.com",
             urls,
             site_name="Test",
             description="Desc",
         )
         # La homepage non produce una sezione H2 ma una riga speciale
-        assert "## _homepage" not in risultato
+        assert "## _homepage" not in result
 
     def test_url_contact_in_optional_con_categoria(self):
         """URL /contact finisce in Optional con label categoria."""
         urls = [SitemapUrl(url="https://example.com/contact")]
-        risultato = generate_llms_txt(
+        result = generate_llms_txt(
             "https://example.com",
             urls,
             site_name="Test",
             description="Desc",
         )
-        assert "## Optional" in risultato
-        assert "Contact" in risultato
+        assert "## Optional" in result
+        assert "Contact" in result
 
 
 # ============================================================================
@@ -418,40 +418,40 @@ class TestGenerateLlmsTxtSezioneOptional:
 
 
 class TestDiscoverSitemapValidazioneSSRF:
-    """Verifica che discover_sitemap ignori URL sitemap non sicuri da robots.txt."""
+    """Verifies that discover_sitemap ignores unsafe sitemap URLs from robots.txt."""
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_sitemap_non_sicuro_viene_ignorato(self, mock_crea):
-        """Righe 407-408: URL sitemap che non passa validate_public_url viene ignorato."""
-        mock_sessione = MagicMock()
-        # robots.txt con URL sitemap verso IP privato
+    def test_unsafe_sitemap_ignored(self, mock_create):
+        """Lines 407–408: sitemap URL that fails validate_public_url is ignored."""
+        mock_session = MagicMock()
+        # robots.txt con URL sitemap verso IP private
         robots_resp = Mock(
             text="Sitemap: http://192.168.1.1/sitemap.xml",
             status_code=200,
         )
         # Fallback common paths → tutti 404
         head_resp = Mock(status_code=404)
-        mock_sessione.get.return_value = robots_resp
-        mock_sessione.head.return_value = head_resp
-        mock_crea.return_value = mock_sessione
+        mock_session.get.return_value = robots_resp
+        mock_session.head.return_value = head_resp
+        mock_create.return_value = mock_session
 
-        # validate_public_url reale blocca 192.168.1.1 (IP privato)
+        # real validate_public_url blocks 192.168.1.1 (IP private)
         result = discover_sitemap("https://example.com")
-        # L'URL non sicuro non deve essere restituito
+        # The unsafe URL must not be returned
         assert result != "http://192.168.1.1/sitemap.xml"
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_sitemap_dominio_diverso_viene_ignorato(self, mock_crea):
-        """Righe 413-414: URL sitemap di dominio esterno viene ignorato."""
-        mock_sessione = MagicMock()
+    def test_external_domain_sitemap_ignored(self, mock_create):
+        """Lines 413–414: sitemap URL from an external domain is ignored."""
+        mock_session = MagicMock()
         robots_resp = Mock(
             text="Sitemap: https://attaccante.com/sitemap.xml",
             status_code=200,
         )
         head_resp = Mock(status_code=404)
-        mock_sessione.get.return_value = robots_resp
-        mock_sessione.head.return_value = head_resp
-        mock_crea.return_value = mock_sessione
+        mock_session.get.return_value = robots_resp
+        mock_session.head.return_value = head_resp
+        mock_create.return_value = mock_session
 
         result = discover_sitemap("https://example.com")
         assert result != "https://attaccante.com/sitemap.xml"
@@ -463,72 +463,72 @@ class TestDiscoverSitemapValidazioneSSRF:
 
 
 class TestDiscoverSitemapFallbackCommonPaths:
-    """Verifica il fallback ai common paths quando robots.txt non ha Sitemap:."""
+    """Verifies the fallback to common paths when robots.txt has no Sitemap: directive."""
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_fallback_sitemap_xml_trovato(self, mock_crea):
-        """Riga 424-426: common path /sitemap.xml risponde 200 → restituito."""
-        mock_sessione = MagicMock()
+    def test_fallback_sitemap_xml_found(self, mock_create):
+        """Lines 424–426: common path /sitemap.xml responds 200 → returned."""
+        mock_session = MagicMock()
         # robots.txt senza direttiva Sitemap
         robots_resp = Mock(text="User-agent: *\nAllow: /", status_code=200)
         head_ok = Mock(status_code=200)
-        mock_sessione.get.return_value = robots_resp
-        mock_sessione.head.return_value = head_ok
-        mock_crea.return_value = mock_sessione
+        mock_session.get.return_value = robots_resp
+        mock_session.head.return_value = head_ok
+        mock_create.return_value = mock_session
 
         result = discover_sitemap("https://example.com")
         assert result is not None
         assert "sitemap" in result.lower()
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_fallback_nessun_sitemap_trovato_ritorna_none(self, mock_crea):
-        """Riga 431: nessun path funziona → on_status callback + ritorna None."""
-        mock_sessione = MagicMock()
+    def test_fallback_no_sitemap_found_returns_none(self, mock_create):
+        """Line 431: no path works → on_status callback + returns None."""
+        mock_session = MagicMock()
         robots_resp = Mock(text="User-agent: *\nAllow: /", status_code=200)
         head_404 = Mock(status_code=404)
-        mock_sessione.get.return_value = robots_resp
-        mock_sessione.head.return_value = head_404
-        mock_crea.return_value = mock_sessione
+        mock_session.get.return_value = robots_resp
+        mock_session.head.return_value = head_404
+        mock_create.return_value = mock_session
 
         callback = Mock()
         result = discover_sitemap("https://example.com", on_status=callback)
         assert result is None
         # on_status deve aver segnalato l'assenza di sitemap
-        chiamate = [c[0][0] for c in callback.call_args_list]
-        assert any("no sitemap" in c.lower() or "not found" in c.lower() for c in chiamate)
+        calls = [c[0][0] for c in callback.call_args_list]
+        assert any("no sitemap" in c.lower() or "not found" in c.lower() for c in calls)
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_fallback_eccezione_head_continua(self, mock_crea):
-        """Riga 427: ConnectionError su HEAD → continua al path successivo."""
-        mock_sessione = MagicMock()
+    def test_fallback_head_exception_continues(self, mock_create):
+        """Line 427: ConnectionError su HEAD → continues al path successivo."""
+        mock_session = MagicMock()
         robots_resp = Mock(text="User-agent: *", status_code=200)
-        # Prima head lancia eccezione, la seconda risponde 200
-        mock_sessione.get.return_value = robots_resp
-        mock_sessione.head.side_effect = [
+        # Prima head lancia exception, la seconda risponde 200
+        mock_session.get.return_value = robots_resp
+        mock_session.head.side_effect = [
             ConnectionError("Timeout"),
             Mock(status_code=200),
         ]
-        mock_crea.return_value = mock_sessione
+        mock_create.return_value = mock_session
 
         result = discover_sitemap("https://example.com")
-        # Deve trovare il secondo path non lanciare eccezione
+        # Deve trovare il secondo path non lanciare exception
         assert result is not None
 
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
-    def test_on_status_chiamato_quando_sitemap_trovato_in_common_path(self, mock_crea):
-        """Riga 424: on_status chiamato quando sitemap trovato via common path."""
-        mock_sessione = MagicMock()
+    def test_on_status_called_when_sitemap_found_via_common_path(self, mock_create):
+        """Line 424: on_status called when sitemap found via common path."""
+        mock_session = MagicMock()
         robots_resp = Mock(text="User-agent: *", status_code=200)
         head_ok = Mock(status_code=200)
-        mock_sessione.get.return_value = robots_resp
-        mock_sessione.head.return_value = head_ok
-        mock_crea.return_value = mock_sessione
+        mock_session.get.return_value = robots_resp
+        mock_session.head.return_value = head_ok
+        mock_create.return_value = mock_session
 
         callback = Mock()
         result = discover_sitemap("https://example.com", on_status=callback)
         assert result is not None
-        chiamate = [c[0][0] for c in callback.call_args_list]
-        assert any("sitemap found" in c.lower() or "found" in c.lower() for c in chiamate)
+        calls = [c[0][0] for c in callback.call_args_list]
+        assert any("sitemap found" in c.lower() or "found" in c.lower() for c in calls)
 
 
 # ============================================================================
@@ -537,16 +537,16 @@ class TestDiscoverSitemapFallbackCommonPaths:
 
 
 class TestFormatAuditTextBranchMancanti:
-    """Verifica i branch di format_audit_text non ancora coperti."""
+    """Verifies uncovered branches in format_audit_text."""
 
     def test_riga_89_citation_bots_ok_true(self):
-        """Riga 89: citation_bots_ok=True produce messaggio 'CITATION bots'."""
+        """Line 89: citation_bots_ok=True produce messaggio 'CITATION bots'."""
         result = _make_audit_result(**{"robots.citation_bots_ok": True})
         output = format_audit_text(result)
         assert "CITATION" in output or "citation" in output.lower()
 
-    def test_riga_101_llms_trovato_senza_h1(self):
-        """Riga 101: llms.txt trovato ma has_h1=False → '❌ H1 missing'."""
+    def test_riga_101_llms_found_senza_h1(self):
+        """Line 101: llms.txt found ma has_h1=False → '❌ H1 missing'."""
         result = _make_audit_result(
             **{
                 "llms.found": True,
@@ -556,8 +556,8 @@ class TestFormatAuditTextBranchMancanti:
         output = format_audit_text(result)
         assert "H1 missing" in output or "H1" in output
 
-    def test_riga_116_schema_trovato_senza_website(self):
-        """Riga 116: schema trovato (found_types non vuoto) ma has_website=False."""
+    def test_riga_116_schema_found_senza_website(self):
+        """Line 116: schema found (found_types non vuoto) ma has_website=False."""
         result = _make_audit_result(
             **{
                 "schema.found_types": ["FAQPage"],
@@ -568,8 +568,8 @@ class TestFormatAuditTextBranchMancanti:
         output = format_audit_text(result)
         assert "WebSite schema missing" in output
 
-    def test_riga_118_schema_trovato_senza_faq(self):
-        """Riga 118: schema trovato ma has_faq=False → warning FAQPage."""
+    def test_riga_118_schema_found_senza_faq(self):
+        """Line 118: schema found ma has_faq=False → warning FAQPage."""
         result = _make_audit_result(
             **{
                 "schema.found_types": ["WebSite"],
@@ -587,10 +587,10 @@ class TestFormatAuditTextBranchMancanti:
 
 
 class TestValidateJsonldBranchMancanti:
-    """Verifica i branch di validate_jsonld non ancora coperti."""
+    """Verifies uncovered branches in validate_jsonld."""
 
     def test_righe_42_43_context_lista_primo_elemento_non_valido(self):
-        """Righe 42-43: @context è lista con primo elemento non valido."""
+        """Lines 42–43: @context is a list with an invalid first element."""
         schema = {
             "@context": ["http://esempio-sbagliato.com"],
             "@type": "WebSite",
@@ -600,7 +600,7 @@ class TestValidateJsonldBranchMancanti:
         assert "@context" in errore
 
     def test_righe_42_43_context_lista_vuota(self):
-        """@context è lista vuota → catturato da 'if not context' (falsy)."""
+        """@context è empty list → catturato da 'if not context' (falsy)."""
         schema = {
             "@context": [],
             "@type": "WebSite",
@@ -611,7 +611,7 @@ class TestValidateJsonldBranchMancanti:
         assert "@context" in errore
 
     def test_riga_57_type_lista_vuota(self):
-        """Riga 57: @type è lista vuota → '@type is empty'."""
+        """Line 57: @type è empty list → '@type is empty'."""
         schema = {
             "@context": "https://schema.org",
             "@type": [],
@@ -621,20 +621,20 @@ class TestValidateJsonldBranchMancanti:
         assert "@type" in errore
 
     def test_riga_80_url_field_e_dizionario(self):
-        """Riga 80: campo 'url' è dict (non str né list) → continue silenzioso."""
+        """Line 80: campo 'url' è dict (non str né list) → continue silenzioso."""
         schema = {
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "Test",
             "url": {"@id": "https://example.com"},  # Nested object, non stringa
         }
-        # Non deve produrre errori — il campo url viene saltato silenziosamente
+        # Must not produce errors — the url field is silently skipped
         ok, errore = validate_jsonld(schema)
         assert ok is True
         assert errore is None
 
     def test_context_lista_con_primo_elemento_valido(self):
-        """@context lista con primo elemento valido → passa la validazione."""
+        """@context list with valid first element → passes validation."""
         schema = {
             "@context": ["https://schema.org"],
             "@type": "WebSite",
@@ -643,7 +643,7 @@ class TestValidateJsonldBranchMancanti:
         assert ok is True
 
     def test_type_lista_con_primo_elemento_valido(self):
-        """@type lista con elementi → usa il primo come primary_type."""
+        """@type list with elements → uses the first as primary_type."""
         schema = {
             "@context": "https://schema.org",
             "@type": ["WebSite", "WebApplication"],
@@ -658,10 +658,10 @@ class TestValidateJsonldBranchMancanti:
 
 
 class TestSchemaCmdPathTraversalValidation:
-    """Verifica che schema_cmd blocchi path non validi per --file e --faq-file."""
+    """Verifies that schema_cmd rejects invalid paths for --file and --faq-file."""
 
     def test_righe_66_67_file_path_non_esistente_bloccato(self):
-        """Righe 66-67: --file con percorso non esistente → errore e exit code 1."""
+        """Lines 66–67: --file with non-existent path → error and exit code 1."""
         runner = CliRunner()
         result = runner.invoke(
             schema,
@@ -672,13 +672,13 @@ class TestSchemaCmdPathTraversalValidation:
             ],
         )
         assert result.exit_code == 1
-        assert "non valido" in result.output or "Percorso" in result.output
+        assert "invalid" in result.output or "Percorso" in result.output
 
     def test_righe_71_72_faq_file_non_esistente_bloccato(self):
-        """Righe 71-72: --faq-file con percorso non esistente → errore e exit code 1."""
+        """Lines 71–72: --faq-file with non-existent path → error and exit code 1."""
         runner = CliRunner()
         with runner.isolated_filesystem():
-            # Crea un file HTML valido per --file
+            # Creates a file HTML valido per --file
             with open("test.html", "w") as f:
                 f.write("<html><body></body></html>")
             result = runner.invoke(
@@ -693,14 +693,14 @@ class TestSchemaCmdPathTraversalValidation:
                 ],
             )
         assert result.exit_code == 1
-        assert "non valido" in result.output or "FAQ" in result.output
+        assert "invalid" in result.output or "FAQ" in result.output
 
     def test_file_con_estensione_non_consentita_bloccato(self):
         """--file con estensione .txt non consentita → errore."""
         runner = CliRunner()
         with runner.isolated_filesystem():
             with open("test.txt", "w") as f:
-                f.write("contenuto testo")
+                f.write("content testo")
             result = runner.invoke(
                 schema,
                 [
@@ -713,15 +713,15 @@ class TestSchemaCmdPathTraversalValidation:
 
 
 # ============================================================================
-# schema_cmd.py — _print_analysis con tutti i tipi schema (righe 162-163, 167-175)
+# schema_cmd.py — _print_analysis for all schema types (righe 162-163, 167-175)
 # ============================================================================
 
 
 class TestSchemaCmdPrintAnalysis:
-    """Verifica _print_analysis con WebApplication, Organization, BreadcrumbList."""
+    """Verifies _print_analysis with WebApplication, Organization, BreadcrumbList."""
 
     def test_righe_162_163_webapplication_nel_report(self):
-        """Righe 162-163: _print_analysis stampa url e name per WebApplication."""
+        """Lines 162–163: _print_analysis prints url and name for WebApplication."""
         runner = CliRunner()
         with runner.isolated_filesystem():
             with open("test.html", "w") as f:
@@ -740,7 +740,7 @@ class TestSchemaCmdPrintAnalysis:
         assert "WebApplication" in result.output
 
     def test_righe_167_171_organization_nel_report(self):
-        """Righe 167-171: _print_analysis stampa name per Organization."""
+        """Lines 167–171: _print_analysis prints name for Organization."""
         runner = CliRunner()
         with runner.isolated_filesystem():
             with open("test.html", "w") as f:
@@ -759,7 +759,7 @@ class TestSchemaCmdPrintAnalysis:
         assert "Organization" in result.output
 
     def test_righe_169_170_breadcrumblist_nel_report(self):
-        """Righe 169-170: _print_analysis stampa items per BreadcrumbList."""
+        """Lines 169–170: _print_analysis prints items for BreadcrumbList."""
         runner = CliRunner()
         with runner.isolated_filesystem():
             with open("test.html", "w") as f:
@@ -779,7 +779,7 @@ class TestSchemaCmdPrintAnalysis:
         assert "BreadcrumbList" in result.output
 
     def test_righe_164_166_faqpage_con_domande(self):
-        """Righe 164-166: _print_analysis stampa il numero di domande per FAQPage."""
+        """Lines 164–166: _print_analysis prints the question count for FAQPage."""
         runner = CliRunner()
         with runner.isolated_filesystem():
             with open("test.html", "w") as f:
@@ -804,7 +804,7 @@ class TestSchemaCmdPrintAnalysis:
         assert "1" in result.output  # 1 domanda
 
     def test_righe_173_175_verbose_true_mostra_json_completo(self):
-        """Righe 173-175: --verbose mostra il JSON completo dello schema."""
+        """Lines 173–175: --verbose shows the full JSON of the schema."""
         runner = CliRunner()
         with runner.isolated_filesystem():
             with open("test.html", "w") as f:
@@ -838,12 +838,12 @@ class TestSchemaCmdPrintAnalysis:
 
 
 class TestSchemaCmdFaqOltreTre:
-    """Verifica che _print_analysis mostri '... and N more' con > 3 FAQ."""
+    """Verifies that _print_analysis shows '... and N more' with > 3 FAQ items."""
 
     def test_riga_198_piu_di_tre_faq_mostra_contatore(self):
-        """Riga 198: più di 3 FAQ estratte → riga '... and X more'."""
+        """Line 198: più di 3 FAQ estratte → riga '... and X more'."""
         runner = CliRunner()
-        # Crea un HTML con 5 blocchi details/summary per far estrarre 5 FAQ
+        # Creates a HTML con 5 blocchi details/summary per far estrarre 5 FAQ
         faq_blocks = "\n".join(
             [
                 f"""<details>
@@ -885,43 +885,43 @@ class TestSchemaCmdFaqOltreTre:
 
 
 class TestValidatorsBranchMancanti:
-    """Verifica branch non coperti di validate_public_url e validate_safe_path."""
+    """Verifies uncovered branches in validate_public_url and validate_safe_path."""
 
-    def test_righe_81_82_ip_address_ValueError_viene_ignorato(self):
-        """Righe 81-82: ip_address() solleva ValueError per indirizzo malformato → skip."""
+    def test_righe_81_82_ip_address_ValueError_viene_ignored(self):
+        """Lines 81–82: ip_address() raises ValueError for a malformed address → skip."""
         # Simula getaddrinfo che restituisce un indirizzo IPv6 non standard
         # che causa ValueError in ip_address()
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
-            # Ritorna un indirizzo che non è un IP valido (malformato)
+            # Returns a indirizzo che non è un IP valido (malformato)
             mock_dns.return_value = [
                 (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("INDIRIZZO_INVALIDO", 0)),
             ]
-            # Non deve sollevare eccezione, deve continuare
+            # Must not raise an exception, must continue
             ok, err = validate_public_url("https://example.com")
-            # Con indirizzo invalido, viene skippato e la validazione passa
+            # With an invalid address, it is skipped and validation passes
             assert ok is True
 
     def test_righe_110_111_must_exist_con_directory(self):
-        """Righe 110-111: must_exist=True con path che è una directory → errore."""
-        # /tmp esiste sempre come directory
+        """Lines 110–111: must_exist=True with a path that is a directory → error."""
+        # /tmp always exists as a directory
         ok, err = validate_safe_path("/tmp", must_exist=True, allowed_extensions={".html"})
         # /tmp è una directory, non un file → deve fallire
         # (potrebbe fallire per estensione o per "non è un file")
         assert ok is False
 
-    def test_riga_117_must_exist_file_non_trovato(self):
-        """Riga 117: must_exist=True con file realmente inesistente → errore."""
-        percorso_inesistente = "/tmp/test_geo_coverage_nonexistent_file_12345.html"
+    def test_riga_117_must_exist_file_non_found(self):
+        """Line 117: must_exist=True con file realmente inesistente → errore."""
+        path_inesistente = "/tmp/test_geo_coverage_nonexistent_file_12345.html"
         ok, err = validate_safe_path(
-            percorso_inesistente,
+            path_inesistente,
             allowed_extensions={".html"},
             must_exist=True,
         )
         assert ok is False
-        assert "non trovato" in err.lower() or "not found" in err.lower()
+        assert "not found" in err.lower() or "not found" in err.lower()
 
     def test_must_exist_false_file_non_esistente_valido(self):
-        """must_exist=False: percorso inesistente con estensione valida → OK."""
+        """must_exist=False: non-existent path with valid extension → OK."""
         ok, err = validate_safe_path(
             "/tmp/file_non_esistente.html",
             allowed_extensions={".html"},
@@ -932,7 +932,7 @@ class TestValidatorsBranchMancanti:
 
     def test_must_exist_true_con_file_esistente(self, tmp_path):
         """must_exist=True con file che esiste realmente → OK."""
-        file_test = tmp_path / "pagina.html"
+        file_test = tmp_path / "page.html"
         file_test.write_text("<html></html>")
         ok, err = validate_safe_path(
             str(file_test),
@@ -951,20 +951,20 @@ class TestValidatorsBranchMancanti:
             must_exist=True,
         )
         assert ok is False
-        # Può fallire per estensione (nessuna suffix) o per "non è un file"
+        # Può fallire per estensione (noa suffix) o per "non è un file"
         assert err is not None
 
 
 # ============================================================================
-# Test di integrazione rapidi — verifica coerenza tra branch
+# Quick integration tests — verify consistency across branches
 # ============================================================================
 
 
 class TestIntegrazioneBranchCoperti:
-    """Verifica che tutti i branch coperti producano output coerente."""
+    """Verifies that all covered branches produce consistent output."""
 
     def test_format_audit_text_completo_non_crasha(self):
-        """format_audit_text con AuditResult completo non solleva eccezioni."""
+        """format_audit_text with a complete AuditResult does not raise exceptions."""
         result = _make_audit_result(
             **{
                 "robots.citation_bots_ok": True,
@@ -981,22 +981,22 @@ class TestIntegrazioneBranchCoperti:
         assert "GEO AUDIT" in output
         assert "example.com" in output
 
-    def test_generate_llms_txt_solo_homepage_nessuna_sezione(self):
+    def test_generate_llms_txt_solo_homepage_noa_sezione(self):
         """generate_llms_txt con solo homepage non produce sezioni H2."""
         urls = [SitemapUrl(url="https://example.com/")]
-        risultato = generate_llms_txt(
+        result = generate_llms_txt(
             "https://example.com",
             urls,
             site_name="Test",
             description="Sito test",
         )
-        assert "# Test" in risultato
-        assert "> Sito test" in risultato
+        assert "# Test" in result
+        assert "> Sito test" in result
         # La homepage produce una riga speciale, non una sezione H2
-        assert "## _homepage" not in risultato
+        assert "## _homepage" not in result
 
     def test_validate_jsonld_schema_completo_valido(self):
-        """Schema completo e valido supera la validazione senza errori."""
+        """A complete, valid schema passes validation without errors."""
         schema_dict = {
             "@context": "https://schema.org",
             "@type": "WebSite",

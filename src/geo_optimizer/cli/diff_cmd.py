@@ -50,7 +50,7 @@ def diff(before_url, after_url, output_format, output_file, cache, config_file):
         result = run_diff_audit(before_url, after_url, use_cache=cache, project_config=project_config)
         if output_format != "json":
             click.echo("✅ Diff complete.\n", err=True)
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         if output_format == "json":
             import json
 

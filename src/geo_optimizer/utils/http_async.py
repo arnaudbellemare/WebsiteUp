@@ -146,7 +146,7 @@ async def fetch_url_async(
         return None, f"Timeout ({timeout}s)"
     except httpx.ConnectError as e:
         return None, f"Connection failed: {e}"
-    except Exception as e:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
         return None, str(e)
     finally:
         # Fix H-1: clear both pin stores

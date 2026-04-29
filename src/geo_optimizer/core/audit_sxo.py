@@ -172,7 +172,7 @@ def _extract_slug(url: str) -> str:
     try:
         from urllib.parse import urlparse
         return urlparse(url).path.replace("/", " ").replace("-", " ").replace("_", " ")
-    except Exception:
+    except ValueError:
         return url
 
 

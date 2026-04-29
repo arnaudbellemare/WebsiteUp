@@ -117,7 +117,7 @@ async def _audit_single_url(url: str, *, use_cache: bool, project_config) -> Bat
             result = await asyncio.to_thread(run_full_audit, url, use_cache=use_cache, project_config=project_config)
         else:
             result = await run_full_audit_async(url, project_config=project_config)
-    except Exception as exc:  # pragma: no cover - rete/eccezioni inattese
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:  # pragma: no cover - rete/eccezioni inattese
         result = AuditResult(url=url, error=f"{type(exc).__name__}: {exc}", band="critical")
     return _summarize_audit_result(result)
 

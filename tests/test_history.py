@@ -17,7 +17,7 @@ def _ts(days_ago: int) -> str:
 
 
 def _make_result(url: str, timestamp: str, score: int, band: str) -> AuditResult:
-    """Crea un AuditResult minimo per i test di tracking."""
+    """Creates a AuditResult minimo per i test di tracking."""
     return AuditResult(
         url=url,
         timestamp=timestamp,
@@ -40,10 +40,10 @@ def _make_result(url: str, timestamp: str, score: int, band: str) -> AuditResult
 
 
 class TestHistoryStore:
-    """Test per salvataggio snapshot, trend e retention."""
+    """Tests for snapshot saving, trend computation, and retention."""
 
     def test_save_and_read_history(self, tmp_path):
-        """Gli snapshot vengono salvati e letti in ordine corretto con delta."""
+        """Snapshots are saved and read in the correct order with delta."""
         store = HistoryStore(Path(tmp_path / "tracking.db"))
         store.save_audit_result(_make_result("https://example.com/", _ts(14), 65, "foundation"))
         store.save_audit_result(_make_result("https://example.com", _ts(7), 78, "good"))
@@ -71,6 +71,6 @@ class TestHistoryStore:
 
 
 def test_canonicalize_history_url_normalizes_host_and_root():
-    """La URL storica viene canonicalizzata in modo stabile."""
+    """The historical URL is canonicalised in a stable way."""
     assert canonicalize_history_url("HTTPS://Example.COM/") == "https://example.com/"
     assert canonicalize_history_url("https://example.com/path/") == "https://example.com/path"

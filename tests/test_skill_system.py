@@ -10,7 +10,7 @@ from geo_optimizer.skills.validator import validate_skill
 
 
 def test_skill_catalog_loads_foundational_skills():
-    """Il catalogo carica le skill fondative attese."""
+    """The catalogue loads the expected foundational skills."""
     skill_ids = {skill.skill_id for skill in load_catalog()}
 
     assert "geo_audit_orchestrator" in skill_ids
@@ -28,7 +28,7 @@ def test_skill_catalog_validation_has_no_failures():
 
 
 def test_skill_catalog_prompt_files_exist():
-    """Ogni skill caricata punta a un prompt markdown esistente."""
+    """Every loaded skill points to an existing markdown prompt."""
     for skill in load_catalog():
         assert skill.prompt_path.is_file()
         assert str(skill.prompt_path).startswith(str(get_catalog_dir()))
@@ -44,7 +44,7 @@ def test_skill_catalog_discovers_current_mcp_tools():
 
 
 def test_load_skill_uses_prompt_file_declared_in_spec(tmp_path: Path):
-    """Il loader carica il prompt dichiarato in `prompt_file`, non un file hardcoded."""
+    """Il loader loads the prompt dichiarato in `prompt_file`, non un file hardcoded."""
     skill_dir = tmp_path / "custom_skill"
     skill_dir.mkdir()
     (skill_dir / "prompt.md").write_text("wrong prompt", encoding="utf-8")

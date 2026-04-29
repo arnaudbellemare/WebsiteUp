@@ -18,7 +18,7 @@ from geo_optimizer.web.badge import BAND_COLORS, generate_badge_svg
 
 
 def test_badge_good_contiene_score_e_label():
-    """generate_badge_svg con score=73 e band='good' restituisce SVG con '73/100'."""
+    """generate_badge_svg with score=73 and band='good' returns an SVG with '73/100'."""
     # Arrange / Act
     svg = generate_badge_svg(score=73, band="good")
 
@@ -68,7 +68,7 @@ def test_badge_critical_usa_colore_rosso():
 
 
 def test_badge_band_sconosciuta_fallback_a_critical():
-    """Band sconosciuta viene normalizzata a 'critical'."""
+    """Unknown band is normalised to 'critical'."""
     # Arrange / Act
     svg = generate_badge_svg(score=50, band="invalid_band")
 
@@ -77,7 +77,7 @@ def test_badge_band_sconosciuta_fallback_a_critical():
 
 
 def test_badge_score_clampato_a_zero():
-    """Score negativo viene clampato a 0."""
+    """Negative score is clamped to 0."""
     # Arrange / Act
     svg = generate_badge_svg(score=-10, band="critical")
 
@@ -86,7 +86,7 @@ def test_badge_score_clampato_a_zero():
 
 
 def test_badge_score_clampato_a_cento():
-    """Score superiore a 100 viene clampato a 100."""
+    """Score above 100 is clamped to 100."""
     # Arrange / Act
     svg = generate_badge_svg(score=150, band="excellent")
 
@@ -98,7 +98,7 @@ def test_badge_score_clampato_a_cento():
 
 
 def test_badge_errore_contiene_testo_error():
-    """generate_badge_svg con error=True restituisce SVG con testo 'Error'."""
+    """generate_badge_svg with error=True returns an SVG with text 'Error'."""
     # Arrange / Act
     svg = generate_badge_svg(score=0, band="critical", error=True)
 
@@ -154,7 +154,7 @@ def test_badge_label_xss_viene_escapata():
 
 
 def test_badge_label_personalizzata_appare_nel_svg():
-    """Label personalizzata appare nell'SVG generato."""
+    """Custom label appears in the generated SVG."""
     # Arrange / Act
     svg = generate_badge_svg(score=80, band="good", label="Il Mio Sito")
 
@@ -163,7 +163,7 @@ def test_badge_label_personalizzata_appare_nel_svg():
 
 
 def test_badge_label_lunga_viene_troncata():
-    """Label più lunga di 50 caratteri viene troncata."""
+    """Label longer than 50 characters is truncated."""
     # Arrange
     label_lunga = "A" * 100  # 100 caratteri, massimo 50
 

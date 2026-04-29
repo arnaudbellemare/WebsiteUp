@@ -1,3 +1,10 @@
+---
+title: "Roadmap"
+description: "Release cadence and upcoming milestones for GEO Optimizer. Focused waves, quality over velocity."
+date: 2026-04-28
+tags: [roadmap, releases, versioning]
+---
+
 # Roadmap
 
 > geo-optimizer-skill follows a deliberate release cadence. We ship in focused waves — each one validated, tested, and stable — rather than pushing frequent incremental patches. Quality over velocity.

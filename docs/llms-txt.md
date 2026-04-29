@@ -1,3 +1,10 @@
+---
+title: "Generating llms.txt"
+description: "Auto-generate an /llms.txt file from your sitemap so AI crawlers understand your site's structure. Follows the llmstxt.org specification."
+date: 2026-04-28
+tags: [llms-txt, sitemap, ai-crawlers, cli]
+---
+
 # Generating llms.txt
 
 `geo llms` auto-generates an `/llms.txt` file from your sitemap so AI crawlers can understand your site's structure.

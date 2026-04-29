@@ -31,7 +31,7 @@ def _make_result(
     brand_entity=None,
     score_breakdown=None,
 ) -> AuditResult:
-    """Crea un AuditResult minimo ma personalizzabile per i test di gap analysis."""
+    """Creates a AuditResult minimo ma personalizzabile per i test di gap analysis."""
     return AuditResult(
         url=url,
         score=score,

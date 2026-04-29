@@ -38,7 +38,7 @@ from geo_optimizer.utils.validators import (
 
 
 class TestValidatePublicUrl:
-    """Test anti-SSRF: blocca IP privati/riservati, host interni."""
+    """Anti-SSRF tests: blocks private/reserved IPs and internal hosts."""
 
     def test_url_pubblica_valida(self):
         """URL pubblica con DNS risolvibile passa la validazione."""
@@ -56,7 +56,7 @@ class TestValidatePublicUrl:
         assert ok is False
         assert "not allowed" in err.lower() or "Host" in err
 
-    def test_blocca_ip_privato_rfc1918(self):
+    def test_blocca_ip_private_rfc1918(self):
         ok, err = validate_public_url("http://192.168.1.1/secret")
         assert ok is False
 
@@ -78,8 +78,8 @@ class TestValidatePublicUrl:
         assert ok is False
         assert "credentials" in err.lower()
 
-    def test_blocca_dns_risolve_a_ip_privato(self):
-        """DNS rebinding: hostname pubblico che risolve a IP privato."""
+    def test_blocca_dns_risolve_a_ip_private(self):
+        """DNS rebinding: hostname pubblico che risolve a IP private."""
         with patch("geo_optimizer.utils.validators.socket.getaddrinfo") as mock_dns:
             mock_dns.return_value = [
                 (2, 1, 6, "", ("10.0.0.1", 0)),
@@ -118,48 +118,48 @@ class TestValidatePublicUrl:
 
 
 class TestFillTemplateInjection:
-    """Test anti-injection: fill_template esegue escape dei caratteri speciali."""
+    """Anti-injection tests: fill_template escapes special characters."""
 
     def test_valore_con_virgolette(self):
-        """Le virgolette nel valore non rompono il JSON."""
+        """Le virgolette nel value non rompono il JSON."""
         template = {"name": "{{name}}"}
         values = {"name": 'Test "quoted" value'}
         result = fill_template(template, values)
         assert result["name"] == 'Test "quoted" value'
 
     def test_valore_con_backslash(self):
-        """I backslash nel valore non causano escape spurii."""
+        """I backslash nel value non causano escape spurii."""
         template = {"path": "{{path}}"}
         values = {"path": "C:\\Users\\test"}
         result = fill_template(template, values)
         assert result["path"] == "C:\\Users\\test"
 
     def test_valore_con_newline(self):
-        """I newline nel valore vengono gestiti correttamente."""
+        """I newline nel value vengono gestiti correttamente."""
         template = {"desc": "{{desc}}"}
         values = {"desc": "Line 1\nLine 2"}
         result = fill_template(template, values)
         assert result["desc"] == "Line 1\nLine 2"
 
     def test_valore_con_injection_json(self):
-        """Tentativo di injection JSON tramite chiusura stringa + nuova chiave."""
+        """JSON injection attempt via string closure + new key."""
         template = {"name": "{{name}}", "url": "{{url}}"}
         malicious = '", "injected": "evil", "x": "'
         values = {"name": malicious, "url": "https://safe.com"}
         result = fill_template(template, values)
-        # Il valore maligno deve essere trattato come stringa letterale
+        # The malicious value must be treated as a literal string
         assert result["name"] == malicious
-        assert "injected" not in result  # Nessuna chiave iniettata
+        assert "injected" not in result  # Noa chiave iniettata
 
     def test_valore_none(self):
-        """None viene convertito in stringa vuota."""
+        """None is converted to an empty string."""
         template = {"name": "{{name}}"}
         values = {"name": None}
         result = fill_template(template, values)
         assert result["name"] == ""
 
     def test_placeholder_in_struttura_annidata(self):
-        """Placeholder in oggetti annidati funzionano correttamente."""
+        """Placeholder in oggetti annidati worksno correttamente."""
         template = {"author": {"@type": "Person", "name": "{{author}}"}}
         values = {"author": "Juan 'Camilo' Auriti"}
         result = fill_template(template, values)
@@ -172,10 +172,10 @@ class TestFillTemplateInjection:
 
 
 class TestSchemaXssEscape:
-    """Test anti-XSS: escape di '</' nel JSON-LD previene chiusura tag prematura."""
+    """Anti-XSS test: escaping '</' in JSON-LD prevents premature tag closure."""
 
     def test_escape_closing_script(self):
-        """'</script>' nel valore viene escaped a '<\\/script>'."""
+        """'</script>' nel value viene escaped a '<\\/script>'."""
         schema = {
             "@type": "WebSite",
             "description": "Test </script><script>alert('xss')</script>",
@@ -187,14 +187,14 @@ class TestSchemaXssEscape:
         assert r"<\/script>" in html
 
     def test_escape_generic_closing_tag(self):
-        """Qualsiasi '</' viene escaped, non solo </script>."""
+        """Any '</' is escaped, not just </script>."""
         schema = {"content": "Test </div> content"}
         html = schema_to_html_tag(schema)
         assert r"<\/div>" in html
         assert "</div>" not in html.split("\n", 1)[1].rsplit("\n", 1)[0]
 
     def test_schema_senza_html_non_cambia(self):
-        """Schema senza '</' non viene modificato."""
+        """Schema senza '</' is not modificato."""
         schema = {"@type": "WebSite", "name": "Safe Name", "url": "https://example.com"}
         html = schema_to_html_tag(schema)
         assert "Safe Name" in html
@@ -202,7 +202,7 @@ class TestSchemaXssEscape:
 
 
 # ============================================================================
-# #4 — script.string None: audit_schema gestisce il caso
+# #4 — script.string None: audit_schema handles the caso
 # ============================================================================
 
 
@@ -222,7 +222,7 @@ class TestAuditSchemaScriptStringNone:
         soup = BeautifulSoup(html, "html.parser")
         result = audit_schema(soup, "https://example.com")
         # Deve gestire il caso senza crashare
-        # Il risultato dipende da BeautifulSoup, ma non deve lanciare TypeError
+        # Il result dipende da BeautifulSoup, ma non deve lanciare TypeError
         assert result is not None
 
     def test_script_vuoto(self):
@@ -249,8 +249,8 @@ class TestAuditSchemaScriptStringNone:
         assert result is not None
         assert len(result.found_types) == 0
 
-    def test_script_valido_funziona(self):
-        """Script JSON-LD valido viene parsato correttamente."""
+    def test_script_valido_works(self):
+        """A valid JSON-LD script is parsed correctly."""
         html = """
         <html><head>
         <script type="application/ld+json">
@@ -273,7 +273,7 @@ class TestScoringConsistency:
     """Test coerenza: i punteggi dei formatters corrispondono a SCORING."""
 
     def _make_result(self, **overrides) -> AuditResult:
-        """Crea un AuditResult con campi personalizzati."""
+        """Creates an AuditResult with custom fields."""
         result = AuditResult(url="https://test.com")
         for key, value in overrides.items():
             parts = key.split(".")
@@ -340,7 +340,9 @@ class TestScoringConsistency:
         r = self._make_result(
             **{
                 "meta.has_title": True,
+                "meta.title_length": 50,        # within 40–60 sweet-spot
                 "meta.has_description": True,
+                "meta.description_length": 140,  # within 120–160 sweet-spot
                 "meta.has_canonical": True,
                 "meta.has_og_title": True,
                 "meta.has_og_description": True,
@@ -389,9 +391,11 @@ class TestScoringConsistency:
                 "schema.has_article": True,
                 "schema.has_organization": True,
                 "schema.has_sameas": True,
-                # meta: 5 + 2 + 3 + 4 = 14
+                # meta: 5 + 2 + 3 + 4 = 14 (valid lengths avoid length penalties)
                 "meta.has_title": True,
+                "meta.title_length": 50,
                 "meta.has_description": True,
+                "meta.description_length": 140,
                 "meta.has_canonical": True,
                 "meta.has_og_title": True,
                 "meta.has_og_description": True,
@@ -448,7 +452,7 @@ class TestScoringConsistency:
 class TestUrlBelongsToDomain:
     """Test sicurezza: domain match esatto, no substring."""
 
-    def test_dominio_esatto(self):
+    def test_domain_esatto(self):
         assert url_belongs_to_domain("https://example.com/page", "example.com") is True
 
     def test_subdomain_legittimo(self):
@@ -478,7 +482,7 @@ class TestUrlBelongsToDomain:
 
 
 class TestVersionPep440:
-    """Verifica che __version__ sia conforme a PEP 440."""
+    """Verifies that __version__ sia conforme a PEP 440."""
 
     def test_version_format(self):
         from geo_optimizer import __version__
@@ -497,7 +501,7 @@ class TestVersionPep440:
 class TestValidateSafePath:
     """Test validazione percorsi file."""
 
-    def test_percorso_valido(self):
+    def test_path_valido(self):
         ok, err = validate_safe_path("/tmp/test.html", allowed_extensions={".html"})
         assert ok is True
 

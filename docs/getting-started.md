@@ -1,3 +1,10 @@
+---
+title: "Getting Started"
+description: "Install GEO Optimizer and run your first audit in under 5 minutes. Covers pip install, CLI quickstart, and MCP server setup."
+date: 2026-04-28
+tags: [getting-started, installation, quickstart, cli]
+---
+
 # Getting Started
 
 Get the toolkit installed and run your first GEO audit in under 5 minutes.

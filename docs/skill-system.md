@@ -1,3 +1,10 @@
+---
+title: "Skill System"
+description: "GEO Optimizer's internal skill framework for maintainers. Covers skill registration, plugin entry points, and the AuditCheck protocol."
+date: 2026-04-28
+tags: [skill-system, plugins, entry-points, maintainer]
+---
+
 # Skill System
 
 GEO Optimizer now includes a minimal internal skill framework for maintainers.

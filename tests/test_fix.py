@@ -1,8 +1,8 @@
 """
 Test per geo_optimizer.core.fixer e geo_optimizer.cli.fix_cmd.
 
-Verifica la generazione di fix automatici (robots, llms, schema, meta)
-e il comando CLI geo fix. Tutto mockato — zero chiamate HTTP.
+Verifies the generazione di fix automatici (robots, llms, schema, meta)
+e il comando CLI geo fix. Tutto mockato — zero calls HTTP.
 """
 
 from unittest.mock import patch
@@ -37,7 +37,7 @@ from geo_optimizer.models.results import (
 
 
 def _make_result(**overrides):
-    """Crea un AuditResult con valori di default per i test."""
+    """Creates a AuditResult con valori di default per i test."""
     result = AuditResult(
         url="https://example.com",
         score=30,
@@ -77,7 +77,7 @@ def _make_result(**overrides):
 
 
 def _make_optimized_result():
-    """Crea un AuditResult con tutto ottimizzato (nessun fix necessario)."""
+    """Creates a AuditResult con tutto ottimizzato (no fix necessario)."""
     return _make_result(
         **{
             "score": 95,
@@ -127,7 +127,7 @@ class TestGenerateRobotsFix:
     """Test per la generazione di fix robots.txt."""
 
     def test_robots_non_trovato_genera_file_completo(self):
-        """Se robots.txt non esiste, genera file completo con tutti i bot."""
+        """If robots.txt does not exist, generates a complete file with all bots."""
         result = _make_result()
         fix = generate_robots_fix(result, "https://example.com")
 
@@ -142,7 +142,7 @@ class TestGenerateRobotsFix:
         assert "Sitemap:" in fix.content
 
     def test_robots_con_bot_mancanti_genera_append(self):
-        """Se robots.txt esiste ma mancano bot, genera righe da appendere."""
+        """If robots.txt exists but bots are missing, generates lines to append."""
         result = _make_result(
             **{
                 "robots.found": True,
@@ -182,7 +182,7 @@ class TestGenerateLlmsFix:
     @patch("geo_optimizer.core.llms_generator.fetch_sitemap", return_value=[])
     @patch("geo_optimizer.core.llms_generator.discover_sitemap", return_value=None)
     def test_llms_non_trovato_genera_file(self, mock_discover, mock_fetch):
-        """Se llms.txt non esiste, genera file nuovo."""
+        """If llms.txt does not exist, generates a new file."""
         result = _make_result()
         fix = generate_llms_fix(result, "https://example.com")
 
@@ -230,7 +230,7 @@ class TestGenerateSchemaFix:
         assert "https://example.com" in website_fix.content
 
     def test_schema_completo_ritorna_vuoto(self):
-        """Se tutti gli schema sono presenti (WebSite + Organization + FAQPage), ritorna lista vuota."""
+        """If all schemas are present (WebSite + Organization + FAQPage), returns an empty list."""
         result = _make_result(
             **{
                 "schema.has_website": True,
@@ -243,7 +243,7 @@ class TestGenerateSchemaFix:
         assert len(fixes) == 0
 
     def test_organization_schema_contiene_sameas(self):
-        """Il template Organization generato deve includere il campo sameAs (#398)."""
+        """The generated Organization template must include the sameAs field (#398)."""
         result = _make_result()
         fixes = generate_schema_fix(result, "https://example.com")
 
@@ -284,7 +284,7 @@ class TestGenerateSchemaFix:
         authoritative_matches = 0
         for url in same_as_urls:
             parsed = urlparse(url)
-            # Controlla se il netloc contiene almeno un dominio autorevole
+            # Check se il netloc contiene almeno un domain autorevole
             for domain in SAMEAS_AUTHORITATIVE_DOMAINS:
                 if domain in parsed.netloc:
                     authoritative_matches += 1
@@ -304,7 +304,7 @@ class TestGenerateMetaFix:
     """Test per la generazione di fix meta tag."""
 
     def test_meta_mancanti_genera_tutti(self):
-        """Se mancano tutti i meta tag, li genera tutti."""
+        """If all meta tags are missing, generates all of them."""
         result = _make_result()
         fix = generate_meta_fix(result, "https://example.com")
 
@@ -326,10 +326,10 @@ class TestGenerateMetaFix:
 
 
 class TestGenerateContentRewriteFix:
-    """Test per i suggerimenti di rewrite del contenuto."""
+    """Test per i suggerimenti di rewrite del content."""
 
     def test_contenuto_debole_genera_piano_rewrite(self):
-        """Con segnali contenuto deboli, genera un markdown di rewrite."""
+        """With weak content signals, generates a rewrite markdown."""
         result = _make_result(
             **{
                 "content.has_h1": False,
@@ -350,7 +350,7 @@ class TestGenerateContentRewriteFix:
         assert "opening 150 characters" in fix.content
 
     def test_contenuto_forte_non_genera_fix(self):
-        """Se i segnali contenuto sono solidi, non serve rewrite guidance."""
+        """Se i segnali content sono solidi, non serve rewrite guidance."""
         result = _make_optimized_result()
 
         fix = generate_content_rewrite_fix(result, "https://example.com")
@@ -362,7 +362,7 @@ class TestGenerateVerticalFixTemplates:
     """Test per i template vertical-specific."""
 
     def test_vertical_templates_real_estate_bilingual(self):
-        """Genera trust page + CTA + schema bilingue per real-estate in locale en-fr."""
+        """Generates trust page + CTA + bilingual schema for real-estate in the en-fr locale."""
         result = _make_result(
             **{
                 "vertical_profile": VerticalAuditResult(
@@ -380,7 +380,7 @@ class TestGenerateVerticalFixTemplates:
         assert "vertical/schema-service-bilingual.jsonld" in names
 
     def test_vertical_templates_generic_none(self):
-        """Non genera template vertical quando il profilo è generic/non attivo."""
+        """Does not generate a vertical template when the profile is generic/inactive."""
         result = _make_result(
             **{
                 "vertical_profile": VerticalAuditResult(
@@ -497,7 +497,7 @@ class TestRunAllFixes:
     @patch("geo_optimizer.core.llms_generator.discover_sitemap", return_value=None)
     @patch("geo_optimizer.core.llms_generator.fetch_sitemap", return_value=[])
     def test_genera_tutti_i_fix(self, mock_fetch, mock_discover):
-        """Con sito completamente non ottimizzato, genera fix per ogni categoria."""
+        """With a completely unoptimised site, generates fixes for every category."""
         result = _make_result()
         plan = run_all_fixes("https://example.com", audit_result=result)
 
@@ -512,8 +512,8 @@ class TestRunAllFixes:
         assert "meta" in categories
         assert "content" in categories
 
-    def test_sito_ottimizzato_nessun_fix(self):
-        """Con sito già ottimizzato, non genera fix."""
+    def test_sito_ottimizzato_no_fix(self):
+        """With an already-optimised site, generates no fixes."""
         result = _make_optimized_result()
         plan = run_all_fixes("https://example.com", audit_result=result)
 
@@ -537,7 +537,7 @@ class TestRunAllFixes:
     @patch("geo_optimizer.core.llms_generator.discover_sitemap", return_value=None)
     @patch("geo_optimizer.core.llms_generator.fetch_sitemap", return_value=[])
     def test_filtro_only_vertical(self, mock_fetch, mock_discover):
-        """Il filtro --only vertical genera solo artefatti verticali."""
+        """The --only vertical filter generates only vertical artefacts."""
         result = _make_result(
             **{
                 "vertical_profile": VerticalAuditResult(
@@ -565,7 +565,7 @@ class TestFixCommand:
     @patch("geo_optimizer.cli.fix_cmd.validate_public_url", return_value=(True, None))
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_fix_dry_run_mostra_preview(self, mock_audit, _mock_validate):
-        """geo fix --url URL mostra preview senza scrivere file."""
+        """geo fix --url URL shows a preview without writing files."""
         mock_audit.return_value = _make_result()
         runner = CliRunner()
 
@@ -603,7 +603,7 @@ class TestFixCommand:
             )
 
         assert result.exit_code == 0
-        # Verifica che almeno un file sia stato scritto
+        # Verifies that almeno un file sia status scritto
         from pathlib import Path
 
         output = Path(output_dir)
@@ -624,7 +624,7 @@ class TestFixCommand:
         assert "No fixes needed" in result.output
 
     def test_fix_url_non_sicuro(self):
-        """geo fix con URL locale viene bloccato."""
+        """geo fix con URL locale is blocked."""
         runner = CliRunner()
         result = runner.invoke(cli, ["fix", "--url", "http://169.254.169.254/metadata"])
 
@@ -639,7 +639,7 @@ class TestFixCommand:
         assert "Invalid categories" in result.output
 
     def test_fix_help(self):
-        """geo fix --help funziona."""
+        """geo fix --help works."""
         runner = CliRunner()
         result = runner.invoke(cli, ["fix", "--help"])
 

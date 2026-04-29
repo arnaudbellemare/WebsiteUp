@@ -80,7 +80,7 @@ def test_audit_factual_accuracy_restituisce_clean_su_contenuto_neutro():
 
 
 def test_run_factual_accuracy_audit_gestisce_errori_http():
-    """Il runner completo deve degradare in modo leggibile se la pagina non e' raggiungibile."""
+    """Il runner completo deve degradare in modo leggibile se la page non e' raggiungibile."""
     original_fetch = run_factual_accuracy_audit.__globals__["fetch_url"]
 
     def _fake_fetch(url: str):

@@ -51,4 +51,14 @@ def audit_meta_tags(soup, url: str) -> MetaResult:
     if og_image and og_image.get("content"):
         result.has_og_image = True
 
+    # Twitter Card
+    tw_card = soup.find("meta", attrs={"name": "twitter:card"})
+    tw_title = soup.find("meta", attrs={"name": "twitter:title"})
+
+    if tw_card and tw_card.get("content", "").strip():
+        result.has_twitter_card = True
+
+    if tw_title and tw_title.get("content", "").strip():
+        result.has_twitter_title = True
+
     return result

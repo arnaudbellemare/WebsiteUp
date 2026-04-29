@@ -104,7 +104,7 @@ class TestNegativeSignals:
         assert result.boilerplate_ratio > 0.5
 
     def test_mixed_signals(self):
-        """H1 promette, contenuto scarso → mixed."""
+        """H1 promette, content scarso → mixed."""
         html = "<html><body><main><h1>The Ultimate Complete Guide</h1><p>Short.</p></main></body></html>"
         soup = BeautifulSoup(html, "html.parser")
         result = audit_negative_signals(

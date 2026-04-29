@@ -27,7 +27,7 @@ class TestWebMcpReadiness:
     """Test per audit_webmcp_readiness()."""
 
     def test_empty_page(self):
-        """Pagina vuota → checked ma nessun segnale."""
+        """Pagina vuota → checked ma no segnale."""
         soup = BeautifulSoup("<html><body></body></html>", "html.parser")
         result = audit_webmcp_readiness(soup, "<html><body></body></html>", SchemaResult())
         assert result.checked is True
@@ -79,7 +79,7 @@ class TestWebMcpReadiness:
         assert result.has_openapi is True
 
     def test_readiness_none(self):
-        """Nessun segnale → none."""
+        """No segnale → none."""
         soup = BeautifulSoup("<html><body><p>Hello</p></body></html>", "html.parser")
         result = audit_webmcp_readiness(soup, "<html><body><p>Hello</p></body></html>", SchemaResult())
         assert result.readiness_level == "none"

@@ -419,7 +419,7 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
         info.append(f"  •  {result.page_size:,} bytes  •  {_vert} vertical",
                     style=_COLORS["dim"])
         con.print(Panel(info, box=box.ROUNDED, border_style=_COLORS["brand_1"], padding=(0, 1)))
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("header", exc)
     _flush()
 
@@ -453,7 +453,7 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
             Panel(scores_table, title="[bold]📊 Score Overview[/]", title_align="left",
                   border_style=_COLORS["brand_1"], box=box.ROUNDED, padding=(1, 1))
         )
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("score overview", exc)
     _flush()
 
@@ -492,7 +492,7 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
 
             con.print(Panel(rt, title=f"[bold]🏁 vs {rival_url}[/]", title_align="left",
                             border_style=_COLORS["accent"], box=box.ROUNDED, padding=(0, 1)))
-        except Exception as exc:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
             _section_error("rival comparison", exc)
         _flush()
 
@@ -574,7 +574,7 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
         con.print()
         con.print(Panel(breakdown_t, title="[bold]📊 Score Breakdown[/]", title_align="left",
                         border_style=_COLORS["brand_1"], box=box.ROUNDED, padding=(1, 2)))
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("score breakdown", exc)
     _flush()
 
@@ -582,35 +582,35 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
     try:
         con.print()
         con.print(_geo_compact_card(result, geo_cats, con))
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("GEO card", exc)
     _flush()
 
     # ── Copywriting card ─────────────────────────────────────────────────────
     try:
         con.print(_copy_card(mkt.copywriting))
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("copywriting card", exc)
     _flush()
 
     # ── Content Strategy card ────────────────────────────────────────────────
     try:
         con.print(_strategy_card(mkt.content_strategy))
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("content strategy card", exc)
     _flush()
 
     # ── AI Presence card ─────────────────────────────────────────────────────
     try:
         con.print(_presence_card(mkt.ai_presence))
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("AI presence card", exc)
     _flush()
 
     # ── Media card ────────────────────────────────────────────────────────────
     try:
         con.print(_media_card(mkt.media))
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("media card", exc)
     _flush()
 
@@ -618,7 +618,7 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
     if mkt.serp.checked and mkt.serp.competitors:
         try:
             con.print(_serp_card(mkt.serp))
-        except Exception as exc:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
             _section_error("SERP card", exc)
         _flush()
 
@@ -626,7 +626,7 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
     if result.conversion.checked or result.perf.checked:
         try:
             con.print(_cro_perf_card(result))
-        except Exception as exc:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
             _section_error("CRO/perf card", exc)
         _flush()
 
@@ -635,7 +635,7 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
     if links.checked and (links.broken_count or links.external_broken_count):
         try:
             con.print(_links_card(links))
-        except Exception as exc:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
             _section_error("links card", exc)
         _flush()
 
@@ -693,7 +693,7 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
 
             con.print(Panel(actions_t, title="[bold]💡 Priority Actions[/]", title_align="left",
                             border_style=_COLORS["foundation"], box=box.ROUNDED, padding=(1, 1)))
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("priority actions", exc)
     _flush()
 
@@ -711,7 +711,7 @@ def _print_rich(url, result, mkt, rival_url, rival_result, rival_mkt):
         con.print(Align.center(Text("GEO Optimizer  •  github.com/Auriti-Labs/geo-optimizer-skill",
                                     style=f"{_COLORS['dim']} underline")))
         con.print()
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         _section_error("footer", exc)
     _flush()
 

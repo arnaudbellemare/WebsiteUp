@@ -283,14 +283,14 @@ class TestRobotsParserRFC9309:
         assert "/" in result["GPTBot"].disallow
 
     def test_bom_non_presente_non_altera_risultato(self):
-        """File senza BOM funziona normalmente."""
+        """File senza BOM works normalmente."""
         content = "User-agent: GPTBot\nAllow: /\n"
         result = parse_robots_txt(content)
         assert "GPTBot" in result
         assert "/" in result["GPTBot"].allow
 
     def test_bom_con_wildcard(self):
-        """BOM + wildcard User-agent viene parsato correttamente."""
+        """BOM + wildcard User-agent is parsed correctly."""
         content = "\ufeffUser-agent: *\nDisallow: /private/\n"
         result = parse_robots_txt(content)
         assert "*" in result
@@ -299,17 +299,17 @@ class TestRobotsParserRFC9309:
     # ── #110 — Limite 500KB ───────────────────────────────────────────────────
 
     def test_limite_500kb_tronca_contenuto(self):
-        """Contenuto oltre 500KB viene troncato prima del parsing."""
-        # Genera contenuto > 500KB
+        """Content over 500 KB is truncated before parsing."""
+        # Generate content > 500KB
         header = "User-agent: GPTBot\nAllow: /\n\n"
         padding = "# " + "x" * 1000 + "\n"
         big_content = header + padding * 600  # ~600KB di commenti
         result = parse_robots_txt(big_content)
-        # Il header è nei primi bytes, deve essere parsato
+        # The header is in the first bytes and must be parsed
         assert "GPTBot" in result
 
     def test_limite_500kb_log_warning(self, caplog):
-        """Warning loggato quando il contenuto supera 500KB."""
+        """Warning loggato when the content supera 500KB."""
         import logging
 
         padding = "# " + "x" * 1000 + "\n"
@@ -319,7 +319,7 @@ class TestRobotsParserRFC9309:
         assert any("500" in record.message or "troncato" in record.message for record in caplog.records)
 
     def test_contenuto_sotto_500kb_non_tronca(self):
-        """Contenuto sotto 500KB viene parsato integralmente."""
+        """Content under 500 KB is parsed in full."""
         content = "User-agent: GPTBot\nDisallow: /private/\n"
         result = parse_robots_txt(content)
         assert "GPTBot" in result
@@ -331,7 +331,7 @@ class TestRobotsParserRFC9309:
         """Allow: /public/ vince su Disallow: / per path /public/page (longest match)."""
         rules = {"GPTBot": AgentRules(disallow=["/"], allow=["/public/"])}
         status = classify_bot("GPTBot", "OpenAI", rules)
-        # /public/ (8 chars) > / (1 char): Allow prevale
+        # /public/ (8 chars) > / (1 char): Allow takes precedence
         assert status.status in ("allowed", "partial")
 
     def test_longest_match_disallow_specifico_prevale(self):
@@ -339,7 +339,7 @@ class TestRobotsParserRFC9309:
         from geo_optimizer.utils.robots_parser import _is_path_allowed
 
         rules = AgentRules(disallow=["/secret/"], allow=["/"])
-        # /secret/ (8 chars) > / (1 char): Disallow prevale
+        # /secret/ (8 chars) > / (1 char): Disallow takes precedence
         assert _is_path_allowed("/secret/doc", rules) is False
 
     def test_longest_match_allow_prevale_parita(self):
@@ -347,35 +347,35 @@ class TestRobotsParserRFC9309:
         from geo_optimizer.utils.robots_parser import _is_path_allowed
 
         rules = AgentRules(disallow=["/page"], allow=["/page"])
-        # Stessa lunghezza: Allow vince
+        # Same length: Allow wins
         assert _is_path_allowed("/page/content", rules) is True
 
-    def test_is_path_allowed_nessuna_regola_corrisponde(self):
-        """Path senza regole corrispondenti restituisce None."""
+    def test_is_path_allowed_noa_regola_corrisponde(self):
+        """Path with no matching rules returns None."""
         from geo_optimizer.utils.robots_parser import _is_path_allowed
 
         rules = AgentRules(disallow=["/private/"], allow=["/docs/"])
-        # /other/ non corrisponde a nessuna regola
+        # /other/ non corrisponde a noa regola
         result = _is_path_allowed("/other/page", rules)
         assert result is None
 
     # ── #106 — Partial classification ────────────────────────────────────────
 
     def test_partial_disallow_root_con_allow_specifico(self):
-        """Disallow: / + Allow: /public/ → stato 'partial' (#106)."""
+        """Disallow: / + Allow: /public/ → status 'partial' (#106)."""
         rules = {"GPTBot": AgentRules(disallow=["/"], allow=["/public/"])}
         status = classify_bot("GPTBot", "OpenAI", rules)
         assert status.status == "partial"
         assert status.matched_agent == "GPTBot"
 
     def test_partial_not_when_allow_root(self):
-        """Disallow: / + Allow: / → stato 'allowed' (non partial)."""
+        """Disallow: / + Allow: / → status 'allowed' (non partial)."""
         rules = {"GPTBot": AgentRules(disallow=["/"], allow=["/"])}
         status = classify_bot("GPTBot", "OpenAI", rules)
         assert status.status == "allowed"
 
     def test_blocked_senza_allow_specifici(self):
-        """Disallow: / senza Allow specifici → stato 'blocked'."""
+        """Disallow: / senza Allow specifici → status 'blocked'."""
         rules = {"GPTBot": AgentRules(disallow=["/"])}
         status = classify_bot("GPTBot", "OpenAI", rules)
         assert status.status == "blocked"
@@ -535,9 +535,9 @@ class TestFetchUrl:
 
     @patch("geo_optimizer.utils.http.create_session_with_retry")
     def test_generic_exception(self, mock_create):
-        """Generic exception returns (None, error_message)."""
+        """RequestException (e.g. SSLError, TooManyRedirects) returns (None, error_message)."""
         mock_session = MagicMock()
-        mock_session.get.side_effect = RuntimeError("something broke")
+        mock_session.get.side_effect = requests.exceptions.SSLError("something broke")
         mock_create.return_value = mock_session
 
         resp, err = fetch_url("https://example.com")
@@ -1352,7 +1352,9 @@ class TestComputeGeoScore:
     def test_full_meta_score(self):
         meta = MetaResult(
             has_title=True,
+            title_length=50,        # within 40–60 sweet-spot → no penalty
             has_description=True,
+            description_length=140,  # within 120–160 sweet-spot → no penalty
             has_canonical=True,
             has_og_title=True,
             has_og_description=True,
@@ -1796,7 +1798,7 @@ class TestFetchSitemap:
     @patch("geo_optimizer.core.llms_generator.create_session_with_retry")
     def test_sitemap_fetch_error(self, mock_create):
         mock_session = MagicMock()
-        # Usa RequestException coerente con il catch specifico in fetch_sitemap
+        # Use RequestException consistent with the specific catch in fetch_sitemap
         mock_session.get.side_effect = requests.exceptions.ConnectionError("Network error")
         mock_create.return_value = mock_session
 
@@ -2082,7 +2084,9 @@ class TestAnalyzeHtmlFile:
             assert "WebSite" in analysis.found_types
             assert analysis.has_head is True
             assert analysis.total_scripts == 1
-            assert "webapp" in analysis.missing
+            # WebApplication is intentionally not flagged as missing (service-site
+            # false-positive fix); only FAQPage is missing here.
+            assert "webapp" not in analysis.missing
             assert "faq" in analysis.missing
         finally:
             os.unlink(path)

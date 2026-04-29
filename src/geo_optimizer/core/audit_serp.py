@@ -235,7 +235,7 @@ def _search_google(keyword: str) -> list[dict]:
             final = r.url
             if "bing.com" not in final:
                 return final
-        except Exception:
+        except requests.exceptions.RequestException:
             pass
         return ""
 
@@ -262,7 +262,7 @@ def _search_google(keyword: str) -> list[dict]:
                 results = resolved
             if results:
                 return results
-        except Exception:
+        except (requests.exceptions.RequestException, ValueError, AttributeError):
             continue
 
     return []
@@ -322,7 +322,7 @@ def _analyze_competitor(rank: int, url: str, title: str, description: str) -> Se
                                 t = item.get("@type", "")
                                 if t:
                                     types.append(t if isinstance(t, str) else str(t))
-                except Exception:
+                except (ValueError, AttributeError, KeyError):
                     pass
             comp.schema_types = list(dict.fromkeys(types))
 
@@ -352,7 +352,7 @@ def _analyze_competitor(rank: int, url: str, title: str, description: str) -> Se
         _loc_pattern = re.compile(r"/(?:location|locations|cities|villes|secteur)/", re.I)
         comp.has_location_pages = any(_loc_pattern.search(a["href"]) for a in links)
 
-    except Exception:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError):
         pass
 
     return comp
@@ -446,7 +446,7 @@ def audit_serp(
 
         try:
             raw_results = _search_google(serp.keyword)
-        except Exception as e:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as e:
             serp.issues = [f"SERP fetch failed: {e}"]
             return serp
 

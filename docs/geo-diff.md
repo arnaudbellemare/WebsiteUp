@@ -1,3 +1,10 @@
+---
+title: "GEO Diff"
+description: "A/B comparison of two URLs using GEO audit scores. Shows exactly what improved, what regressed, and by how many points."
+date: 2026-04-28
+tags: [diff, comparison, audit, cli]
+---
+
 # GEO Diff
 
 `geo diff` confronta due URL con un audit GEO A/B e mostra cosa è migliorato, cosa è peggiorato e di quanto.

@@ -30,15 +30,15 @@ _set_cached = app_module._set_cached
 
 
 # ============================================================================
-# #57 — SSRF nella sitemap index
+# #57 — SSRF in the sitemap index
 # ============================================================================
 
 
 class TestSitemapSsrf:
     """Test validazione anti-SSRF per sub-URL in sitemap index."""
 
-    def test_sub_sitemap_privato_bloccato(self):
-        """URL privato in sitemap index viene ignorato."""
+    def test_sub_sitemap_private_bloccato(self):
+        """URL private in sitemap index is ignored."""
         from geo_optimizer.core.llms_generator import fetch_sitemap
 
         sitemap_xml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -53,11 +53,11 @@ class TestSitemapSsrf:
         with patch("geo_optimizer.core.llms_generator.create_session_with_retry") as mock_session:
             mock_session.return_value.get.return_value = mock_response
             urls = fetch_sitemap("https://example.com/sitemap.xml")
-            # Sub-sitemap a IP privato deve essere ignorato
+            # Sub-sitemap pointing to private IPs must be ignored
             assert urls == []
 
     def test_sub_sitemap_pubblico_accettato(self):
-        """URL pubblico in sitemap index viene processato."""
+        """A public URL in the sitemap index is processed."""
         from geo_optimizer.core.llms_generator import fetch_sitemap
 
         sitemap_index_xml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -148,7 +148,7 @@ class TestRateLimiting:
             assert asyncio.run(_check_rate_limit("192.0.2.1")) is True
 
     def test_richieste_sopra_limite_bloccate(self):
-        """Richieste oltre il limite vengono bloccate."""
+        """Requests above the limit are blocked."""
         for _ in range(30):
             asyncio.run(_check_rate_limit("192.0.2.2"))
         assert asyncio.run(_check_rate_limit("192.0.2.2")) is False
@@ -173,7 +173,7 @@ class TestAstroInjection:
         """Virgolette nell'URL vengono rimosse."""
         result = generate_astro_snippet('https://evil.com"; import("evil")//', "Safe Site")
         assert '"' not in result.split("SITE_URL")[0] or '" import(' not in result
-        # Verifica che la stringa maligna non sia interpolata direttamente
+        # Verifies that la stringa maligna non sia interpolata direttamente
         assert 'import("evil")' not in result
 
     def test_name_con_backtick_sanitizzato(self):
@@ -182,19 +182,19 @@ class TestAstroInjection:
         assert "${process.env.SECRET}" not in result
 
     def test_url_troncato(self):
-        """URL troppo lungo viene troncato a 200 caratteri."""
+        """A URL that is too long is truncated to 200 characters."""
         long_url = "https://example.com/" + "A" * 300
         result = generate_astro_snippet(long_url, "Test")
         assert "A" * 201 not in result
 
     def test_name_troncato(self):
-        """Nome troppo lungo viene troncato a 100 caratteri."""
+        """Name that is too long is truncated to 100 characters."""
         long_name = "A" * 200
         result = generate_astro_snippet("https://example.com", long_name)
         assert "A" * 101 not in result
 
     def test_input_sicuro_invariato(self):
-        """Input sicuro viene usato correttamente."""
+        """Safe input is used correctly."""
         result = generate_astro_snippet("https://example.com", "My Site")
         assert "https://example.com" in result
         assert "My Site" in result

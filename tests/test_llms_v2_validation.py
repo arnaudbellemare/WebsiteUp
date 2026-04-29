@@ -103,7 +103,7 @@ Additional words to fill the requirement for the validation threshold
 so we can properly test companion file detection without short warnings.
 """
 
-# llms.txt con H1 non come prima riga
+# llms.txt with H1 not as the first line
 LLMS_H1_NOT_FIRST = """\
 Some random intro text.
 
@@ -130,7 +130,7 @@ class TestValidateLlmsContent:
     """Test per la funzione di validazione interna."""
 
     def test_full_spec_compliant_no_warnings(self):
-        """llms.txt conforme a spec → nessun warning."""
+        """llms.txt conforme a spec → no warning."""
         result = LlmsTxtResult(
             found=True,
             has_h1=True,
@@ -187,7 +187,7 @@ class TestValidateLlmsContent:
         assert result.has_blockquote is True
 
     def test_h1_not_first_line_generates_warning(self):
-        """H1 non è la prima riga → warning generato."""
+        """H1 is not the first line → warning generated."""
         result = LlmsTxtResult(
             found=True,
             has_h1=True,
@@ -212,7 +212,7 @@ class TestValidateLlmsContent:
         assert any("markdown links" in w for w in result.validation_warnings)
 
     def test_optional_section_detected(self):
-        """Sezione ## Optional viene rilevata."""
+        """The ## Optional section is detected."""
         result = LlmsTxtResult(found=True, has_h1=True, has_links=True, word_count=150)
         _validate_llms_content(result, LLMS_FULL_SPEC)
 
@@ -277,8 +277,8 @@ class TestAuditLlmsTxtV2Integration:
 
     @patch("geo_optimizer.core.audit_llms.fetch_url")
     def test_full_spec_via_audit(self, mock_fetch):
-        """audit_llms_txt con contenuto conforme popola tutti i campi v2."""
-        # Mock: prima chiamata = llms.txt, seconda = llms-full.txt
+        """audit_llms_txt con content conforme popola tutti i campi v2."""
+        # Mock: first call = llms.txt, second = llms-full.txt
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.text = LLMS_FULL_SPEC

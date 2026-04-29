@@ -206,7 +206,7 @@ def _render_stacked_bar(categories: list[tuple[str, int, int]], width: int = 68)
 
 
 def _render_legend(categories: list[tuple[str, int, int]]) -> Text:
-    """Legenda compatta per la barra stacked."""
+    """Compact legend for the stacked bar."""
     segment_colors = [
         _COLORS["brand_1"],
         _COLORS["brand_2"],
@@ -233,7 +233,7 @@ def _render_legend(categories: list[tuple[str, int, int]]) -> Text:
 
 
 def _micro_bar(score: int, max_score: int, width: int = 20) -> Text:
-    """Barra di progresso compatta con gradiente."""
+    """Compact progress bar with gradient."""
     pct = score / max_score if max_score > 0 else 0
     filled = int(pct * width)
     empty = width - filled
@@ -276,7 +276,7 @@ def _build_robots_card(result: AuditResult, score: int, max_score: int) -> Panel
     content_parts.append(Text())
 
     if not result.robots.found:
-        content_parts.append(Text("  File non trovato", style=f"italic {_COLORS['dim']}"))
+        content_parts.append(Text("  File not found", style=f"italic {_COLORS['dim']}"))
     else:
         # Bot info with detail
         info = Text()
@@ -327,7 +327,7 @@ def _build_llms_card(result: AuditResult, score: int, max_score: int) -> Panel:
     content_parts.append(Text())
 
     if not result.llms.found:
-        content_parts.append(Text("  File non trovato", style=f"italic {_COLORS['dim']}"))
+        content_parts.append(Text("  File not found", style=f"italic {_COLORS['dim']}"))
     else:
         # Structure details
         features = []
@@ -359,9 +359,9 @@ def _build_llms_card(result: AuditResult, score: int, max_score: int) -> Panel:
 
         # Word count
         wc = Text()
-        wc.append(f"  ~{result.llms.word_count:,} parole", style=_COLORS["dim"])
+        wc.append(f"  ~{result.llms.word_count:,} words", style=_COLORS["dim"])
         if result.llms.sections_count:
-            wc.append(f"  •  {result.llms.sections_count} sezioni", style=_COLORS["dim"])
+            wc.append(f"  •  {result.llms.sections_count} sections", style=_COLORS["dim"])
         content_parts.append(wc)
 
     color = _score_color(score, max_score)
@@ -391,7 +391,7 @@ def _build_schema_card(result: AuditResult, score: int, max_score: int) -> Panel
     content_parts.append(Text())
 
     if not result.schema.found_types:
-        content_parts.append(Text("  Nessuno schema trovato", style=f"italic {_COLORS['dim']}"))
+        content_parts.append(Text("  No schema found", style=f"italic {_COLORS['dim']}"))
     else:
         # Schemas found as inline tags
         types_text = Text("  ")
@@ -514,7 +514,7 @@ def _build_content_card(result: AuditResult, score: int, max_score: int) -> Pane
     # Main metrics
     metrics = Text("  ")
     metrics.append(f"{result.content.word_count:,}", style=f"bold {_COLORS['brand_2']}")
-    metrics.append(" parole", style=_COLORS["dim"])
+    metrics.append(" words", style=_COLORS["dim"])
     metrics.append("  •  ", style=_COLORS["dim"])
     metrics.append(f"{result.content.heading_count}", style=f"bold {_COLORS['brand_2']}")
     metrics.append(" headings", style=_COLORS["dim"])
@@ -560,7 +560,7 @@ def _build_content_card(result: AuditResult, score: int, max_score: int) -> Pane
 
 
 def _build_signals_card(result: AuditResult, score: int, max_score: int) -> Panel:
-    """Card compatta per Signals + AI Discovery combinati."""
+    """Compact card for combined Signals + AI Discovery."""
     if not result.signals:
         return Panel(Text("No signals data"), title="Signals", border_style="dim")
     content_parts = []
@@ -674,9 +674,9 @@ def _build_brand_entity_card(result: AuditResult, score: int, max_score: int) ->
     # Brand name consistency
     coherence = Text("  ")
     if be.brand_name_consistent:
-        coherence.append("✓ Brand name coerente", style=_COLORS["excellent"])
+        coherence.append("✓ Brand name consistent", style=_COLORS["excellent"])
     else:
-        coherence.append("✗ Brand name incoerente", style=_COLORS["critical"])
+        coherence.append("✗ Brand name inconsistent", style=_COLORS["critical"])
     if be.names_found:
         coherence.append(f"  ({', '.join(be.names_found[:3])})", style=_COLORS["dim"])
     content_parts.append(coherence)
@@ -802,7 +802,7 @@ def _build_js_card(result: AuditResult) -> Panel | None:
 
     metrics = Text()
     metrics.append(f"  {js.raw_word_count:,}", style=f"bold {_COLORS['brand_2']}")
-    metrics.append(" parole in HTML", style=_COLORS["dim"])
+    metrics.append(" words in HTML", style=_COLORS["dim"])
     metrics.append(f"  •  {js.raw_heading_count}", style=f"bold {_COLORS['brand_2']}")
     metrics.append(" headings", style=_COLORS["dim"])
     content_parts.append(metrics)
@@ -814,9 +814,9 @@ def _build_js_card(result: AuditResult) -> Panel | None:
         content_parts.append(fw)
 
     if js.has_empty_root:
-        content_parts.append(Text("  ⚠ Container SPA vuoto rilevato", style=_COLORS["foundation"]))
+        content_parts.append(Text("  ⚠ Empty SPA container detected", style=_COLORS["foundation"]))
     if js.has_noscript_content:
-        content_parts.append(Text("  ℹ Fallback <noscript> presente", style=_COLORS["dim"]))
+        content_parts.append(Text("  ℹ Fallback <noscript> present", style=_COLORS["dim"]))
 
     color = _COLORS["excellent"] if not js.js_dependent else _COLORS["critical"]
     status = "PASS" if not js.js_dependent else "JS-DEPENDENT"

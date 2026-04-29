@@ -67,7 +67,7 @@ def run_orchestration(
             job = OrchestrationJob(name=job_type, started_at=datetime.now(timezone.utc).isoformat())
             try:
                 payload = future.result()
-            except Exception as exc:
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
                 job.status = "error"
                 job.summary = f"{job_type} failed: {exc}"
                 result.errors.append(job.summary)

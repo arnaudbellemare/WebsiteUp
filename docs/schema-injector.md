@@ -1,3 +1,10 @@
+---
+title: "Schema Injector"
+description: "Generate and inject JSON-LD structured data into HTML pages. Supports FAQPage, Article, Organization, WebSite, WebApplication, and BreadcrumbList schema types."
+date: 2026-04-28
+tags: [schema, json-ld, structured-data, cli]
+---
+
 # Schema Injector
 
 `geo schema` generates and injects JSON-LD structured data into HTML pages. It supports multiple schema types, framework-specific output, and in-place file injection.

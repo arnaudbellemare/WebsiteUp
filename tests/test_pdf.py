@@ -1,7 +1,7 @@
 """
 Test per geo_optimizer.cli.pdf_formatter — generazione report PDF.
 
-Verifica che il formatter PDF generi output valido e gestisca
+Verifies that il formatter PDF generi output valido e gestisca
 correttamente l'assenza di weasyprint.
 """
 
@@ -23,7 +23,7 @@ from geo_optimizer.models.results import (
 
 
 def _make_result(**overrides) -> AuditResult:
-    """Crea un AuditResult di esempio per i test."""
+    """Creates a AuditResult di esempio per i test."""
     result = AuditResult(
         url="https://example.com",
         score=72,
@@ -59,7 +59,7 @@ class TestPdfFormatterImportError:
         """Senza weasyprint, format_audit_pdf alza ImportError con messaggio chiaro."""
         result = _make_result()
 
-        # Rimuoviamo weasyprint dai moduli disponibili per simulare l'assenza
+        # Remove weasyprint from available modules to simulate its absence
         with patch.dict(sys.modules, {"weasyprint": None}):
             # Forza re-import del modulo per pulire la cache
             if "geo_optimizer.cli.pdf_formatter" in sys.modules:
@@ -85,7 +85,7 @@ class TestPdfFormatterImportError:
 
 
 class TestPdfFormatterWithMock:
-    """Test con weasyprint mockato per verificare la generazione PDF."""
+    """Test with mocked weasyprint to verify PDF generation."""
 
     def test_format_audit_pdf_returns_bytes(self):
         """format_audit_pdf ritorna bytes non vuoti quando weasyprint è disponibile."""
@@ -112,7 +112,7 @@ class TestPdfFormatterWithMock:
         assert pdf_bytes == fake_pdf
 
     def test_format_audit_pdf_passes_html_to_weasyprint(self):
-        """Verifica che l'HTML generato venga passato a weasyprint.HTML(string=...)."""
+        """Verifies that the generated HTML is passed to weasyprint.HTML(string=...)."""
         result = _make_result()
 
         mock_html_cls = MagicMock()
@@ -129,7 +129,7 @@ class TestPdfFormatterWithMock:
 
             format_audit_pdf(result)
 
-        # Verifica che HTML sia stato chiamato con string= contenente il report
+        # Verify that HTML was called with string= containing the report
         mock_html_cls.assert_called_once()
         call_kwargs = mock_html_cls.call_args
         html_string = (
@@ -141,14 +141,14 @@ class TestPdfFormatterWithMock:
         assert "example.com" in html_string
 
     def test_format_audit_pdf_with_different_scores(self):
-        """Verifica generazione PDF con punteggi diversi (bande diverse)."""
+        """Verifies generazione PDF con punteggi diversi (bande diverse)."""
         mock_html_cls = MagicMock()
         mock_html_cls.return_value.write_pdf.return_value = b"%PDF-test"
 
         mock_weasyprint = MagicMock()
         mock_weasyprint.HTML = mock_html_cls
 
-        # Testa tutte le bande
+        # Test tutte le bande
         test_cases = [
             {"score": 95, "band": "excellent"},
             {"score": 72, "band": "good"},

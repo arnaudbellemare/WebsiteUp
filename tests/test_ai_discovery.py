@@ -1,5 +1,5 @@
 """
-Test per la funzionalità AI Discovery (geo-checklist.dev standard).
+Test per la workslità AI Discovery (geo-checklist.dev standard).
 
 Copre: audit endpoint, scoring, raccomandazioni, summary validation, faq count.
 """
@@ -37,7 +37,7 @@ from geo_optimizer.models.results import (
 
 
 def _mock_response(status_code: int, text: str = ""):
-    """Crea un mock di risposta HTTP."""
+    """Creates an HTTP response mock."""
     r = MagicMock()
     r.status_code = status_code
     r.text = text
@@ -52,12 +52,12 @@ class TestAuditAiDiscovery:
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_tutti_endpoint_presenti(self, mock_fetch):
-        """Verifica che tutti e 4 gli endpoint vengano rilevati."""
+        """Verifies that tutti e 4 gli endpoint vengano rilevati."""
         summary = json.dumps({"name": "Test Site", "description": "A test site with enough description length for validation", "url": "https://example.com"})
         faq = json.dumps([{"question": "What is this service?", "answer": "This is a valid answer with enough text"}, {"question": "How does it work exactly?", "answer": "Another answer that meets the minimum length"}])
         service = json.dumps({"name": "Test Service", "capabilities": ["search", "chat"]})
 
-        # Mappa URL → risposta
+        # Mappa URL → response
         responses = {
             "https://example.com/.well-known/ai.txt": (_mock_response(200, "User-agent: *\nAllow: /"), None),
             "https://example.com/ai/summary.json": (_mock_response(200, summary), None),
@@ -77,8 +77,8 @@ class TestAuditAiDiscovery:
         assert result.endpoints_found == 4
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
-    def test_nessun_endpoint_presente(self, mock_fetch):
-        """Verifica risultato quando tutti gli endpoint sono 404."""
+    def test_no_endpoint_presente(self, mock_fetch):
+        """Verifies result when all endpoints return 404."""
         mock_fetch.return_value = (_mock_response(404), None)
 
         result = audit_ai_discovery("https://example.com")
@@ -92,7 +92,7 @@ class TestAuditAiDiscovery:
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_summary_senza_campi_richiesti(self, mock_fetch):
         """summary.json presente ma senza name/description → summary_valid=False."""
-        # JSON valido ma senza i campi richiesti
+        # Valid JSON but without the required fields
         summary_invalid = json.dumps({"url": "https://example.com"})
 
         responses = {
@@ -151,7 +151,7 @@ class TestAuditAiDiscovery:
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_json_invalido_non_conta(self, mock_fetch):
-        """Endpoint con JSON invalido → non viene contato."""
+        """Endpoint with invalid JSON → is not counted."""
         responses = {
             "https://example.com/.well-known/ai.txt": (_mock_response(404), None),
             "https://example.com/ai/summary.json": (_mock_response(200, "not json{{{"), None),
@@ -169,7 +169,7 @@ class TestAuditAiDiscovery:
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_errore_connessione(self, mock_fetch):
-        """Errore di connessione → risultato vuoto."""
+        """Errore di connessione → result vuoto."""
         mock_fetch.return_value = (None, "Connection refused")
 
         result = audit_ai_discovery("https://example.com")
@@ -182,7 +182,7 @@ class TestAuditAiDiscovery:
 
 
 class TestAuditAiDiscoveryFromResponses:
-    """Test per il percorso async con risposte pre-scaricate."""
+    """Tests for the async path with pre-downloaded responses."""
 
     def test_tutte_risposte_valide(self):
         """Risposte HTTP 200 valide → tutti gli endpoint rilevati."""
@@ -201,7 +201,7 @@ class TestAuditAiDiscoveryFromResponses:
         assert result.endpoints_found == 4
 
     def test_risposte_none(self):
-        """Risposte None (fetch fallito) → risultato vuoto."""
+        """Risposte None (fetch fallito) → result vuoto."""
         result = _audit_ai_discovery_from_responses(None, None, None, None)
 
         assert result.endpoints_found == 0
@@ -234,8 +234,8 @@ class TestAiDiscoveryScoring:
         assert score == expected
         assert score == 6
 
-    def test_score_nessun_endpoint(self):
-        """Nessun endpoint → punteggio 0."""
+    def test_score_no_endpoint(self):
+        """No endpoint → punteggio 0."""
         ai_disc = AiDiscoveryResult()
         assert _score_ai_discovery(ai_disc) == 0
 
@@ -251,7 +251,7 @@ class TestAiDiscoveryScoring:
             endpoints_found=1,
         )
         score = _score_ai_discovery(ai_disc)
-        # Solo summary presente ma invalido → 0 punti (non conta)
+        # Only summary present but invalid → 0 points (does not count)
         assert score == 0
 
     def test_score_solo_well_known(self):
@@ -275,8 +275,8 @@ class TestAiDiscoveryScoring:
         assert breakdown["ai_discovery"] == SCORING["ai_discovery_well_known"] + SCORING["ai_discovery_faq"]
 
     def test_totale_scoring_100(self):
-        """Verifica che il totale massimo SCORING sia 100."""
-        # Calcola il massimo raggiungibile per ogni categoria
+        """Verifies that il totale massimo SCORING sia 100."""
+        # Calculates the massimo raggiungibile per ogni categoria
         max_robots = SCORING["robots_found"] + SCORING["robots_citation_ok"]
         max_llms = (
             SCORING["llms_found"]
@@ -337,7 +337,7 @@ class TestAiDiscoveryRecommendations:
     """Test per le raccomandazioni AI discovery."""
 
     def test_raccomandazioni_endpoint_mancanti(self):
-        """Endpoint mancanti → raccomandazioni generate."""
+        """Missing endpoints → recommendations generated."""
         robots = RobotsResult(found=True, citation_bots_ok=True)
         llms = LlmsTxtResult(found=True)
         schema = SchemaResult(has_website=True, has_faq=True)
@@ -347,12 +347,12 @@ class TestAiDiscoveryRecommendations:
 
         recs = build_recommendations("https://example.com", robots, llms, schema, meta, content, ai_disc)
 
-        # Verifica che ci siano raccomandazioni per ai_discovery
+        # Verifies that ci siano raccomandazioni per ai_discovery
         ai_recs = [r for r in recs if "ai" in r.lower() or "well-known" in r.lower()]
         assert len(ai_recs) >= 3  # well-known, summary, faq, service (plus other ai-related hints)
 
-    def test_nessuna_raccomandazione_se_tutto_presente(self):
-        """Tutti gli endpoint presenti → nessuna raccomandazione AI."""
+    def test_noa_raccomandazione_se_tutto_presente(self):
+        """Tutti gli endpoint presenti → noa raccomandazione AI."""
         robots = RobotsResult(found=True, citation_bots_ok=True)
         llms = LlmsTxtResult(found=True)
         schema = SchemaResult(has_website=True, has_faq=True)
@@ -369,7 +369,7 @@ class TestAiDiscoveryRecommendations:
 
         recs = build_recommendations("https://example.com", robots, llms, schema, meta, content, ai_disc)
 
-        # Nessuna raccomandazione AI-discovery specifica
+        # Noa raccomandazione AI-discovery specifica
         ai_recs = [
             r
             for r in recs
@@ -428,7 +428,7 @@ class TestSummaryJsonValidation:
     """Test validazione strict per summary.json (#389)."""
 
     def _make_responses(self, summary_text: str):
-        """Helper: crea risposte mock con solo summary.json presente."""
+        """Helper: creates mock responses with only summary.json present."""
         responses = {
             "https://example.com/.well-known/ai.txt": (MagicMock(status_code=404), None),
             "https://example.com/ai/summary.json": (MagicMock(status_code=200, text=summary_text), None),
@@ -499,7 +499,7 @@ class TestSummaryJsonValidation:
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_summary_constants_values(self, mock_fetch):
-        """Verifica che le costanti di validazione abbiano i valori attesi."""
+        """Verifies that le costanti di validazione abbiano i valori attesi."""
         assert AI_DISCOVERY_SUMMARY_NAME_MIN_LEN == 3
         assert AI_DISCOVERY_SUMMARY_DESC_MIN_LEN == 20
 
@@ -508,7 +508,7 @@ class TestFaqJsonValidation:
     """Test validazione strict per faq.json (#389)."""
 
     def _make_responses(self, faq_text: str):
-        """Helper: crea risposte mock con solo faq.json presente."""
+        """Helper: creates mock responses with only faq.json present."""
         responses = {
             "https://example.com/.well-known/ai.txt": (MagicMock(status_code=404), None),
             "https://example.com/ai/summary.json": (MagicMock(status_code=404), None),
@@ -598,7 +598,7 @@ class TestFaqJsonValidation:
     def test_faq_mix_validi_e_invalidi(self, mock_fetch):
         """faq.json con item validi e invalidi → conta solo i validi."""
         payload = json.dumps([
-            # Valido
+            # Valid
             {"question": "What is this service?", "answer": "A complete and valid answer for the validation check"},
             # Question troppo corta
             {"question": "Why?", "answer": "A complete and valid answer for the validation check"},
@@ -629,7 +629,7 @@ class TestFaqJsonValidation:
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_faq_constants_values(self, mock_fetch):
-        """Verifica che le costanti di validazione FAQ abbiano i valori attesi."""
+        """Verifies that le costanti di validazione FAQ abbiano i valori attesi."""
         assert AI_DISCOVERY_FAQ_QUESTION_MIN_LEN == 10
         assert AI_DISCOVERY_FAQ_ANSWER_MIN_LEN == 20
 
@@ -638,7 +638,7 @@ class TestServiceJsonValidation:
     """Test validazione strict per service.json (#389)."""
 
     def _make_responses(self, service_text: str):
-        """Helper: crea risposte mock con solo service.json presente."""
+        """Helper: creates mock responses with only service.json present."""
         responses = {
             "https://example.com/.well-known/ai.txt": (MagicMock(status_code=404), None),
             "https://example.com/ai/summary.json": (MagicMock(status_code=404), None),
@@ -691,7 +691,7 @@ class TestServiceJsonValidation:
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_service_valido_con_service_type(self, mock_fetch):
-        """service.json con serviceType valido deve essere accettato."""
+        """service.json with a valid serviceType should be accepted."""
         payload = json.dumps({"name": "GEO API", "serviceType": "ai-visibility-audit"})
         mock_fetch.side_effect = self._make_responses(payload)
 
@@ -742,7 +742,7 @@ class TestServiceJsonValidation:
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_service_capabilities_non_lista(self, mock_fetch):
-        """service.json con capabilities non lista (stringa) → has_service=False."""
+        """service.json with capabilities not a list (string) → has_service=False."""
         payload = json.dumps({"name": "GEO API", "capabilities": "audit,fix"})
         mock_fetch.side_effect = self._make_responses(payload)
 
@@ -752,7 +752,7 @@ class TestServiceJsonValidation:
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_service_qualsiasi_json_valido_non_sufficiente(self, mock_fetch):
-        """service.json con JSON valido ma senza i campi richiesti → has_service=False."""
+        """service.json with valid JSON but without required fields → has_service=False."""
         payload = json.dumps({"type": "api", "version": "1.0"})
         mock_fetch.side_effect = self._make_responses(payload)
 
@@ -762,5 +762,5 @@ class TestServiceJsonValidation:
 
     @patch("geo_optimizer.core.audit_ai_discovery.fetch_url")
     def test_service_constants_values(self, mock_fetch):
-        """Verifica che le costanti di validazione service abbiano i valori attesi."""
+        """Verifies that le costanti di validazione service abbiano i valori attesi."""
         assert AI_DISCOVERY_SERVICE_NAME_MIN_LEN == 3

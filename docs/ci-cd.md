@@ -1,3 +1,10 @@
+---
+title: "CI/CD Integration"
+description: "Run GEO audits automatically in your CI/CD pipeline. Catch AI-visibility regressions before they hit production using GitHub Actions, GitLab CI, or any CI system."
+date: 2026-04-28
+tags: [ci-cd, github-actions, automation, pipeline]
+---
+
 # CI/CD Integration
 
 Run GEO audits automatically in your CI/CD pipeline. Catch regressions before they hit production.

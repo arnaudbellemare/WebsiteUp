@@ -105,7 +105,7 @@ def build_audit_diff(before_result: AuditResult, after_result: AuditResult) -> A
 
 
 def _compute_category_deltas(before_result: AuditResult, after_result: AuditResult) -> list[CategoryDelta]:
-    """Calcola il delta per ogni categoria GEO presente nel breakdown."""
+    """Computes the delta for each GEO category present in the breakdown."""
     categories = sorted(set(before_result.score_breakdown) | set(after_result.score_breakdown) | set(_CATEGORY_LABELS))
     deltas: list[CategoryDelta] = []
     for category in categories:

@@ -51,7 +51,7 @@ def _fetch_size(url: str) -> int:
                           headers={"User-Agent": "geo-optimizer/4.13"})
         cl = r.headers.get("Content-Length", "")
         return int(cl) if cl.isdigit() else -1
-    except Exception:
+    except requests.exceptions.RequestException:
         return -1
 
 

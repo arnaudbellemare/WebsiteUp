@@ -16,7 +16,7 @@ import re
 import tempfile
 from pathlib import Path
 
-from geo_optimizer.models.results import EmbeddingProximityResult
+from geo_optimizer.models.results import EmbeddingProximityResult, QueryScore
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +92,7 @@ def audit_embedding_proximity(
         model = SentenceTransformer(model_name)
         chunk_embeddings = model.encode(chunks, show_progress_bar=False)
         query_embeddings = model.encode(queries, show_progress_bar=False)
-    except Exception as exc:
+    except (ImportError, RuntimeError, OSError, ValueError) as exc:
         logger.warning("Embedding model unavailable: %s", type(exc).__name__)
         return EmbeddingProximityResult(
             checked=True,
@@ -108,7 +108,7 @@ def audit_embedding_proximity(
         similarities = st_util.cos_sim(query_embeddings[i], chunk_embeddings)[0]
         max_sim = float(similarities.max())
         all_max_scores.append(max_sim)
-        query_scores.append({"query": query, "max_similarity": round(max_sim, 4)})
+        query_scores.append(QueryScore(query=query, max_similarity=round(max_sim, 4)))
 
     retrievable = sum(
         1

@@ -1,3 +1,10 @@
+---
+title: "AI Bots Reference"
+description: "Complete reference for AI crawler user-agents and robots.txt configuration strategies for ChatGPT, Claude, Perplexity, and Gemini."
+date: 2026-04-28
+tags: [robots-txt, ai-bots, crawlers, configuration]
+---
+
 # AI Bots Reference
 
 Complete reference for AI crawler user-agents and `robots.txt` configuration strategies.

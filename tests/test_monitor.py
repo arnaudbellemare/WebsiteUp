@@ -16,7 +16,7 @@ from geo_optimizer.models.results import (
 
 
 def _sample_audit_result() -> AuditResult:
-    """Crea un AuditResult rappresentativo per i test di monitor."""
+    """Creates a AuditResult rappresentativo per i test di monitor."""
     trust = TrustStackResult(checked=True, composite_score=20, grade="B", trust_level="high")
     return AuditResult(
         url="https://example.com",
@@ -50,7 +50,7 @@ def _sample_audit_result() -> AuditResult:
 
 
 def test_normalize_monitor_domain_usa_homepage_canonica():
-    """Input dominio/url viene normalizzato alla homepage del dominio."""
+    """domain/url input is normalised to the domain homepage."""
     assert normalize_monitor_domain("example.com/path?q=1") == "https://example.com"
     assert normalize_monitor_domain("HTTP://Example.com/blog") == "http://example.com"
 

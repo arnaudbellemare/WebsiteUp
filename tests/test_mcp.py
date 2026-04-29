@@ -1,7 +1,7 @@
 """
 Test per geo_optimizer.mcp.server.
 
-Verifica i 4 tool MCP e le 2 resource. Tutto mockato — zero chiamate HTTP.
+Verifies the 4 tool MCP e le 2 resource. Tutto mockato — zero calls HTTP.
 Richiede: pip install geo-optimizer-skill[mcp]
 """
 
@@ -59,7 +59,7 @@ def _mock_mcp_url_validation(monkeypatch):
 
 
 def _mock_audit_result():
-    """Crea un AuditResult mock per i test."""
+    """Creates an AuditResult mock for tests."""
     return AuditResult(
         url="https://example.com",
         score=65,
@@ -86,7 +86,7 @@ def _mock_audit_result():
 
 
 def _mock_fix_plan():
-    """Crea un FixPlan mock per i test."""
+    """Creates a FixPlan mock for tests."""
     return FixPlan(
         url="https://example.com",
         score_before=65,
@@ -114,7 +114,7 @@ class TestGeoAuditTool:
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_audit_ritorna_json_valido(self, mock_audit):
-        """geo_audit ritorna JSON con score e dettagli."""
+        """geo_audit returns JSON with score and details."""
         mock_audit.return_value = _mock_audit_result()
 
         result = geo_audit("https://example.com")
@@ -126,7 +126,7 @@ class TestGeoAuditTool:
         assert data["robots"]["found"] is True
 
     def test_audit_url_non_sicuro(self):
-        """geo_audit blocca URL verso reti private."""
+        """geo_audit blocks URLs pointing to private networks."""
         result = geo_audit("http://169.254.169.254/metadata")
         data = json.loads(result)
 
@@ -153,7 +153,7 @@ class TestGeoFixTool:
 
     @patch("geo_optimizer.core.fixer.run_all_fixes")
     def test_fix_ritorna_piano(self, mock_fixes):
-        """geo_fix ritorna FixPlan serializzato."""
+        """geo_fix returns a serialised FixPlan."""
         mock_fixes.return_value = _mock_fix_plan()
 
         result = geo_fix("https://example.com")
@@ -174,7 +174,7 @@ class TestGeoFixTool:
         assert call_kwargs["only"] == {"robots", "llms"}
 
     def test_fix_url_non_sicuro(self):
-        """geo_fix blocca URL locali."""
+        """geo_fix blocks local URLs."""
         result = geo_fix("http://localhost:8080")
         data = json.loads(result)
         assert "error" in data
@@ -227,7 +227,7 @@ class TestGeoFactualAccuracyTool:
 
     @patch("geo_optimizer.core.factual_accuracy.run_factual_accuracy_audit")
     def test_factual_accuracy_ritorna_json_valido(self, mock_factual):
-        """geo_factual_accuracy serializza il risultato dell'audit fattuale."""
+        """geo_factual_accuracy serializza il result dell'audit fattuale."""
         mock_factual.return_value = FactualAccuracyResult(
             checked=True,
             claims_found=4,
@@ -263,20 +263,20 @@ class TestGeoFactualAccuracyTool:
 
 
 class TestGeoLlmsGenerateTool:
-    """Test per il tool MCP geo_llms_generate."""
+    """Tests for the MCP tool geo_llms_generate."""
 
-    @patch("geo_optimizer.core.llms_generator.generate_llms_txt", return_value="# Example\n> Sito web")
+    @patch("geo_optimizer.core.llms_generator.generate_llms_txt", return_value="# Example\n> Web site")
     @patch("geo_optimizer.core.llms_generator.fetch_sitemap", return_value=[])
     @patch("geo_optimizer.core.llms_generator.discover_sitemap", return_value=None)
     def test_genera_llms_txt(self, mock_discover, mock_fetch, mock_gen):
-        """geo_llms_generate ritorna contenuto llms.txt."""
+        """geo_llms_generate ritorna content llms.txt."""
         result = geo_llms_generate("https://example.com")
 
         assert "Example" in result
         assert len(result) > 0
 
     def test_llms_url_non_sicuro(self):
-        """geo_llms_generate blocca URL privati."""
+        """geo_llms_generate blocks private URLs."""
         result = geo_llms_generate("http://10.0.0.1")
 
         assert "Unsafe URL" in result
@@ -291,7 +291,7 @@ class TestGeoSchemaValidateTool:
     """Test per il tool MCP geo_schema_validate."""
 
     def test_schema_valido(self):
-        """Schema WebSite completo viene validato correttamente."""
+        """A complete WebSite schema is validated correctly."""
         schema = json.dumps(
             {
                 "@context": "https://schema.org",
@@ -306,7 +306,7 @@ class TestGeoSchemaValidateTool:
         assert data["valid"] is True
 
     def test_schema_non_valido(self):
-        """Schema incompleto viene rilevato."""
+        """Schema incompleto is detected."""
         schema = json.dumps(
             {
                 "@context": "https://schema.org",
@@ -320,7 +320,7 @@ class TestGeoSchemaValidateTool:
         assert data["error"] is not None
 
     def test_json_malformato(self):
-        """JSON non valido viene gestito senza crash."""
+        """Invalid JSON is handled without crashing."""
         result = geo_schema_validate("{invalid json}", "website")
         data = json.loads(result)
 
@@ -336,7 +336,7 @@ class TestMcpResources:
     """Test per le resource MCP."""
 
     def test_ai_bots_resource(self):
-        """Resource ai-bots ritorna lista bot."""
+        """The ai-bots resource returns the bot list."""
         result = get_ai_bots()
         data = json.loads(result)
 
@@ -349,7 +349,7 @@ class TestMcpResources:
         assert "user" in data["tiers"]
 
     def test_score_bands_resource(self):
-        """Resource score-bands ritorna fasce punteggio."""
+        """The score-bands resource returns the score bands."""
         result = get_score_bands()
         data = json.loads(result)
 
@@ -367,17 +367,17 @@ class TestGeoCitabilityTool:
     @patch("geo_optimizer.utils.http.fetch_url")
     @patch("geo_optimizer.core.citability.audit_citability")
     def test_citability_happy_path_ritorna_json(self, mock_citability, mock_fetch):
-        """geo_citability con fetch OK e citability audit ritorna JSON valido."""
+        """geo_citability with fetch OK and citability audit returns valid JSON."""
         from unittest.mock import MagicMock
 
         from geo_optimizer.models.results import CitabilityResult, MethodScore
 
-        # Arrange: risposta HTTP mock
+        # Arrange: response HTTP mock
         mock_resp = MagicMock()
         mock_resp.text = "<html><body><h1>Titolo</h1><p>Contenuto con citazione (Fonte: esempio.com).</p></body></html>"
         mock_fetch.return_value = (mock_resp, None)
 
-        # Arrange: risultato citability mock
+        # Arrange: result citability mock
         mock_result = CitabilityResult(
             methods=[
                 MethodScore(
@@ -424,7 +424,7 @@ class TestGeoCitabilityTool:
         assert "Connection refused" in data["error"] or "example.com" in data["error"]
 
     def test_citability_url_non_sicuro_ritorna_errore(self):
-        """geo_citability blocca URL verso reti private."""
+        """geo_citability blocks URLs pointing to private networks."""
         from geo_optimizer.mcp.server import geo_citability
 
         # Act
@@ -458,12 +458,12 @@ class TestGeoCitabilityTool:
 
 
 # ============================================================================
-# TEST: exception paths per geo_audit, geo_fix, geo_llms_generate
+# TEST: exception paths for geo_audit, geo_fix, geo_llms_generate
 # ============================================================================
 
 
 class TestExceptionPaths:
-    """Verifica i percorsi di eccezione nei tool MCP."""
+    """Verifies the percorsi di eccezione nei tool MCP."""
 
     @patch("geo_optimizer.core.audit.run_full_audit")
     def test_geo_audit_eccezione_ritorna_json_errore(self, mock_audit):

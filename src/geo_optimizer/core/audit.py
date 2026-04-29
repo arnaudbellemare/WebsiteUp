@@ -69,6 +69,7 @@ from geo_optimizer.models.results import (
     MetaResult,
     NegativeSignalsResult,
     PerfResult,
+    PluginCheckSummary,
     RobotsResult,
     SchemaResult,
     SignalsResult,
@@ -501,17 +502,17 @@ def _build_audit_result(
 
     # Fix #104: run plugins registered in CheckRegistry
     # Their results do not affect the base score
-    plugin_results = {}
+    plugin_results: dict[str, PluginCheckSummary] = {}
     if CheckRegistry.all():
         check_results = CheckRegistry.run_all(base_url, soup=soup)
         plugin_results = {
-            r.name: {
-                "score": r.score,
-                "max_score": r.max_score,
-                "passed": r.passed,
-                "message": r.message,
-                "details": r.details,
-            }
+            r.name: PluginCheckSummary(
+                score=r.score,
+                max_score=r.max_score,
+                passed=r.passed,
+                message=r.message,
+                details=r.details if isinstance(r.details, dict) else {},
+            )
             for r in check_results
         }
 

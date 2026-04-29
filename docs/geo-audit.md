@@ -1,3 +1,10 @@
+---
+title: "GEO Audit"
+description: "Score your website 0–100 across 8 GEO categories and get a prioritized action list to improve AI citation visibility in ChatGPT, Perplexity, Claude, and Gemini."
+date: 2026-04-28
+tags: [audit, scoring, cli, geo]
+---
+
 # GEO Audit
 
 `geo audit` scores your website from 0 to 100 across **8 GEO categories** and tells you exactly what to fix.

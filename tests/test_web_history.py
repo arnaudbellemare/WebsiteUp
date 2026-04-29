@@ -22,7 +22,7 @@ def _ts(days_ago: int) -> str:
 
 
 def _make_result(score: int, timestamp: str) -> AuditResult:
-    """Crea un AuditResult minimo per i test web history."""
+    """Creates a AuditResult minimo per i test web history."""
     return AuditResult(
         url="https://example.com",
         timestamp=timestamp,
@@ -36,7 +36,7 @@ def _make_result(score: int, timestamp: str) -> AuditResult:
 
 
 def test_save_and_load_history_summary(monkeypatch, tmp_path):
-    """La web app salva snapshot e restituisce summary trend serializzabile."""
+    """The web app saves a snapshot and returns a serialisable trend summary."""
     db_path = Path(tmp_path / "tracking.db")
     monkeypatch.setattr("geo_optimizer.models.config.TRACKING_DB_PATH", db_path)
     monkeypatch.setattr("geo_optimizer.core.history.TRACKING_DB_PATH", db_path)
@@ -53,7 +53,7 @@ def test_save_and_load_history_summary(monkeypatch, tmp_path):
 
 
 def test_load_history_summary_returns_none_when_empty(monkeypatch, tmp_path):
-    """Senza snapshot salvati la web app non espone alcuna history."""
+    """Without saved snapshots the web app exposes no history."""
     db_path = Path(tmp_path / "tracking.db")
     monkeypatch.setattr("geo_optimizer.models.config.TRACKING_DB_PATH", db_path)
     monkeypatch.setattr("geo_optimizer.core.history.TRACKING_DB_PATH", db_path)

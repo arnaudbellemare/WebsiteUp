@@ -2,7 +2,7 @@
 Test per geo_optimizer.utils.http_async.
 
 Verifica fetch_url_async e fetch_urls_async con mock httpx completi.
-Zero chiamate HTTP reali — tutto simulato con unittest.mock.
+Zero calls HTTP reali — tutto simulato con unittest.mock.
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ def _mock_async_url_validation(monkeypatch):
     monkeypatch.setattr("geo_optimizer.utils.validators.validate_public_url", _fake_validate)
 
 
-# ─── Helper: risposta httpx mock ─────────────────────────────────────────────
+# ─── Helper: response httpx mock ─────────────────────────────────────────────
 
 
 def _mock_response(
@@ -60,7 +60,7 @@ def _mock_response(
 
 
 def test_fetch_url_async_happy_path_restituisce_risposta_e_none():
-    """fetch_url_async con URL pubblico e risposta 200 restituisce (response, None)."""
+    """fetch_url_async with a public URL and 200 response returns (response, None)."""
     # Arrange
     mock_resp = _mock_response(200, b"<html>Ciao</html>")
 
@@ -89,7 +89,7 @@ def test_fetch_url_async_happy_path_restituisce_risposta_e_none():
 
 
 def test_fetch_url_async_happy_path_proprio_client_creato():
-    """fetch_url_async senza client esterno crea il proprio httpx.AsyncClient."""
+    """fetch_url_async without an external client creates its own httpx.AsyncClient."""
     # Arrange
     mock_resp = _mock_response(200, b"<html>Ok</html>")
 
@@ -101,7 +101,7 @@ def test_fetch_url_async_happy_path_proprio_client_creato():
             mock_client_inst = AsyncMock()
             mock_client_inst.get = AsyncMock(return_value=mock_resp)
             mock_client_inst.aclose = AsyncMock()
-            # Attributo mancante: forza la creazione di un nuovo client
+            # Missing attribute: forces creation of a new client
             del mock_client_inst._transport
             mock_client_cls.return_value = mock_client_inst
 
@@ -119,8 +119,8 @@ def test_fetch_url_async_happy_path_proprio_client_creato():
 # ─── Test: SSRF — URL iniziale non sicuro ─────────────────────────────────────
 
 
-def test_fetch_url_async_url_privato_restituisce_errore():
-    """fetch_url_async blocca URL verso IP privati prima del fetch."""
+def test_fetch_url_async_url_private_restituisce_errore():
+    """fetch_url_async blocks URLs pointing to private IPs before fetching."""
     # Arrange / Act
     resp, err = asyncio.run(fetch_url_async("http://192.168.1.1"))
 
@@ -130,11 +130,11 @@ def test_fetch_url_async_url_privato_restituisce_errore():
     assert "Unsafe URL" in err
 
 
-# ─── Test: redirect verso IP privato (SSRF su redirect) ──────────────────────
+# ─── Test: redirect verso IP private (SSRF su redirect) ──────────────────────
 
 
-def test_fetch_url_async_redirect_verso_ip_privato_restituisce_errore():
-    """fetch_url_async blocca redirect che puntano verso reti interne (anti-SSRF)."""
+def test_fetch_url_async_redirect_verso_ip_private_restituisce_errore():
+    """fetch_url_async blocks redirects pointing to internal networks (anti-SSRF)."""
     # Arrange
     redirect_resp = _mock_response(
         status_code=301,
@@ -179,7 +179,7 @@ def test_fetch_url_async_redirect_verso_ip_privato_restituisce_errore():
 
 def test_fetch_url_async_troppi_redirect_restituisce_errore():
     """fetch_url_async restituisce errore dopo il numero massimo di redirect."""
-    # Arrange: ogni risposta è un redirect valido verso se stesso
+    # Arrange: every response is a valid redirect to itself
     redirect_resp = _mock_response(
         status_code=302,
         headers={"location": "https://example.com/next"},
@@ -191,7 +191,7 @@ def test_fetch_url_async_troppi_redirect_restituisce_errore():
             patch("httpx.AsyncClient") as mock_client_cls,
         ):
             mock_client_inst = AsyncMock()
-            # Restituisce sempre redirect — forza il superamento del limite
+            # Always returns redirect — forces limit to be exceeded
             mock_client_inst.get = AsyncMock(return_value=redirect_resp)
             mock_client_inst.aclose = AsyncMock()
             mock_client_cls.return_value = mock_client_inst
@@ -212,7 +212,7 @@ def test_fetch_url_async_troppi_redirect_restituisce_errore():
 
 
 def test_fetch_url_async_redirect_senza_location_restituisce_errore():
-    """fetch_url_async gestisce redirect senza header Location."""
+    """fetch_url_async handles redirects without a Location header."""
     # Arrange
     redirect_resp = _mock_response(status_code=301, headers={})
 
@@ -242,7 +242,7 @@ def test_fetch_url_async_redirect_senza_location_restituisce_errore():
 
 
 def test_fetch_url_async_timeout_restituisce_errore_con_secondi():
-    """fetch_url_async gestisce httpx.TimeoutException e include i secondi."""
+    """fetch_url_async handles httpx.TimeoutException and includes the seconds."""
     import httpx
 
     async def _run():
@@ -271,7 +271,7 @@ def test_fetch_url_async_timeout_restituisce_errore_con_secondi():
 
 
 def test_fetch_url_async_connect_error_restituisce_errore():
-    """fetch_url_async gestisce httpx.ConnectError."""
+    """fetch_url_async handles httpx.ConnectError."""
     import httpx
 
     async def _run():
@@ -296,7 +296,7 @@ def test_fetch_url_async_connect_error_restituisce_errore():
     assert "Connection" in err or "connect" in err.lower()
 
 
-# ─── Test: risposta troppo grande (body) ──────────────────────────────────────
+# ─── Test: response troppo grande (body) ──────────────────────────────────────
 
 
 def test_fetch_url_async_risposta_troppo_grande_restituisce_errore():
@@ -327,7 +327,7 @@ def test_fetch_url_async_risposta_troppo_grande_restituisce_errore():
     assert "too large" in err.lower() or "large" in err.lower()
 
 
-# ─── Test: risposta troppo grande (Content-Length header) ─────────────────────
+# ─── Test: response troppo grande (Content-Length header) ─────────────────────
 
 
 def test_fetch_url_async_content_length_troppo_grande_restituisce_errore():
@@ -365,16 +365,16 @@ def test_fetch_url_async_content_length_troppo_grande_restituisce_errore():
 
 
 def test_fetch_urls_async_mix_successo_e_fallimento():
-    """fetch_urls_async gestisce correttamente URL che riescono e URL che falliscono."""
+    """fetch_urls_async correctly handles URLs that succeed and URLs that fail."""
     # Arrange
     mock_resp_ok = _mock_response(200, b"<html>Ok</html>")
 
     # URL di test
     url_ok = "https://example.com"
-    url_privato = "http://127.0.0.1"
+    url_private = "http://127.0.0.1"
 
     async def _run():
-        # validate_public_url: ok per example.com, fallisce per 127.0.0.1
+        # validate_public_url: ok per example.com, fails per 127.0.0.1
         def _validate(url):
             if "127.0.0.1" in url:
                 return False, "Private IP"
@@ -392,7 +392,7 @@ def test_fetch_urls_async_mix_successo_e_fallimento():
             mock_client_inst.__aexit__ = AsyncMock(return_value=None)
             mock_client_cls.return_value = mock_client_inst
 
-            results = await fetch_urls_async([url_ok, url_privato])
+            results = await fetch_urls_async([url_ok, url_private])
 
         return results
 
@@ -400,15 +400,15 @@ def test_fetch_urls_async_mix_successo_e_fallimento():
 
     # Assert
     assert url_ok in results
-    assert url_privato in results
+    assert url_private in results
 
     # URL pubblico: successo
     resp_ok, err_ok = results[url_ok]
     assert err_ok is None
     assert resp_ok is not None
 
-    # URL privato: fallimento per SSRF
-    resp_fail, err_fail = results[url_privato]
+    # URL private: fallimento per SSRF
+    resp_fail, err_fail = results[url_private]
     assert resp_fail is None
     assert err_fail is not None
     assert "Unsafe URL" in err_fail

@@ -1,21 +1,20 @@
 """
-Test di copertura per i moduli a 0% coverage.
+Coverage tests for modules at 0% coverage.
 
-Moduli coperti (in ordine di priorità):
-- cli/html_formatter.py  — genera report HTML standalone
-- utils/cache.py         — cache HTTP su filesystem con TTL
-- cli/rich_formatter.py  — formatter Rich per terminale
-- cli/github_formatter.py — formatter GitHub Actions
-- utils/http_async.py    — client HTTP asincrono con httpx
-- i18n/__init__.py       — internazionalizzazione gettext
-- web/cli.py             — CLI per avviare la web demo
-- models/project_config.py — configurazione progetto via YAML
-- core/registry.py       — sistema di plugin check GEO
+Modules covered (in priority order):
+- cli/html_formatter.py  — generates standalone HTML report
+- utils/cache.py         — HTTP filesystem cache with TTL
+- cli/rich_formatter.py  — Rich formatter for the terminal
+- cli/github_formatter.py — GitHub Actions formatter
+- utils/http_async.py    — async HTTP client with httpx
+- web/cli.py             — CLI to start the web demo
+- models/project_config.py — project configuration via YAML
+- core/registry.py       — GEO plugin check system
 
-Convenzioni:
-- Tutti i test usano unittest.mock — nessuna chiamata di rete reale
-- Naming: test_{soggetto}_{scenario}_{aspettativa}
-- Pattern Arrange-Act-Assert
+Conventions:
+- All tests use unittest.mock — no real network calls
+- Naming: test_{subject}_{scenario}_{expectation}
+- Arrange-Act-Assert pattern
 """
 
 import asyncio
@@ -58,7 +57,7 @@ def _mock_offline_url_validation(monkeypatch):
 
 
 def _crea_audit_result_completo() -> AuditResult:
-    """Crea un AuditResult con tutti i campi valorizzati per i test."""
+    """Creates a AuditResult con tutti i campi valorizzati per i test."""
     r = AuditResult(url="https://example.com")
     r.score = 85
     r.band = "good"
@@ -106,7 +105,7 @@ def _crea_audit_result_completo() -> AuditResult:
 
 
 def _crea_audit_result_vuoto() -> AuditResult:
-    """Crea un AuditResult con tutti i flag negativi (sito non ottimizzato)."""
+    """Creates a AuditResult con tutti i flag negativi (sito non ottimizzato)."""
     r = AuditResult(url="https://unoptimized.example.com")
     r.score = 15
     r.band = "critical"
@@ -217,7 +216,7 @@ class TestHtmlFormatter:
         assert "Recommendations" not in html
 
     def test_format_audit_html_schemi_trovati(self):
-        """I tipi di schema trovati vengono mostrati come tag."""
+        """The found schema types are displayed as tags."""
         from geo_optimizer.cli.html_formatter import format_audit_html
 
         result = _crea_audit_result_completo()
@@ -233,7 +232,7 @@ class TestHtmlFormatter:
         result = _crea_audit_result_vuoto()
         html = format_audit_html(result)
 
-        # Nessun tipo schema vuol dire nessun tag schema nell'HTML
+        # No tipo schema vuol dire no tag schema nell'HTML
         assert "Found schemas" not in html
 
     def test_format_audit_html_escape_xss(self):
@@ -261,7 +260,7 @@ class TestHtmlFormatter:
         assert "Content Quality" in html
 
     def test_escape_funzione_caratteri_speciali(self):
-        """La funzione _escape gestisce tutti i caratteri speciali HTML."""
+        """The _escape function handles all special HTML characters."""
         from geo_optimizer.cli.html_formatter import _escape
 
         assert _escape("a & b") == "a &amp; b"
@@ -296,7 +295,7 @@ class TestHtmlFormatter:
         assert _robots_score(r) == expected
 
     def test_robots_score_solo_trovato(self):
-        """Punteggio robots base con solo robots.txt trovato."""
+        """Base robots score with only robots.txt found."""
         from geo_optimizer.cli.html_formatter import _robots_score
         from geo_optimizer.models.config import SCORING
 
@@ -306,7 +305,7 @@ class TestHtmlFormatter:
         assert _robots_score(r) == SCORING["robots_found"]
 
     def test_robots_score_zero(self):
-        """Punteggio robots zero se robots.txt non trovato."""
+        """Punteggio robots zero se robots.txt not found."""
         from geo_optimizer.cli.html_formatter import _robots_score
 
         r = AuditResult(url="https://example.com")
@@ -346,7 +345,9 @@ class TestHtmlFormatter:
 
         r = AuditResult(url="https://example.com")
         r.meta.has_title = True
+        r.meta.title_length = 50        # within 40–60 sweet-spot
         r.meta.has_description = True
+        r.meta.description_length = 140  # within 120–160 sweet-spot
         r.meta.has_canonical = True
         r.meta.has_og_title = True
         r.meta.has_og_description = True
@@ -368,7 +369,7 @@ class TestHtmlFormatter:
         assert _content_score(r) == expected
 
     def test_format_audit_html_contiene_timestamp(self):
-        """L'HTML include un timestamp generato."""
+        """The HTML includes a generated timestamp."""
         from geo_optimizer.cli.html_formatter import format_audit_html
 
         result = _crea_audit_result_completo()
@@ -394,10 +395,10 @@ class TestHtmlFormatter:
 
 
 class TestFileCache:
-    """Test per la cache HTTP su filesystem con TTL."""
+    """Test per la HTTP cache on the filesystem with TTL."""
 
     def test_get_cache_miss_file_non_esistente(self):
-        """get() ritorna None se il file cache non esiste."""
+        """get() returns None se il file cache does not exist."""
         from geo_optimizer.utils.cache import FileCache
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -406,7 +407,7 @@ class TestFileCache:
             assert result is None
 
     def test_put_e_get_cache_hit(self):
-        """put() salva la risposta, get() la recupera correttamente."""
+        """put() salva la response, get() la recupera correttamente."""
         from geo_optimizer.utils.cache import FileCache
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -423,14 +424,14 @@ class TestFileCache:
             assert headers["Content-Type"] == "text/html"
 
     def test_get_cache_scaduta_rimuove_file(self):
-        """get() ritorna None e rimuove il file se il TTL è scaduto."""
+        """get() returns None e rimuove il file se il TTL è scaduto."""
         from geo_optimizer.utils.cache import FileCache
 
         with tempfile.TemporaryDirectory() as tmpdir:
             cache = FileCache(cache_dir=Path(tmpdir), ttl=1)
             url = "https://example.com/ttl"
 
-            cache.put(url, 200, "contenuto", {})
+            cache.put(url, 200, "content", {})
 
             # Simula TTL scaduto modificando il tempo con patch
             with patch("geo_optimizer.utils.cache.time.time", return_value=time.time() + 3600):
@@ -439,7 +440,7 @@ class TestFileCache:
             assert result is None
 
     def test_get_file_json_corrotto(self):
-        """get() ritorna None se il file cache contiene JSON non valido."""
+        """get() returns None se il file cache contiene JSON non valido."""
         from geo_optimizer.utils.cache import FileCache
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -454,7 +455,7 @@ class TestFileCache:
             assert result is None
 
     def test_clear_rimuove_tutti_i_file(self):
-        """clear() svuota la directory cache e ritorna il conteggio."""
+        """clear() svuota la directory cache e returns the conteggio."""
         from geo_optimizer.utils.cache import FileCache
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -469,7 +470,7 @@ class TestFileCache:
             assert not Path(tmpdir).exists()
 
     def test_clear_directory_non_esistente(self):
-        """clear() ritorna 0 se la directory non esiste."""
+        """clear() ritorna 0 se la directory does not exist."""
         from geo_optimizer.utils.cache import FileCache
 
         cache = FileCache(cache_dir=Path("/tmp/geo_cache_non_esiste_mai_xyz"))
@@ -477,7 +478,7 @@ class TestFileCache:
         assert count == 0
 
     def test_stats_directory_non_esistente(self):
-        """stats() ritorna valori zero se la directory non esiste."""
+        """stats() ritorna valori zero se la directory does not exist."""
         from geo_optimizer.utils.cache import FileCache
 
         cache = FileCache(cache_dir=Path("/tmp/geo_cache_stats_vuoto_xyz"))
@@ -492,14 +493,14 @@ class TestFileCache:
 
         with tempfile.TemporaryDirectory() as tmpdir:
             cache = FileCache(cache_dir=Path(tmpdir))
-            cache.put("https://example.com/stat", 200, "contenuto di test", {})
+            cache.put("https://example.com/stat", 200, "content di test", {})
 
             stats = cache.stats()
             assert stats["files"] == 1
             assert stats["size_bytes"] > 0
 
     def test_key_genera_hash_sha256(self):
-        """_key() genera hash SHA256 deterministico per lo stesso URL."""
+        """_key() generates a deterministic SHA256 hash for the same URL."""
         from geo_optimizer.utils.cache import FileCache
 
         cache = FileCache()
@@ -512,7 +513,7 @@ class TestFileCache:
         assert len(key1) == 64  # SHA-256 in hex
 
     def test_key_diverso_per_url_diversi(self):
-        """_key() genera hash diversi per URL diversi."""
+        """_key() generates different hashes for different URLs."""
         from geo_optimizer.utils.cache import FileCache
 
         cache = FileCache()
@@ -521,8 +522,8 @@ class TestFileCache:
 
         assert key_a != key_b
 
-    def test_path_ritorna_percorso_con_json_extension(self):
-        """_path() ritorna un Path con estensione .json."""
+    def test_path_ritorna_path_con_json_extension(self):
+        """_path() returns a Path con estensione .json."""
         from geo_optimizer.utils.cache import FileCache
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -533,7 +534,7 @@ class TestFileCache:
             assert path.parent == Path(tmpdir)
 
     def test_put_crea_directory_se_non_esiste(self):
-        """put() crea la directory cache se non esiste."""
+        """put() crea la directory cache se does not exist."""
         from geo_optimizer.utils.cache import FileCache
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -560,13 +561,13 @@ class TestFileCache:
 
 
 class TestRichFormatter:
-    """Test per il formatter Rich per output CLI colorato."""
+    """Test per il Rich formatter per output CLI colorato."""
 
     def test_is_rich_available_ritorna_bool(self):
-        """is_rich_available() ritorna True se rich è installato."""
+        """is_rich_available() returns True when rich is installed."""
         from geo_optimizer.cli.rich_formatter import is_rich_available
 
-        # Verifichiamo solo che ritorni un bool, non importa il valore
+        # Verifichiamo solo che ritorni un bool, non importa il value
         result = is_rich_available()
         assert isinstance(result, bool)
 
@@ -575,7 +576,7 @@ class TestRichFormatter:
         reason="rich non installato",
     )
     def test_format_audit_rich_ritorna_stringa(self):
-        """format_audit_rich() ritorna una stringa non vuota."""
+        """format_audit_rich() returns aa stringa non vuota."""
         from geo_optimizer.cli.rich_formatter import format_audit_rich
 
         result = _crea_audit_result_completo()
@@ -619,28 +620,28 @@ class TestRichFormatter:
         reason="rich non installato",
     )
     def test_format_audit_rich_robots_non_trovato(self):
-        """L'output gestisce correttamente robots.txt non trovato."""
+        """The output handles robots.txt not found correctly."""
         from geo_optimizer.cli.rich_formatter import format_audit_rich
 
         result = _crea_audit_result_vuoto()
         output = format_audit_rich(result)
 
-        # v2: testo in italiano "File non trovato"
-        assert "non trovato" in output
+        # v2: expected text "File not found"
+        assert "not found" in output
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("rich"),
         reason="rich non installato",
     )
     def test_format_audit_rich_llms_non_trovato(self):
-        """L'output gestisce correttamente llms.txt non trovato."""
+        """The output handles llms.txt not found correctly."""
         from geo_optimizer.cli.rich_formatter import format_audit_rich
 
         result = _crea_audit_result_vuoto()
         output = format_audit_rich(result)
 
-        # v2: testo in italiano "File non trovato"
-        assert "non trovato" in output
+        # v2: expected text "File not found"
+        assert "not found" in output
 
     @pytest.mark.skipif(
         not __import__("importlib").util.find_spec("rich"),
@@ -673,18 +674,18 @@ class TestRichFormatter:
         not __import__("importlib").util.find_spec("rich"),
         reason="rich non installato",
     )
-    def test_format_audit_rich_schema_nessuno(self):
-        """Senza schema, l'output mostra 'Nessuno schema'."""
+    def test_format_audit_rich_schema_noo(self):
+        """Without schema, the output shows 'No schema'."""
         from geo_optimizer.cli.rich_formatter import format_audit_rich
 
         result = _crea_audit_result_vuoto()
         output = format_audit_rich(result)
 
-        # v2: testo in italiano "Nessuno schema trovato"
-        assert "Nessuno schema" in output
+        # v2: expected text "No schema found"
+        assert "No schema found" in output
 
     def test_score_color_returns_color(self):
-        """_score_color() ritorna un colore hex basato sulla percentuale."""
+        """_score_color() returns a colore hex basato sulla percentuale."""
         from geo_optimizer.cli.rich_formatter import _score_color
 
         # Score alto → verde
@@ -700,7 +701,7 @@ class TestRichFormatter:
         assert _robots_score(r) == 0
 
     def test_llms_score_solo_found(self):
-        """_llms_score() ritorna il punteggio base con solo found=True."""
+        """_llms_score() returns the punteggio base con solo found=True."""
         from geo_optimizer.cli.rich_formatter import _llms_score
         from geo_optimizer.models.config import SCORING
 
@@ -713,13 +714,13 @@ class TestRichFormatter:
         """_meta_score() assegna punti OG solo se entrambi og_title e og_desc presenti."""
         from geo_optimizer.cli.rich_formatter import _meta_score
 
-        # Solo og_title, senza og_description: nessun punto OG
+        # Solo og_title, senza og_description: no punto OG
         r = AuditResult(url="https://example.com")
         r.meta.has_og_title = True
         r.meta.has_og_description = False
 
         score = _meta_score(r)
-        assert score == 0  # Nessun altro flag attivo
+        assert score == 0  # No altro flag attivo
 
     def test_content_score_zero_senza_flag(self):
         """_content_score() ritorna 0 senza flag attivi."""
@@ -738,7 +739,7 @@ class TestGithubFormatter:
     """Test per il formatter GitHub Actions con annotazioni ::notice/::warning/::error."""
 
     def test_format_audit_github_score_alto_notice(self):
-        """Score >= 71 genera annotazione ::notice."""
+        """Score >= 71 generates a ::notice annotation."""
         from geo_optimizer.cli.github_formatter import format_audit_github
 
         result = _crea_audit_result_completo()
@@ -748,7 +749,7 @@ class TestGithubFormatter:
         assert output.startswith("::notice::GEO Score: 85")
 
     def test_format_audit_github_score_medio_warning(self):
-        """Score tra 41 e 70 genera annotazione ::warning."""
+        """Score between 41 and 70 generates a ::warning annotation."""
         from geo_optimizer.cli.github_formatter import format_audit_github
 
         result = AuditResult(url="https://example.com")
@@ -759,7 +760,7 @@ class TestGithubFormatter:
         assert output.startswith("::warning::GEO Score: 60")
 
     def test_format_audit_github_score_basso_error(self):
-        """Score <= 40 genera annotazione ::error."""
+        """Score <= 40 generates an ::error annotation."""
         from geo_optimizer.cli.github_formatter import format_audit_github
 
         result = _crea_audit_result_vuoto()
@@ -854,7 +855,7 @@ class TestGithubFormatter:
         assert _llms_score(r) == 0
 
     def test_schema_score_github_completo(self):
-        """_schema_score() del github formatter calcola il totale correttamente (v4.0)."""
+        """_schema_score() del github formatter calculates the totale correttamente (v4.0)."""
         from geo_optimizer.cli.github_formatter import _schema_score
         from geo_optimizer.models.config import SCORING
 
@@ -873,13 +874,15 @@ class TestGithubFormatter:
 
         r = AuditResult(url="https://example.com")
         r.meta.has_title = True
+        r.meta.title_length = 50        # within 40–60 sweet-spot
         r.meta.has_description = True
+        r.meta.description_length = 140  # within 120–160 sweet-spot
 
         expected = SCORING["meta_title"] + SCORING["meta_description"]
         assert _meta_score(r) == expected
 
     def test_content_score_github_solo_h1(self):
-        """_content_score() del github formatter calcola solo il punto H1."""
+        """_content_score() of the GitHub formatter calculates only the H1 point."""
         from geo_optimizer.cli.github_formatter import _content_score
         from geo_optimizer.models.config import SCORING
 
@@ -889,7 +892,7 @@ class TestGithubFormatter:
         assert _content_score(r) == SCORING["content_h1"]
 
     def test_format_audit_github_score_limite_71_e_notice(self):
-        """Score esattamente 71 genera ::notice (limite inferiore 'good')."""
+        """Score exactly 71 generates ::notice (lower bound of 'good')."""
         from geo_optimizer.cli.github_formatter import format_audit_github
 
         result = AuditResult(url="https://example.com")
@@ -900,7 +903,7 @@ class TestGithubFormatter:
         assert output.startswith("::notice::")
 
     def test_format_audit_github_score_limite_41_e_warning(self):
-        """Score esattamente 41 genera ::warning."""
+        """Score exactly 41 generates ::warning."""
         from geo_optimizer.cli.github_formatter import format_audit_github
 
         result = AuditResult(url="https://example.com")
@@ -917,17 +920,17 @@ class TestGithubFormatter:
 
 
 class TestHttpAsync:
-    """Test per il client HTTP asincrono con httpx."""
+    """Test per il async HTTP client with httpx."""
 
     def test_is_httpx_available_ritorna_bool(self):
-        """is_httpx_available() ritorna un valore booleano."""
+        """is_httpx_available() returns a value booleano."""
         from geo_optimizer.utils.http_async import is_httpx_available
 
         result = is_httpx_available()
         assert isinstance(result, bool)
 
     def test_is_httpx_available_false_quando_non_installato(self):
-        """is_httpx_available() ritorna False se httpx non è importabile."""
+        """is_httpx_available() returns False when httpx is not importable."""
         import builtins
 
         original_import = builtins.__import__
@@ -938,7 +941,7 @@ class TestHttpAsync:
             return original_import(name, *args, **kwargs)
 
         with patch("builtins.__import__", side_effect=mock_import):
-            # Re-importa il modulo per testare la logica con httpx mancante
+            # Re-importa il modulo per testare la logica with httpx mancante
             import importlib
 
             import geo_optimizer.utils.http_async as mod
@@ -946,7 +949,7 @@ class TestHttpAsync:
             importlib.reload(mod)
             result = mod.is_httpx_available()
             assert result is False
-            # Ripristina lo stato del modulo
+            # Ripristina lo status del modulo
             importlib.reload(mod)
 
     @pytest.mark.skipif(
@@ -954,7 +957,7 @@ class TestHttpAsync:
         reason="httpx non installato",
     )
     def test_fetch_url_async_successo(self):
-        """fetch_url_async() ritorna (response, None) in caso di successo."""
+        """fetch_url_async() returns (response, None) on success."""
         from geo_optimizer.utils.http_async import fetch_url_async
 
         mock_response = MagicMock()
@@ -976,7 +979,7 @@ class TestHttpAsync:
         reason="httpx non installato",
     )
     def test_fetch_url_async_timeout(self):
-        """fetch_url_async() ritorna (None, msg_errore) in caso di timeout."""
+        """fetch_url_async() returns (None, error_msg) on timeout."""
         import httpx
 
         from geo_optimizer.utils.http_async import fetch_url_async
@@ -996,7 +999,7 @@ class TestHttpAsync:
         reason="httpx non installato",
     )
     def test_fetch_url_async_connection_error(self):
-        """fetch_url_async() ritorna (None, msg_errore) per errore di connessione."""
+        """fetch_url_async() returns (None, error_msg) on connection error."""
         import httpx
 
         from geo_optimizer.utils.http_async import fetch_url_async
@@ -1017,7 +1020,7 @@ class TestHttpAsync:
         reason="httpx non installato",
     )
     def test_fetch_url_async_risposta_troppo_grande_content_length(self):
-        """fetch_url_async() ritorna errore se Content-Length supera max_size."""
+        """fetch_url_async() returns an error if Content-Length exceeds max_size."""
         from geo_optimizer.utils.http_async import fetch_url_async
 
         mock_response = MagicMock()
@@ -1039,7 +1042,7 @@ class TestHttpAsync:
         reason="httpx non installato",
     )
     def test_fetch_url_async_risposta_troppo_grande_content_effettivo(self):
-        """fetch_url_async() ritorna errore se il contenuto effettivo supera max_size."""
+        """fetch_url_async() ritorna errore se il content effettivo supera max_size."""
         from geo_optimizer.utils.http_async import fetch_url_async
 
         mock_response = MagicMock()
@@ -1061,7 +1064,7 @@ class TestHttpAsync:
         reason="httpx non installato",
     )
     def test_fetch_urls_async_parallelo(self):
-        """fetch_urls_async() ritorna un dict con tutti gli URL come chiavi."""
+        """fetch_urls_async() returns a dict con tutti gli URL come chiavi."""
 
         from geo_optimizer.utils.http_async import fetch_urls_async
 
@@ -1085,137 +1088,7 @@ class TestHttpAsync:
 
 
 # ============================================================================
-# 6 — i18n/__init__.py
-# ============================================================================
-
-
-class TestI18n:
-    """Test per il sistema di internazionalizzazione gettext."""
-
-    def setup_method(self):
-        """Ripristina lo stato globale di i18n prima di ogni test."""
-        import geo_optimizer.i18n as i18n_mod
-
-        i18n_mod._current_translation = None
-
-    def test_get_lang_default_italiano(self):
-        """get_lang() ritorna 'it' di default senza variabile GEO_LANG."""
-        from geo_optimizer.i18n import get_lang
-
-        with patch.dict(os.environ, {}, clear=True):
-            # Rimuove GEO_LANG se presente
-            os.environ.pop("GEO_LANG", None)
-            lang = get_lang()
-            assert lang == "it"
-
-    def test_get_lang_da_variabile_ambiente(self):
-        """get_lang() rispetta la variabile GEO_LANG."""
-        from geo_optimizer.i18n import get_lang
-
-        with patch.dict(os.environ, {"GEO_LANG": "en"}):
-            lang = get_lang()
-            assert lang == "en"
-
-    def test_get_lang_lingua_non_supportata_fallback_italiano(self):
-        """get_lang() ritorna 'it' per lingue non supportate."""
-        from geo_optimizer.i18n import get_lang
-
-        with patch.dict(os.environ, {"GEO_LANG": "fr"}):
-            lang = get_lang()
-            assert lang == "it"
-
-    def test_get_lang_case_insensitive(self):
-        """get_lang() normalizza la lingua in minuscolo."""
-        from geo_optimizer.i18n import get_lang
-
-        with patch.dict(os.environ, {"GEO_LANG": "IT"}):
-            lang = get_lang()
-            assert lang == "it"
-
-    def test_setup_i18n_ritorna_translations(self):
-        """setup_i18n() ritorna un oggetto translations (NullTranslations o GNUTranslations)."""
-        import gettext
-
-        from geo_optimizer.i18n import setup_i18n
-
-        translation = setup_i18n("it")
-        # Deve essere un'istanza di NullTranslations (o sottoclasse GNUTranslations)
-        assert isinstance(translation, gettext.NullTranslations)
-
-    def test_setup_i18n_lingua_non_trovata_usa_null_translations(self):
-        """setup_i18n() usa NullTranslations se i file .mo non esistono."""
-        import gettext
-
-        from geo_optimizer.i18n import setup_i18n
-
-        # Con file .mo assenti, deve usare NullTranslations senza errori
-        translation = setup_i18n("en")
-        assert isinstance(translation, gettext.NullTranslations)
-
-    def test_traduzione_passthrough_senza_file_mo(self):
-        """_() ritorna il messaggio originale se non ci sono file .mo."""
-        from geo_optimizer.i18n import _
-
-        messaggio = "Score GEO"
-        risultato = _(messaggio)
-        assert risultato == messaggio
-
-    def test_traduzione_inizializza_automaticamente(self):
-        """_() funziona anche senza chiamata esplicita a setup_i18n."""
-        import geo_optimizer.i18n as i18n_mod
-
-        # Forza _current_translation a None
-        i18n_mod._current_translation = None
-
-        from geo_optimizer.i18n import _
-
-        # Non deve sollevare eccezioni
-        risultato = _("test")
-        assert isinstance(risultato, str)
-
-    def test_set_lang_valida(self):
-        """set_lang() cambia la lingua corrente senza errori."""
-        import gettext
-
-        import geo_optimizer.i18n as i18n_mod
-        from geo_optimizer.i18n import set_lang
-
-        set_lang("en")
-        assert isinstance(i18n_mod._current_translation, gettext.NullTranslations)
-
-    def test_set_lang_non_supportata_usa_italiano(self):
-        """set_lang() con lingua non supportata ricade sull'italiano."""
-        import geo_optimizer.i18n as i18n_mod
-        from geo_optimizer.i18n import set_lang
-
-        set_lang("zh")  # Cinese non supportato
-        # Deve aver impostato una traduzione senza errori
-        assert i18n_mod._current_translation is not None
-
-    def test_supported_langs_contiene_it_e_en(self):
-        """SUPPORTED_LANGS contiene almeno 'it' e 'en'."""
-        from geo_optimizer.i18n import SUPPORTED_LANGS
-
-        assert "it" in SUPPORTED_LANGS
-        assert "en" in SUPPORTED_LANGS
-
-    def test_default_lang_e_italiano(self):
-        """DEFAULT_LANG è 'it'."""
-        from geo_optimizer.i18n import DEFAULT_LANG
-
-        assert DEFAULT_LANG == "it"
-
-    def test_setup_i18n_senza_lingua_usa_get_lang(self):
-        """setup_i18n() senza parametro usa get_lang() per determinare la lingua."""
-        from geo_optimizer.i18n import setup_i18n
-
-        with patch("geo_optimizer.i18n.get_lang", return_value="it") as mock_get_lang:
-            setup_i18n(None)
-            mock_get_lang.assert_called_once()
-
-
-# ============================================================================
-# 7 — web/cli.py
+# 6 — web/cli.py
 # ============================================================================
 
 
@@ -1228,8 +1101,8 @@ class TestWebCli:
 
         runner = CliRunner()
 
-        with patch("builtins.__import__", side_effect=ImportError("uvicorn non trovato")):
-            # Simula l'importazione di uvicorn che fallisce
+        with patch("builtins.__import__", side_effect=ImportError("uvicorn not found")):
+            # Simula l'importazione di uvicorn che fails
             result = runner.invoke(main, ["--port", "8001"])
 
         # L'uscita deve contenere un messaggio di errore
@@ -1246,11 +1119,11 @@ class TestWebCli:
         with patch.dict("sys.modules", {"uvicorn": mock_uvicorn}):
             runner.invoke(main, ["--host", "127.0.0.1", "--port", "9999"])
 
-        # uvicorn.run deve essere stato chiamato
+        # uvicorn.run deve essere status chiamato
         mock_uvicorn.run.assert_called_once()
         call_kwargs = mock_uvicorn.run.call_args
 
-        # Verifica parametri host e port
+        # Verify host and port parameters
         assert call_kwargs[1]["host"] == "127.0.0.1" or (len(call_kwargs[0]) > 1 and call_kwargs[0][1] == "127.0.0.1")
 
     def test_main_con_uvicorn_parametri_default(self):
@@ -1266,11 +1139,11 @@ class TestWebCli:
         mock_uvicorn.run.assert_called_once()
         call_kwargs = mock_uvicorn.run.call_args
 
-        # Verifica porta di default
+        # Verify default port
         assert 8000 in call_kwargs[0] or call_kwargs[1].get("port") == 8000
 
     def test_main_stampa_url_avvio(self):
-        """main() stampa l'URL del server prima di avviarlo."""
+        """main() prints the server URL before starting it."""
         from geo_optimizer.web.cli import main
 
         runner = CliRunner()
@@ -1297,15 +1170,15 @@ class TestWebCli:
 
 
 # ============================================================================
-# 8 — models/project_config.py
+# 7 — models/project_config.py
 # ============================================================================
 
 
 class TestProjectConfig:
-    """Test per la configurazione progetto via file YAML."""
+    """Test per la project configuration via file YAML."""
 
     def test_load_config_senza_file_ritorna_defaults(self):
-        """load_config() ritorna ProjectConfig con defaults se nessun file trovato."""
+        """load_config() returns a ProjectConfig with defaults when no file is found."""
         from geo_optimizer.models.project_config import ProjectConfig, load_config
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1339,7 +1212,7 @@ class TestProjectConfig:
             assert found == config_file
 
     def test_find_config_file_non_trovato(self):
-        """find_config_file() ritorna None se nessun file esiste."""
+        """find_config_file() returns None se no file esiste."""
         from geo_optimizer.models.project_config import find_config_file
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1347,7 +1220,7 @@ class TestProjectConfig:
             assert found is None
 
     def test_load_config_senza_yaml_ritorna_defaults(self):
-        """load_config() ritorna defaults se PyYAML non è disponibile."""
+        """load_config() returns defaults when PyYAML is not available."""
         from geo_optimizer.models.project_config import ProjectConfig, load_config
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1467,7 +1340,7 @@ extra_bots:
         reason="PyYAML non installato",
     )
     def test_load_config_yaml_corrotto_ritorna_defaults(self):
-        """load_config() ritorna defaults se il YAML è corrotto."""
+        """load_config() returns defaults when the YAML is corrupted."""
         from geo_optimizer.models.project_config import ProjectConfig, load_config
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1483,7 +1356,7 @@ extra_bots:
         reason="PyYAML non installato",
     )
     def test_load_config_yaml_non_dict_ritorna_defaults(self):
-        """load_config() ritorna defaults se il YAML non è un dizionario."""
+        """load_config() returns defaults when the YAML is not a dictionary."""
         from geo_optimizer.models.project_config import ProjectConfig, load_config
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -1495,14 +1368,14 @@ extra_bots:
         assert isinstance(config, ProjectConfig)
 
     def test_is_yaml_available_ritorna_bool(self):
-        """_is_yaml_available() ritorna True o False."""
+        """_is_yaml_available() returns True or False."""
         from geo_optimizer.models.project_config import _is_yaml_available
 
         result = _is_yaml_available()
         assert isinstance(result, bool)
 
     def test_project_config_defaults(self):
-        """ProjectConfig crea istanza con tutti i defaults corretti."""
+        """ProjectConfig creates an instance with all correct defaults."""
         from geo_optimizer.models.project_config import (
             AuditConfig,
             LlmsConfig,
@@ -1532,12 +1405,12 @@ extra_bots:
 
 
 # ============================================================================
-# 9 — core/registry.py
+# 8 — core/registry.py
 # ============================================================================
 
 
 class TestCheckRegistry:
-    """Test per il sistema di plugin check GEO (CheckRegistry)."""
+    """Test per il plugin system check GEO (CheckRegistry)."""
 
     def setup_method(self):
         """Svuota il registry prima di ogni test per isolamento."""
@@ -1552,7 +1425,7 @@ class TestCheckRegistry:
         CheckRegistry.clear()
 
     def _crea_check_valido(self, name: str = "test_check"):
-        """Crea un'istanza di check valida che implementa AuditCheck Protocol."""
+        """Creates a'istanza di check valida che implementa AuditCheck Protocol."""
         from geo_optimizer.core.registry import CheckResult
 
         class CheckValido:
@@ -1614,7 +1487,7 @@ class TestCheckRegistry:
         assert retrieved is check
 
     def test_get_check_non_esistente_ritorna_none(self):
-        """get() ritorna None se il check non esiste."""
+        """get() returns None se il check does not exist."""
         from geo_optimizer.core.registry import CheckRegistry
 
         result = CheckRegistry.get("check_inesistente")
@@ -1631,7 +1504,7 @@ class TestCheckRegistry:
         assert "check_da_rimuovere" not in CheckRegistry.names()
 
     def test_unregister_nome_non_esistente_non_crasha(self):
-        """unregister() con nome non esistente non lancia eccezioni."""
+        """unregister() con nome does not existnte non lancia eccezioni."""
         from geo_optimizer.core.registry import CheckRegistry
 
         # Non deve lanciare KeyError o altri errori
@@ -1686,7 +1559,7 @@ class TestCheckRegistry:
         assert all(isinstance(r, CheckResult) for r in results)
 
     def test_run_all_check_che_crasha_ritorna_score_zero(self):
-        """run_all() gestisce check che lanciano eccezioni: score 0, passed False."""
+        """run_all() handles checks that raise exceptions: score 0, passed False."""
         from geo_optimizer.core.registry import CheckRegistry, CheckResult
 
         class CheckCheCrepa:
@@ -1725,7 +1598,7 @@ class TestCheckRegistry:
         # entry_points viene importato localmente nel metodo, quindi
         # si patcha direttamente in importlib.metadata
         with patch("importlib.metadata.entry_points", return_value=[]):
-            # Prima chiamata: esegue il caricamento
+            # Prima chiamata: executes the caricamento
             count1 = CheckRegistry.load_entry_points()
             # Seconda chiamata: ritorna 0 immediatamente (già caricati)
             count2 = CheckRegistry.load_entry_points()
@@ -1734,7 +1607,7 @@ class TestCheckRegistry:
         assert count2 == 0
 
     def test_run_all_registry_vuoto_ritorna_lista_vuota(self):
-        """run_all() con registry vuoto ritorna lista vuota."""
+        """run_all() con registry vuoto ritorna empty list."""
         from geo_optimizer.core.registry import CheckRegistry
 
         results = CheckRegistry.run_all("https://example.com")

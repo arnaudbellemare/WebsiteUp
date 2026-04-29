@@ -2,7 +2,7 @@
 Test per geo_optimizer.core.citability — 18 metodi (Princeton GEO + content analysis).
 
 Ogni metodo viene testato con HTML costruito ad hoc per verificare
-detection e scoring. Zero chiamate HTTP.
+detection e scoring. Zero calls HTTP.
 """
 
 from __future__ import annotations
@@ -60,7 +60,7 @@ from geo_optimizer.core.citability import (
 
 
 def _soup(html: str) -> BeautifulSoup:
-    """Helper: crea BeautifulSoup da stringa HTML."""
+    """Helper: creates a BeautifulSoup from an HTML string."""
     return BeautifulSoup(html, "html.parser")
 
 
@@ -116,7 +116,7 @@ class TestQuotations:
     def test_blockquote_rilevato(self):
         html = """
         <html><body>
-            <blockquote>La qualità del contenuto è fondamentale.</blockquote>
+            <blockquote>La qualità del content è fondamentale.</blockquote>
             <p>Testo normale.</p>
         </body></html>
         """
@@ -134,7 +134,7 @@ class TestQuotations:
         assert result.detected is True
         assert result.details["attributed_quotes"] >= 1
 
-    def test_nessuna_citazione(self):
+    def test_noa_citazione(self):
         html = "<html><body><p>Testo semplice senza citazioni.</p></body></html>"
         result = detect_quotations(_soup(html))
         assert result.detected is False
@@ -168,7 +168,7 @@ class TestStatistics:
         assert result.details["tables_with_data"] >= 1
 
     def test_testo_senza_numeri(self):
-        html = "<html><body><p>Il contenuto è importante per la visibilità online.</p></body></html>"
+        html = "<html><body><p>Il content è importante per la visibilità online.</p></body></html>"
         result = detect_statistics(_soup(html))
         assert result.detected is False
 
@@ -183,7 +183,7 @@ class TestFluency:
         html = """
         <html><body>
             <p>La visibilità AI è fondamentale per i siti moderni. Pertanto, è necessario
-            ottimizzare il contenuto per i motori di ricerca generativi. Inoltre, la struttura
+            ottimizzare il content per i motori di ricerca generativi. Inoltre, la struttura
             del testo deve essere chiara e ben organizzata per facilitare la comprensione.</p>
             <p>Di conseguenza, i siti che adottano queste pratiche vedono miglioramenti
             significativi nella loro posizione. Tuttavia, non tutti i metodi producono
@@ -193,7 +193,7 @@ class TestFluency:
             <p>Ad esempio, i siti che usano connettivi logici tra i paragrafi
             ottengono un punteggio più alto nella valutazione di citabilità.</p>
             <p>Infine, è importante notare che la qualità del testo è più
-            importante della quantità di contenuto pubblicato.</p>
+            importante della quantità di content pubblicato.</p>
         </body></html>
         """
         result = detect_fluency(_soup(html))
@@ -278,8 +278,8 @@ class TestEasyToUnderstand:
     def test_struttura_chiara(self):
         html = """
         <html><body><article>
-            <h2>Come funziona</h2>
-            <p>Il sistema analizza il contenuto.</p>
+            <h2>Come works</h2>
+            <p>Il sistema analyses the content.</p>
             <h2>FAQ</h2>
             <p>Domande frequenti sul servizio.</p>
             <h2>Come iniziare</h2>
@@ -329,7 +329,7 @@ class TestUniqueWords:
 
 
 class TestKeywordStuffing:
-    def test_nessun_stuffing(self):
+    def test_no_stuffing(self):
         html = """
         <html><body>
             <p>Il marketing digitale comprende diverse strategie di comunicazione.
@@ -344,7 +344,7 @@ class TestKeywordStuffing:
     def test_stuffing_rilevato(self):
         # Ripeti più parole ossessivamente
         stuffed = "ottimizzazione ottimizzazione seo seo ranking ranking keyword keyword "
-        filler = "contenuto qualità web analisi risultato strategia digitale marketing "
+        filler = "content qualità web analisi result strategia digitale marketing "
         html = f"<html><body><p>{stuffed * 15}{filler * 3}</p></body></html>"
         result = detect_keyword_stuffing(_soup(html))
         assert result.detected is True
@@ -361,7 +361,7 @@ class TestReadability:
         # Testo con frasi di media lunghezza (Grade ~7-8)
         html = """
         <html><body>
-            <h2>Come funziona</h2>
+            <h2>Come works</h2>
             <p>This tool checks your site. It finds problems fast. The score shows how well
             your content works. Most sites need small fixes. Better content means more traffic.
             Simple words help readers understand. Short sentences work best for AI engines.</p>
@@ -415,7 +415,7 @@ class TestFaqInContent:
         result = detect_faq_in_content(_soup(html))
         assert result.detected is True
 
-    def test_nessuna_faq(self):
+    def test_noa_faq(self):
         html = "<html><body><h2>Overview</h2><p>Some text here.</p></body></html>"
         result = detect_faq_in_content(_soup(html))
         assert result.detected is False
@@ -460,7 +460,7 @@ class TestImageAltQuality:
         result = detect_image_alt_quality(_soup(html))
         assert result.details["missing_alt"] == 2
 
-    def test_nessuna_immagine(self):
+    def test_noa_immagine(self):
         html = "<html><body><p>No images here.</p></body></html>"
         result = detect_image_alt_quality(_soup(html))
         assert result.score == 3  # Score neutro
@@ -497,7 +497,7 @@ class TestContentFreshness:
         result = detect_content_freshness(_soup(html))
         assert result.details["is_fresh"] is False
 
-    def test_nessuna_data(self):
+    def test_noa_data(self):
         html = "<html><body><p>Content without any date signals.</p></body></html>"
         result = detect_content_freshness(_soup(html))
         assert result.details["date_modified"] is None
@@ -635,7 +635,7 @@ class TestDefinitionPatterns:
         assert result.detected is True
         assert result.details["definitions_found"] >= 2
 
-    def test_nessuna_definizione(self):
+    def test_noa_definizione(self):
         html = """
         <html><body>
             <h1>Tips</h1>
@@ -717,8 +717,8 @@ class TestAttribution:
         assert result.details["inline_attributions"] >= 2
         assert result.score > 0
 
-    def test_nessuna_attribuzione(self):
-        html = "<html><body><p>Il contenuto è importante per tutti i siti web moderni.</p></body></html>"
+    def test_noa_attribuzione(self):
+        html = "<html><body><p>Il content è importante per tutti i siti web moderni.</p></body></html>"
         result = detect_attribution(_soup(html))
         assert result.detected is False
         assert result.details["inline_attributions"] == 0
@@ -741,7 +741,7 @@ class TestAttribution:
 
 
 class TestNegativeSignals:
-    def test_nessun_segnale_negativo(self):
+    def test_no_segnale_negativo(self):
         html = """
         <html><body>
             <meta name="author" content="Dr. Smith">
@@ -803,7 +803,7 @@ class TestComparisonContent:
         assert result.details["vs_headings"] >= 1
         assert result.details["large_tables"] >= 1
 
-    def test_nessun_confronto(self):
+    def test_no_confronto(self):
         html = "<html><body><h2>Guide</h2><p>Simple text without comparisons.</p></body></html>"
         result = detect_comparison_content(_soup(html))
         assert result.detected is False
@@ -841,7 +841,7 @@ class TestEeat:
         assert result.details["trust_link_count"] >= 4
         assert result.details["is_https"] is True
 
-    def test_nessun_segnale_eeat(self):
+    def test_no_segnale_eeat(self):
         html = "<html><body><p>Content without any trust signals.</p></body></html>"
         result = detect_eeat(_soup(html))
         assert result.details["trust_link_count"] == 0
@@ -990,7 +990,7 @@ class TestSnippetReady:
         assert result.detected is True
         assert result.details["snippet_ready_sections"] >= 1
 
-    def test_nessun_heading(self):
+    def test_no_heading(self):
         html = "<html><body><p>Solo testo.</p></body></html>"
         result = detect_snippet_ready(_soup(html))
         assert result.detected is False
@@ -1059,7 +1059,7 @@ class TestBlogStructure:
         assert result.details["has_author"] is True
         assert result.score >= 3
 
-    def test_nessun_schema_article(self):
+    def test_no_schema_article(self):
         html = """
         <html><body>
             <script type="application/ld+json">
@@ -1106,8 +1106,8 @@ class TestShoppingReadiness:
         assert result.details["has_availability"] is True
         assert result.details["has_review_count"] is True
 
-    def test_nessun_product_schema(self):
-        html = "<html><body><p>Nessun prodotto.</p></body></html>"
+    def test_no_product_schema(self):
+        html = "<html><body><p>No prodotto.</p></body></html>"
         result = detect_shopping_readiness(_soup(html))
         assert result.detected is False
         assert result.score == 0
@@ -1158,7 +1158,7 @@ class TestChatgptShopping:
         assert result.detected is False
         assert result.details["fields_present"] == 2
 
-    def test_nessun_product(self):
+    def test_no_product(self):
         html = "<html><body><p>No product.</p></body></html>"
         result = detect_chatgpt_shopping(_soup(html))
         assert result.detected is False
@@ -1172,7 +1172,7 @@ class TestChatgptShopping:
 
 class TestWeightSum:
     def test_somma_max_score_base_100_con_bonus(self):
-        """Verifica che i 18 metodi base sommano 100, i 7 bonus aggiungono 31."""
+        """Verifies that i 18 metodi base sommano 100, i 7 bonus aggiungono 31."""
         html = "<html><body><p>Test content.</p></body></html>"
         result = audit_citability(_soup(html), "https://example.com")
         # 18 base=100, 7 batch2=31, 5 batch3+4=18, 8 batchA=27, 4 batchB=13, 5 RAG=19 → 208
@@ -1205,7 +1205,7 @@ class TestAuditCitability:
                 <p>Il 73% dei siti non è ottimizzato. Il mercato vale $82.2 billion.
                 La crescita è del 25% CAGR.</p>
 
-                <h2>Come funziona</h2>
+                <h2>Come works</h2>
                 <p>L'API REST usa JSON-LD per strutturare i dati (RFC 9309).
                 Il protocollo HTTP/2 migliora le performance.</p>
                 <code>geo audit --url https://example.com</code>
@@ -1229,7 +1229,7 @@ class TestAuditCitability:
         assert result.grade in ("low", "medium", "high", "excellent")
         assert len(result.methods) == 47
 
-        # Verifica che ogni metodo abbia un nome
+        # Verifies that ogni metodo abbia un nome
         names = {m.name for m in result.methods}
         assert "cite_sources" in names
         assert "quotation_addition" in names
@@ -1299,7 +1299,7 @@ class TestVoiceSearch:
         assert result.details["question_headings"] >= 2
         assert result.details["concise_answers"] >= 1
 
-    def test_nessuna_domanda(self):
+    def test_noa_domanda(self):
         html = "<html><body><h2>SEO Guide</h2><p>Some content here.</p></body></html>"
         result = detect_voice_search(_soup(html))
         assert not result.detected
@@ -1417,7 +1417,7 @@ class TestFirstPartyData:
         assert result.score >= 3
         assert result.details["has_methodology_section"]
 
-    def test_nessun_dato_proprio(self):
+    def test_no_dato_proprio(self):
         html = "<html><body><p>SEO is important for websites.</p></body></html>"
         result = detect_first_party_data(_soup(html))
         assert not result.detected
@@ -1433,7 +1433,7 @@ class TestStaleData:
     def test_contenuto_pulito(self):
         html = "<html><body><p>Fresh content about modern SEO in 2026.</p></body></html>"
         result = detect_stale_data(_soup(html))
-        assert not result.detected  # fix #327: detected=False quando pulito (nessuna penalità)
+        assert not result.detected  # fix #327: detected=False quando pulito (noa penalità)
         assert result.score == 4
 
     def test_copyright_vecchio(self):
@@ -1483,7 +1483,7 @@ class TestSocialProof:
         assert result.detected
         assert result.score == 3
 
-    def test_nessun_social_proof(self):
+    def test_no_social_proof(self):
         html = "<html><body><p>Simple text without any proof.</p></body></html>"
         result = detect_social_proof(_soup(html))
         assert result.score == 0
@@ -1508,7 +1508,7 @@ class TestAccessibilitySignals:
         assert result.detected
         assert result.score == 3
 
-    def test_nessun_segnale_accessibilita(self):
+    def test_no_segnale_accessibilita(self):
         html = "<html><body><div>Content in a div only.</div></body></html>"
         result = detect_accessibility_signals(_soup(html))
         assert result.score == 0
@@ -1535,7 +1535,7 @@ class TestConversionFunnel:
         assert result.details["has_pricing_link"]
         assert result.details["has_contact"]
 
-    def test_nessun_funnel(self):
+    def test_no_funnel(self):
         html = "<html><body><p>Just some informational text.</p></body></html>"
         result = detect_conversion_funnel(_soup(html))
         assert result.score == 0
@@ -1592,8 +1592,8 @@ class TestTemporalCoherence:
         assert result.score == 1
         assert result.details["date_count"] == 1
 
-    def test_nessuna_data(self):
-        """Nessuna data trovata → score 0."""
+    def test_noa_data(self):
+        """Noa data trovata → score 0."""
         html = "<html><body><p>No dates anywhere.</p></body></html>"
         result = detect_temporal_coherence(_soup(html))
         assert result.score == 0
@@ -1676,8 +1676,8 @@ class TestAnchorTextQuality:
         assert result.details["total_internal_links"] == 1
         assert result.details["descriptive_count"] == 1
 
-    def test_nessun_link_interno(self):
-        """Nessun link interno → score neutro."""
+    def test_no_link_interno(self):
+        """No link interno → score neutro."""
         html = "<html><body><p>No links at all.</p></body></html>"
         result = detect_anchor_text_quality(_soup(html), "https://example.com")
         assert result.score == 2  # Score neutro

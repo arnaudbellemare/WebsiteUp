@@ -87,7 +87,7 @@ Creates robots.txt entries, llms.txt, JSON-LD schema, meta tags, and AI discover
 | `robots` | AI bot access via robots.txt |
 | `llms` | llms.txt presence, structure, depth |
 | `schema` | JSON-LD types, richness, sameAs |
-| `meta` | title, description, canonical, Open Graph |
+| `meta` | **/15** — title (40–60 chars), description (120–160 chars), canonical, Open Graph, Twitter Card |
 | `content` | H1, word count, numbers, links, structure |
 | `signals` | lang attribute, RSS feed, freshness |
 | `ai_discovery` | .well-known/ai.txt, /ai/summary.json, /ai/faq.json |

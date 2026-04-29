@@ -68,7 +68,7 @@ class TestAuditSignals:
         assert result.has_freshness is True
 
     def test_signals_soup_none_safe(self):
-        """Schema vuoto e pagina minimale non crashano."""
+        """Schema vuoto e page minimale non crashano."""
         html = "<html><body></body></html>"
         result = audit_signals(_soup(html), SchemaResult())
         assert result.has_lang is False
@@ -112,7 +112,7 @@ class TestAuditBrandEntity:
         assert "Acme Corp" in result.names_found
 
     def test_brand_incoerente(self):
-        """Nomi tutti diversi (nessuno appare 2+ volte) → brand_name_consistent = False."""
+        """Nomi tutti diversi (noo appare 2+ volte) → brand_name_consistent = False."""
         # HTML senza og:title per evitare che il title appaia 2 volte
         html = """<html><head>
             <title>Alpha</title>
@@ -153,7 +153,7 @@ class TestAuditBrandEntity:
         assert result.has_wikidata is True
 
     def test_kg_pillars_zero(self):
-        """Nessun sameAs → kg_pillar_count = 0."""
+        """No sameAs → kg_pillar_count = 0."""
         schema = SchemaResult(
             raw_schemas=[{"@type": "Organization", "name": "Acme"}],
             has_organization=True,
@@ -169,7 +169,7 @@ class TestAuditBrandEntity:
         assert result.has_about_link is True
 
     def test_about_link_assente(self):
-        """Nessun link about → has_about_link = False."""
+        """No link about → has_about_link = False."""
         html = _base_html()
         result = audit_brand_entity(_soup(html), SchemaResult(), MetaResult(), ContentResult())
         assert result.has_about_link is False
@@ -209,7 +209,7 @@ class TestAuditBrandEntity:
         assert result.faq_depth == 5
 
     def test_graph_spacchettamento(self):
-        """Schema con @graph viene spacchettato per description match."""
+        """Schema with @graph is unpacked for description matching."""
         schema = SchemaResult(
             raw_schemas=[
                 {
@@ -232,7 +232,7 @@ class TestAuditBrandEntity:
             description_text="Leading provider of widgets and solutions",
         )
         result = audit_brand_entity(_soup(html), schema, meta, ContentResult())
-        # Il @graph viene spacchettato e la description match funziona
+        # The @graph is unpacked and the description match works
         assert result.schema_desc_matches_meta is True
 
 

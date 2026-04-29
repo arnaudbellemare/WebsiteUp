@@ -129,7 +129,7 @@ def _query_openai(prompt: str, *, system: str, api_key: str, model: str, max_tok
             prompt_tokens=usage.prompt_tokens if usage else 0,
             completion_tokens=usage.completion_tokens if usage else 0,
         )
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         logger.warning("OpenAI query failed: %s: %s", type(exc).__name__, exc)
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="openai", model=model)
 
@@ -154,7 +154,7 @@ def _query_anthropic(prompt: str, *, system: str, api_key: str, model: str, max_
             prompt_tokens=resp.usage.input_tokens if resp.usage else 0,
             completion_tokens=resp.usage.output_tokens if resp.usage else 0,
         )
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         logger.warning("Anthropic query failed: %s: %s", type(exc).__name__, exc)
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="anthropic", model=model)
 
@@ -181,6 +181,6 @@ def _query_groq(prompt: str, *, system: str, api_key: str, model: str, max_token
             prompt_tokens=usage.prompt_tokens if usage else 0,
             completion_tokens=usage.completion_tokens if usage else 0,
         )
-    except Exception as exc:
+    except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError) as exc:
         logger.warning("Groq query failed: %s: %s", type(exc).__name__, exc)
         return LLMResponse(error=f"{type(exc).__name__}: {exc}", provider="groq", model=model)

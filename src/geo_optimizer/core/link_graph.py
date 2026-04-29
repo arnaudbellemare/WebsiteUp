@@ -113,7 +113,7 @@ def _fetch_html(url: str) -> str:
         return ""
     try:
         return response.content.decode(response.encoding or "utf-8", errors="replace")
-    except Exception:
+    except (UnicodeDecodeError, LookupError):
         return response.text or ""
 
 

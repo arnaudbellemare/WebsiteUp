@@ -197,7 +197,7 @@ def _check_canonical_conflict(soup, base_url: str) -> tuple[bool, str, str]:
             # Redirect detected — get final URL from Location header if available
             location = r.headers.get("Location", "") if hasattr(r, "headers") else ""
             return True, canonical_url, location
-    except Exception:
+    except (AttributeError, TypeError):
         pass
 
     return False, canonical_url, ""
@@ -270,7 +270,7 @@ def _check_urls_parallel(
             if err or r is None:
                 return url, anchor, 0
             return url, anchor, r.status_code
-        except Exception:
+        except (AttributeError, TypeError):
             return url, anchor, 0
 
     with ThreadPoolExecutor(max_workers=_WORKERS) as pool:
@@ -278,7 +278,7 @@ def _check_urls_parallel(
         for future in as_completed(futures):
             try:
                 results.append(future.result())
-            except Exception:
+            except (ValueError, TypeError, KeyError, AttributeError, OSError, RuntimeError):
                 url, anchor = futures[future]
                 results.append((url, anchor, 0))
 

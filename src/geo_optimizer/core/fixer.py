@@ -17,12 +17,20 @@ import copy
 import html as html_lib
 import json
 import logging
+from pathlib import Path
 from urllib.parse import urlparse
 
 from geo_optimizer.models.config import AI_BOTS, SAMEAS_AUTHORITATIVE_DOMAINS, SCHEMA_TEMPLATES
 from geo_optimizer.models.results import AuditResult, FixItem, FixPlan
 
 logger = logging.getLogger(__name__)
+_TEMPLATE_DIR = Path(__file__).with_name("templates")
+
+
+def _render_template(template_name: str, **kwargs: str) -> str:
+    """Load and render a text template from core/templates."""
+    template = (_TEMPLATE_DIR / template_name).read_text(encoding="utf-8")
+    return template.format(**kwargs)
 
 
 def generate_robots_fix(result: AuditResult, base_url: str, project_config=None) -> FixItem | None:
@@ -389,23 +397,8 @@ def generate_content_rewrite_fix(result: AuditResult, base_url: str) -> FixItem 
     if not suggestions:
         return None
 
-    content = "\n".join(
-        [
-            f"# Content Rewrite Plan — {page_label}",
-            "",
-            "Use this deterministic rewrite checklist before publishing the next revision.",
-            "",
-            "## Priority Suggestions",
-            *suggestions,
-            "",
-            "## Recommended Section Shape",
-            "- Intro: answer the main question in one direct sentence.",
-            "- H2 1: explain the key concept with one concrete example.",
-            "- H2 2: add evidence, numbers, or source-backed support.",
-            "- H2 3: compare options, tradeoffs, or implementation steps.",
-            "- Close: summarize the decision or takeaway in one citation-ready sentence.",
-        ]
-    )
+    checklist = "\n".join(suggestions)
+    content = _render_template("content_rewrite_plan.md.tpl", page_label=page_label, suggestions=checklist)
 
     return FixItem(
         category="content",
@@ -430,32 +423,7 @@ def generate_vertical_fix_templates(result: AuditResult, base_url: str) -> list[
     site_name = parsed.netloc.replace("www.", "")
     locale = (profile.market_locale or "en").strip().lower()
 
-    trust_page = "\n".join(
-        [
-            f"# Why clients trust {site_name}",
-            "",
-            f"This page is optimized for {vertical} trust and AI citation.",
-            "",
-            "## Credentials and reliability",
-            "- Licenses, certifications, and insurance status",
-            "- Years in operation and served client volume",
-            "- Team qualifications and response SLAs",
-            "",
-            "## Process transparency",
-            "- How discovery, delivery, and quality control work",
-            "- Expected timelines and escalation paths",
-            "- Clear scope boundaries and exclusions",
-            "",
-            "## Proof and outcomes",
-            "- Case studies with measurable outcomes",
-            "- Client testimonials with context",
-            "- Third-party references where available",
-            "",
-            "## Contact and quote",
-            "- Add a direct quote/consultation CTA block above the fold",
-            "- Add a secondary CTA after proof sections",
-        ]
-    )
+    trust_page = _render_template("vertical_trust_page.md.tpl", site_name=site_name, vertical=vertical)
     fixes: list[FixItem] = [
         FixItem(
             category="vertical",
@@ -532,19 +500,7 @@ def generate_vertical_fix_templates(result: AuditResult, base_url: str) -> list[
         )
 
     if vertical in {"ecommerce-retail", "saas-technology", "education-edtech-k12"}:
-        faq_seed = "\n".join(
-            [
-                f"# {vertical} conversion FAQ seed",
-                "",
-                "Use these as initial FAQ prompts for high-intent pages:",
-                "",
-                "- What problem does this solve and for whom?",
-                "- How does pricing/packaging work?",
-                "- What are onboarding steps and timelines?",
-                "- What proof of outcomes can be verified?",
-                "- What support channels are available?",
-            ]
-        )
+        faq_seed = _render_template("vertical_faq_seed.md.tpl", vertical=vertical)
         fixes.append(
             FixItem(
                 category="vertical",

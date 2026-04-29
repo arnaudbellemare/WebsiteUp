@@ -62,7 +62,7 @@ def _get_text_safe(element) -> str:
     """Safely extract text from a BeautifulSoup element."""
     try:
         return str(element.get_text(strip=True))
-    except Exception:
+    except AttributeError:
         return ""
 
 
