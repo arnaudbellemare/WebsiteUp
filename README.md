@@ -2,7 +2,7 @@
 
 <img src="assets/logo.svg" alt="GEO Optimizer" width="480"/>
 
-### AI Visibility Audit for AI search engines
+### Make your website visible to AI search engines
 
 [![PyPI](https://img.shields.io/pypi/v/geo-optimizer-skill?style=flat-square&color=3b82f6)](https://pypi.org/project/geo-optimizer-skill/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white)](https://python.org)
@@ -12,7 +12,7 @@
 [![MCP Compatible](https://img.shields.io/badge/MCP-compatible-8b5cf6?style=flat-square)](https://modelcontextprotocol.io)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?style=flat-square&logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/auritidesign)
 
-**Scanner + Scorer + Fixer + Monitor for AI visibility, citation readiness, and buyer-facing action plans.**
+**Audit · Score · Fix · Monitor — for AI citation readiness.**
 
 [Quick Start](#quick-start) · [Live Demo](https://geo-optimizer-web.onrender.com) · [Documentation](https://auriti-labs.github.io/geo-optimizer-skill/) · [Changelog](CHANGELOG.md)
 
@@ -22,16 +22,16 @@
 
 ## Why this exists
 
-AI search engines give direct answers and **cite their sources**. If your site isn't optimized, you're invisible — even if you rank #1 on Google.
+AI search engines like Perplexity, ChatGPT, and Google AI give direct answers and **cite their sources**. If your site isn't optimized for these engines, you're invisible — even if you rank #1 on Google.
 
 ```
-User: "What's the best mortgage calculator?"
+User asks: "What's the best property management company in Montreal?"
 
-Perplexity: "According to [Competitor.com], the formula is..."
+Perplexity: "According to [Competitor.com], their services include..."
              ↑ They appear. You don't.
 ```
 
-GEO Optimizer audits your site against **47 research-backed methods** ([Princeton KDD 2024](https://arxiv.org/abs/2311.09735), [AutoGEO ICLR 2026](https://arxiv.org/abs/2510.11438)) and generates the fixes.
+GEO Optimizer audits your site against **47 research-backed methods** ([Princeton KDD 2024](https://arxiv.org/abs/2311.09735), [AutoGEO ICLR 2026](https://arxiv.org/abs/2510.11438)) and generates the fixes so AI engines can find, parse, and cite you.
 
 ---
 
@@ -41,153 +41,101 @@ GEO Optimizer audits your site against **47 research-backed methods** ([Princeto
 pip install geo-optimizer-skill
 ```
 
-Alternative buyer-facing command names after install:
+Then run your first audit:
 
 ```bash
-aiv --help
-ai-visibility-audit --help
-ai-citation-optimizer --help
-ai-search-readiness --help
-local-ai-presence-monitor --help
+geo audit --url https://yoursite.com
 ```
 
-## Run On Your Website (Copy/Paste)
+You'll get a score out of 100 and a prioritized list of what to fix.
 
-Use this section if you just want to plug your website in and run.
+---
 
-### 1) Fastest all-in-one path
+## Common Commands
+
+### One-shot: audit and fix everything
 
 ```bash
-geo autopilot --url https://yoursite.com --repo . --apply --vertical auto --market-locale en-fr
+geo autopilot --url https://yoursite.com --repo . --apply
 ```
 
-What this does:
-- audits your site
-- builds a prioritized action roadmap
-- generates/apply file-safe fixes
-- re-runs audit and reports delta
+This audits your site, generates fixes, applies them to your repo, then re-runs the audit and shows the improvement.
 
-If you want an A/B-style optimization panel (incumbent vs rival vs merged):
+### Step by step (recommended for first run)
 
 ```bash
-geo rivalry --url https://yoursite.com --vertical auto --market-locale en-fr --output rivalry-report.md
-```
-
-### 2) Safe step-by-step path (recommended for first run)
-
-```bash
-# A) Audit with auto business-type detection
-geo audit --url https://yoursite.com --vertical auto --market-locale en-fr
-
-# B) Preview vertical packs only (trust pages, CTA blocks, bilingual schema)
-geo fix --url https://yoursite.com --vertical auto --market-locale en-fr --only vertical
-
-# C) Apply generated fixes
-geo fix --url https://yoursite.com --vertical auto --apply
-
-# D) Apply into local repo with stack-aware routing (Next.js/Astro/etc.)
-geo apply --url https://yoursite.com --repo . --vertical auto
-
-# E) Save a baseline snapshot for monitoring
-geo audit --url https://yoursite.com --save-history
-
-# F) Generate client-friendly trend report
-geo track --url https://yoursite.com --report --output ./ai-readiness-report.html
-```
-
-### 3) Large sites (sitemap mode)
-
-```bash
-geo audit --sitemap https://yoursite.com/sitemap.xml --max-urls 25 --format json --output sitemap-audit.json
-```
-
-### 4) Weekly monitoring commands
-
-```bash
-geo audit --url https://yoursite.com --save-history --regression
-geo monitor --domain yoursite.com
-geo track --url https://yoursite.com --report --output ./ai-readiness-report.html
-```
-
-### 5) Buyer-friendly aliases (same engine)
-
-```bash
-aiv visibility-audit --url https://yoursite.com
-aiv scanner --url https://yoursite.com
-aiv scorer --url https://yoursite.com
-aiv fixer --url https://yoursite.com --apply
-aiv readiness-monitor --url https://yoursite.com --report --output ./ai-readiness-report.html
-```
-
-```bash
-# Audit any site — get a score 0-100 with actionable recommendations
+# 1. Audit — see your score and what's missing
 geo audit --url https://yoursite.com
 
-# Buyer-facing alias for the same command
-aiv visibility-audit --url https://yoursite.com
+# 2. Preview fixes before applying
+geo fix --url https://yoursite.com
 
-# Run a verticalized audit with auto business-type detection
-geo audit --url https://yoursite.com --vertical auto --market-locale en-fr
-
-# Audit a full sitemap and surface weakest pages first
-geo audit --sitemap https://yoursite.com/sitemap.xml --max-urls 25
-
-# Compare before/after versions of a page
-geo diff --before https://yoursite.com/page-old --after https://yoursite.com/page-new
-
-# Save history and detect regressions over time
-geo audit --url https://yoursite.com --save-history --regression
-
-# Show the saved trend for a site
-geo history --url https://yoursite.com
-
-# Passive AI visibility snapshot for a domain
-geo monitor --domain yoursite.com
-
-# Save or query archived AI answer snapshots
-geo snapshots --query "best GEO tool" --from 2026-03-01 --to 2026-03-30
-
-# Score citation quality inside an archived answer snapshot
-geo snapshots --quality --snapshot-id 12 --target-domain yoursite.com
-
-# Run recurring monitoring and generate an HTML trend report
-geo track --url https://yoursite.com --report --output ./geo-track-report.html
-
-# Auto-generate all missing files (robots.txt, llms.txt, schema, meta)
+# 3. Apply fixes to your local repo
 geo fix --url https://yoursite.com --apply
 
-# Generate fixes with vertical context (trust + conversion priorities)
-geo fix --url https://yoursite.com --vertical legal-professional-services --apply
+# 4. Save a baseline so you can track changes over time
+geo audit --url https://yoursite.com --save-history
+```
 
-# Generate only vertical artifacts (trust page, CTA block, bilingual service schema if en-fr)
-geo fix --url https://yoursite.com --vertical auto --market-locale en-fr --only vertical --apply
+### Competitor comparison
 
-# 4-layer model aliases
+```bash
+geo rivalry --url https://yoursite.com --output rivalry-report.md
+```
+
+### Large sites (sitemap mode)
+
+```bash
+geo audit --sitemap https://yoursite.com/sitemap.xml --max-urls 25
+```
+
+### Weekly monitoring
+
+```bash
+geo audit --url https://yoursite.com --save-history --regression
+geo monitor --domain yoursite.com
+geo track --url https://yoursite.com --report --output ai-readiness-report.html
+```
+
+### Other useful commands
+
+```bash
+# Compare before/after versions of a page
+geo diff --before https://yoursite.com/old --after https://yoursite.com/new
+
+# Generate llms.txt (the AI equivalent of robots.txt)
+geo llms --base-url https://yoursite.com --output ./public/llms.txt
+
+# Generate JSON-LD schema markup
+geo schema --type faq --url https://yoursite.com
+
+# Content audit (keyword density, E-E-A-T, entity signals)
+geo content --url https://yoursite.com --keywords "property management,montreal"
+
+# Audit a GitHub repo's SEO/GEO health
+geo github --repo-path .
+
+# Internal link graph and orphan page detection
+geo links --sitemap https://yoursite.com/sitemap.xml
+
+# Cross-page terminology consistency
+geo coherence --sitemap https://yoursite.com/sitemap.xml
+
+# AI crawler log analysis
+geo logs --file access.log
+
+# Saved AI answer archive and citation quality
+geo snapshots --query "best GEO tool"
+geo snapshots --quality --snapshot-id 12 --target-domain yoursite.com
+```
+
+You can also use these shorter aliases for the same commands:
+
+```bash
+aiv visibility-audit --url https://yoursite.com
 aiv scanner --url https://yoursite.com
 aiv scorer --url https://yoursite.com
 aiv fixer --url https://yoursite.com --apply
-aiv readiness-monitor --url https://yoursite.com --report --output ./ai-readiness-report.html
-
-# Generate llms.txt from sitemap
-geo llms --base-url https://yoursite.com --output ./public/llms.txt
-
-# Generate JSON-LD schema
-geo schema --type faq --url https://yoursite.com
-
-# Content workflow audit (keyword density + E-E-A-T + entity signals)
-geo content --url https://yoursite.com --keywords "property management,montreal"
-
-# Repository SEO/GEO audit for GitHub projects
-geo github --repo-path . --write-reports
-geo github --repo-url https://github.com/org/repo.git --branch main
-
-# Internal link graph + orphan pages from sitemap
-geo links --sitemap https://yoursite.com/sitemap.xml --max-pages 30
-
-# Playbooks, orchestration, and pipelines
-geo playbook --list
-geo orchestrate --url https://yoursite.com --sitemap https://yoursite.com/sitemap.xml
-geo pipeline --mode cwv --url https://yoursite.com
 ```
 
 ---
@@ -205,9 +153,9 @@ geo pipeline --mode cwv --url https://yoursite.com
 | **Signals** | /6 | `<html lang>`, RSS/Atom feed, dateModified freshness? |
 | **AI Discovery** | /6 | `.well-known/ai.txt`, `/ai/summary.json`, `/ai/faq.json`, `/ai/service.json`? |
 
-**Score bands:** 86-100 Excellent · 68-85 Good · 36-67 Foundation · 0-35 Critical
+**Score bands:** 86–100 Excellent · 68–85 Good · 36–67 Foundation · 0–35 Critical
 
-**Bonus checks** (informational, do not affect score):
+**Bonus checks** (informational, don't affect your score):
 
 | Check | What it detects |
 |-------|-----------------|
@@ -216,17 +164,20 @@ geo pipeline --mode cwv --url https://yoursite.com
 | **WebMCP Readiness** | Chrome WebMCP support: `registerTool()`, `toolname` attributes, `potentialAction` schema |
 | **Negative Signals** | 8 anti-citation signals: CTA overload, popups, thin content, keyword stuffing, missing author, boilerplate ratio |
 | **Prompt Injection Detection** | 8 manipulation patterns: hidden text, invisible Unicode, LLM instructions, HTML comment injection, monochrome text, micro-font, data-attr injection, aria-hidden abuse |
-| **Trust Stack Score** | 5-layer trust aggregation (Technical, Identity, Social, Academic, Consistency) — composite grade A-F |
-| **RAG Chunk Readiness** | Content segmentation for RAG retrieval: section word counts, definition openings, heading boundaries, anchor sentences `🆕 v4.7` |
-| **Content Decay Prediction** | Detects temporal, statistical, version, event, and price decay patterns — evergreen score 0-100 `🆕 v4.7` |
-| **Platform Citation Profile** | Per-platform readiness scores for ChatGPT, Perplexity, Google AI `🆕 v4.7` |
+| **Trust Stack Score** | 5-layer trust aggregation (Technical, Identity, Social, Academic, Consistency) — composite grade A–F |
+| **RAG Chunk Readiness** | Content segmentation for RAG retrieval: section word counts, definition openings, heading boundaries, anchor sentences |
+| **Content Decay Prediction** | Detects temporal, statistical, version, event, and price decay patterns — evergreen score 0–100 |
+| **Platform Citation Profile** | Per-platform readiness scores for ChatGPT, Perplexity, Google AI |
 
-Plus a separate **Citability Score** (0-100) measuring content quality across 47 methods:
+Plus a separate **Citability Score** (0–100) measuring content quality across 47 methods:
 Quotation +41% · Statistics +33% · Fluency +29% · Cite Sources +27% · and 43 more.
 
-### Vertical Mode (service businesses)
+---
 
-`geo audit` and `geo fix` now support a vertical profile layer for:
+## Vertical Mode
+
+Running with `--vertical auto` detects your business type automatically and adapts recommendations for it. Supported verticals:
+
 - `ecommerce-retail`
 - `travel-hospitality`
 - `healthcare-dental`
@@ -238,53 +189,26 @@ Quotation +41% · Statistics +33% · Fluency +29% · Cite Sources +27% · and 43
 - `education-edtech-k12`
 - `local-home-services`
 
-This adds a buyer-facing **Business Readiness Score** (trust, conversion path, locality clarity, vertical relevance) with prioritized actions for local service operators.
-By default (`--vertical auto`), the engine infers business type from URL + page content and adapts recommendations automatically.
+This adds a **Business Readiness Score** (trust, conversion path, locality clarity, vertical relevance) with prioritized actions for your industry.
 
-`geo fix` can now output vertical-specific artifacts directly via `--only vertical`, including:
-- trust page templates
-- conversion quote CTA blocks
-- bilingual service entity schema templates (when `--market-locale en-fr`)
-- opinionated per-vertical content packs, for example:
-  - property-management trust/legal pack
-  - dental procedure FAQ scaffold + explainer template
-  - insurance comparison/transparency blocks
-  - industrial B2B spec-sheet template
-  - travel intent + itinerary schema pack
-  - ecommerce conversion + product comparison pack
-  - SaaS demand capture + commercial FAQ schema pack
-  - education lead-quality + curriculum alignment pack
-  - local home services trust + estimate CTA pack
-
-### Additional tools
+Use `--only vertical` to generate vertical-specific content directly — trust page templates, conversion CTA blocks, bilingual service schema, FAQ scaffolds, and more:
 
 ```bash
-geo coherence --sitemap https://example.com/sitemap.xml  # Cross-page terminology consistency
-geo logs --file access.log                                # AI crawler log analysis
+geo fix --url https://yoursite.com --vertical auto --market-locale en-fr --only vertical --apply
 ```
-
-Optional LLM-powered analysis (`pip install geo-optimizer-skill[llm]`):
-brand sentiment, citation attribution, multi-turn persistence, cross-platform citation map, prompt library.
 
 ---
 
-## Output formats
+## Output Formats
 
 ```bash
-geo audit --url https://example.com --format text     # Human-readable (default)
+geo audit --url https://example.com                    # Human-readable (default)
 geo audit --url https://example.com --format json      # Machine-readable
-geo audit --sitemap https://example.com/sitemap.xml    # Batch sitemap audit (text)
-geo audit --sitemap https://example.com/sitemap.xml --format json  # Batch sitemap audit (JSON)
-geo audit --url https://example.com --format rich      # Colored terminal
-geo audit --url https://example.com --format html      # Self-contained report
+geo audit --url https://example.com --format rich      # Colored terminal output
+geo audit --url https://example.com --format html      # Self-contained HTML report
 geo audit --url https://example.com --format sarif     # GitHub Code Scanning
-geo audit --url https://example.com --format junit     # Jenkins, GitLab CI
+geo audit --url https://example.com --format junit     # Jenkins / GitLab CI
 geo audit --url https://example.com --format github    # GitHub Actions annotations
-geo monitor --domain example.com                       # Passive AI visibility readiness
-geo snapshots --query "best GEO tool"                 # Saved AI answer archive
-geo snapshots --quality --snapshot-id 12              # Citation quality tiers for a saved answer
-geo history --url https://example.com                  # Saved score trend
-geo track --url https://example.com --report           # Monitoring HTML report
 ```
 
 ---
@@ -296,13 +220,13 @@ geo track --url https://example.com --report           # Monitoring HTML report
 - uses: Auriti-Labs/geo-optimizer-skill@v1
   with:
     url: https://yoursite.com
-    min-score: 70        # Fail if score drops below 70
-    format: sarif        # Upload to GitHub Security tab
+    min-score: 70        # Fail the build if score drops below 70
+    format: sarif        # Upload results to GitHub Security tab
 ```
 
 Works with GitHub Actions, GitLab CI, Jenkins, CircleCI, and any CI that runs Python.
 
-For longitudinal checks, persist snapshots and fail on regressions:
+To catch regressions over time:
 
 ```bash
 geo audit --url https://yoursite.com --save-history --regression
@@ -312,23 +236,23 @@ geo audit --url https://yoursite.com --save-history --regression
 
 ## MCP Server
 
-Use GEO Optimizer from Claude, Cursor, Windsurf, or any MCP client:
+Use GEO Optimizer directly from Claude, Cursor, Windsurf, or any MCP client:
 
 ```bash
 pip install geo-optimizer-skill[mcp]
 claude mcp add geo-optimizer -- geo-mcp
 ```
 
-Then ask: *"audit my site and fix what's missing"*
+Then just ask: *"audit my site and fix what's missing"*
 
-| Tool | Purpose |
-|------|---------|
-| `geo_audit` | Full audit with score + recommendations |
+| Tool | What it does |
+|------|-------------|
+| `geo_audit` | Full audit with score and recommendations |
 | `geo_fix` | Generate fix files |
 | `geo_llms_generate` | Generate llms.txt |
 | `geo_citability` | Content citability analysis (47 methods) |
 | `geo_schema_validate` | Validate JSON-LD |
-| `geo_compare` | Compare multiple sites |
+| `geo_compare` | Compare multiple sites side by side |
 | `geo_gap_analysis` | Explain the gap between two sites and prioritize fixes |
 | `geo_ai_discovery` | Check AI discovery endpoints |
 | `geo_check_bots` | Check bot access via robots.txt |
@@ -340,7 +264,7 @@ Then ask: *"audit my site and fix what's missing"*
 
 ## Use as AI Context
 
-Load the right file into your AI assistant for GEO expertise:
+Load the right file into your AI assistant to get GEO expertise:
 
 | Platform | File |
 |----------|------|
@@ -352,23 +276,17 @@ Load the right file into your AI assistant for GEO expertise:
 
 ---
 
-## Internal Skill System
-
-The repository now includes a structured internal skill catalog for maintainers at [`src/geo_optimizer/skills/catalog/`](src/geo_optimizer/skills/catalog/) plus validation rules and examples. See [`docs/skill-system.md`](docs/skill-system.md) for the v1 architecture.
-
----
-
 ## Python API
 
 ```python
 from geo_optimizer import audit
 
 result = audit("https://example.com")
-print(result.score)                      # 85
-print(result.band)                       # "good"
-print(result.citability.total_score)     # 72
-print(result.score_breakdown)            # {"robots": 18, "llms": 14, ...}
-print(result.recommendations)            # ["Add FAQPage schema..."]
+print(result.score)                  # 85
+print(result.band)                   # "good"
+print(result.citability.total_score) # 72
+print(result.score_breakdown)        # {"robots": 18, "llms": 14, ...}
+print(result.recommendations)        # ["Add FAQPage schema..."]
 ```
 
 Async variant:
@@ -388,13 +306,13 @@ Show your GEO score in your README:
 ![GEO Score](https://geo-optimizer-web.onrender.com/badge?url=https://yoursite.com)
 ```
 
-Colors: 86-100 green · 68-85 cyan · 36-67 yellow · 0-35 red. Cached 1h.
+Colors: 86–100 green · 68–85 cyan · 36–67 yellow · 0–35 red. Cached 1h.
 
 ---
 
 ## Plugin System
 
-Extend the audit with custom checks via entry points:
+Extend the audit with custom checks:
 
 ```toml
 [project.entry-points."geo_optimizer.checks"]
@@ -409,17 +327,15 @@ See [`examples/example_plugin.py`](examples/example_plugin.py) for a working exa
 
 | Paper | Venue | Key Finding |
 |-------|-------|-------------|
-| [GEO: Generative Engine Optimization](https://arxiv.org/abs/2311.09735) | **KDD 2024** | 9 methods tested on 10k queries. Cite Sources: +115%, Statistics: +40% |
+| [GEO: Generative Engine Optimization](https://arxiv.org/abs/2311.09735) | **KDD 2024** | 9 methods tested on 10k queries. Cite Sources +115%, Statistics +40% |
 | [AutoGEO](https://arxiv.org/abs/2510.11438) | **ICLR 2026** | Automatic rule extraction. +50.99% over Princeton baseline |
 | [C-SEO Bench](https://arxiv.org/abs/2506.11097) | **2025** | Most content manipulation is ineffective. Infrastructure matters most |
 
-We focus on **technical infrastructure** (robots.txt, llms.txt, schema, meta) over content rewriting. The research confirms: if crawlers can't find and parse your content, prose optimization doesn't matter.
+The research is clear: if crawlers can't find and parse your content, prose optimization doesn't help. GEO Optimizer focuses on **technical infrastructure** (robots.txt, llms.txt, schema, meta) first.
 
 ---
 
 ## Roadmap
-
-This project follows a deliberate release cadence — focused waves, not noisy patches.
 
 | Version | Window | Codename |
 |---------|--------|----------|
@@ -428,18 +344,15 @@ This project follows a deliberate release cadence — focused waves, not noisy p
 | v4.12.0 | Sep 2026 | Ledger |
 | v4.13.0 | Nov 2026 | Quiet Glass |
 | v4.14.0-rc1 | Jan 2027 | Threshold |
-| v4.14.0-rc2 / v4.15.0 | Mar 2027 | Pale Signal |
 | v5.0.0 | May 2027 | Black Archive |
 
-Next focus areas: signal architecture, retrieval surface analysis, scoring recalibration, and structural pattern recognition. The v5.0 cycle represents a broader architectural evolution.
-
-Full release calendar, philosophy, and direction → [docs/ROADMAP.md](docs/ROADMAP.md)
+Full calendar → [docs/ROADMAP.md](docs/ROADMAP.md)
 
 ---
 
 ## Security
 
-All URL inputs are validated against private IP ranges (RFC 1918, loopback, link-local, cloud metadata) with DNS pinning before any request. See [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
+All URL inputs are validated against private IP ranges (RFC 1918, loopback, link-local, cloud metadata) with DNS pinning before any request is made. See [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
 
 ---
 
@@ -448,7 +361,7 @@ All URL inputs are validated against private IP ranges (RFC 1918, loopback, link
 ```bash
 git clone https://github.com/YOUR_USERNAME/geo-optimizer-skill.git
 cd geo-optimizer-skill && pip install -e ".[dev]"
-pytest tests/ -v   # 1309 tests, all mocked
+pytest tests/ -v   # 1393 tests
 ```
 
 [Bug reports](https://github.com/Auriti-Labs/geo-optimizer-skill/issues/new?template=bug_report.yml) · [Feature requests](https://github.com/Auriti-Labs/geo-optimizer-skill/issues/new?template=feature_request.yml) · [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -465,7 +378,7 @@ If this saved you time, a star helps others find it.
 
 </div>
 
-## Star History
+---
 
 <a href="https://www.star-history.com/?repos=Auriti-Labs%2Fgeo-optimizer-skill&type=timeline&logscale=&legend=bottom-right">
  <picture>
